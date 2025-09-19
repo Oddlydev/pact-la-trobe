@@ -7,7 +7,7 @@ export type ChipProps = {
   defaultSelected?: boolean;
   onSelectedChange?: (selected: boolean) => void;
   className?: string;
-  badgeClassName?: string; // full "bg-red-600 text-white"
+  badgeClassName?: string;
 };
 
 const colorMap: Record<string, string> = {
@@ -47,7 +47,6 @@ export default function Chip({
     className,
   ].join(" ");
 
-  // Extract the "bg-xxx" token
   const bgMatch = badgeClassName?.match(/bg-(\S+)/);
   const bgColor = bgMatch ? bgMatch[1] : "gray-800"; // fallback
   const activeTextColor = colorMap[bgColor] ?? "text-gray-800";

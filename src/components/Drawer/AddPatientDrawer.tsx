@@ -100,13 +100,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
           {/* Footer */}
           <div className="flex justify-end gap-3 px-6 py-4">
             <FormButton variant="light" label="Cancel" onClick={onClose} />
-            <FormButton
-              variant="dark"
-              label="Save"
-              onClick={() => {
-                // you can handle form submit here
-              }}
-            />
+            <FormButton variant="dark" label="Save" onClick={() => {}} />
           </div>
         </form>
       </div>

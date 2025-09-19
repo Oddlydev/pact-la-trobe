@@ -13,7 +13,6 @@ type Props = {
 
 export default function EditPatientDrawer({ open, onClose }: Props) {
   const [confirmOpen, setConfirmOpen] = useState(false);
-  // Keep component mounted if confirm modal is open
   if (!open && !confirmOpen) return null;
 
   return (
@@ -136,7 +135,6 @@ export default function EditPatientDrawer({ open, onClose }: Props) {
           onClose();
         }}
         onConfirm={(reason) => {
-          // You can handle the update confirmation here
           console.log("Update confirmed with note:", reason);
           setConfirmOpen(false);
           onClose();

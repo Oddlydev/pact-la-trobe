@@ -141,7 +141,7 @@ export default function PatientCard({
     >
       {/* Badge + Score */}
       <div className="flex items-start justify-between">
-        {/* Indicator + Name (stacked vertically with 20px gap) */}
+        {/* Indicator + Name */}
         <div className="flex flex-col gap-5">
           <span
             className={[

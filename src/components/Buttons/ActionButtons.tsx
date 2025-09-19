@@ -9,7 +9,7 @@ type Props = {
   type: ButtonType;
   label?: string;
   ariaLabel?: string;
-  iconType?: "edit" | "export"; // choose icon for icon buttons and text buttons
+  iconType?: "edit" | "export";
   state?: State;
   className?: string;
   onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
@@ -52,7 +52,7 @@ const PersonIcon = ({ className = "h-5 w-5" }) => (
   </svg>
 );
 
-// Edit Report icon (document with pen)
+// Edit Report icon
 const EditIcon = ({ className = "h-5 w-5" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +147,6 @@ export default function ActionButton({
     textColor = "text-white";
     if (forced) {
       if (isHover) {
-        // Match PrimaryButtons dark hover: white bg, black text, black border
         look = "border border-black bg-white text-black";
         textColor = "text-black";
       } else if (isFocus) {
@@ -160,7 +159,6 @@ export default function ActionButton({
     } else {
       look = [
         "border border-gray-300 bg-black text-white", // default
-        // Match PrimaryButtons dark hover
         "hover:border-black hover:bg-white hover:text-black", // hover
         "focus:border-2 focus:border-gray-300 focus:bg-black focus:text-white", // focus
         "active:border active:border-gray-300 active:bg-black active:text-white", // active

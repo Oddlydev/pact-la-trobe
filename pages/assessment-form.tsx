@@ -301,7 +301,7 @@ export default function AssessmentFormPage() {
           dob="1936 FEB 21"
           gender="Man"
           location="Western General Hospital"
-          risk="CRITICAL/PRIORITY"
+          risk="CRITICAL"
           latestReportAt="2025 MAY 8 | 10:19"
           latestReportBy="Louisa Durrell"
         />
