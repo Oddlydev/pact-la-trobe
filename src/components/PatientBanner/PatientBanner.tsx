@@ -63,7 +63,7 @@ export default function PatientBanner({
           <BannerRiskIndicator variant={"low"} />
         </div>
 
-        <div className="text-white mt-2 text-2xl font-semibold leading-6 tracking-normal">
+        <div className="text-white text-2xl font-semibold leading-6 tracking-normal">
           {name}
         </div>
 
