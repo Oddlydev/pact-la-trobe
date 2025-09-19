@@ -184,7 +184,7 @@ export default function Topbar() {
         </div>
       </div>
 
-      {/* ✅ Indented horizontal line */}
+      {/*   Indented horizontal line */}
       {/* Drawer */}
       <AddPatientDrawer open={addOpen} onClose={() => setAddOpen(false)} />
 

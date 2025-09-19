@@ -12,7 +12,16 @@ export default function PatientProfilePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const reports = [
+  type Report = {
+    id: number;
+    date: string;
+    score: number;
+    risk: "critical" | "low" | "moderate";
+    provider: string;
+    notes: string;
+  };
+
+  const reports: Report[] = [
     {
       id: 1,
       date: "03-MAY-2025 16:33",
@@ -220,8 +229,6 @@ export default function PatientProfilePage() {
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
               onPageChange={setCurrentPage}
             />
           </div>

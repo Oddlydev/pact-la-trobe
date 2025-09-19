@@ -95,7 +95,7 @@ export default function SearchBar({
           type="search"
           value={val}
           onChange={handleChange}
-          onFocus={handleFocus} // :point_left: Clears when clicked/focused
+          onFocus={handleFocus}
           placeholder={placeholder}
           disabled={disabled}
           className={`caret-black block min-w-0 grow  text-sm text-zinc-600 placeholder:text-zinc-400 placeholder:font-dmsans focus:outline-none focus:placeholder-transparent ${inputClassName}`}

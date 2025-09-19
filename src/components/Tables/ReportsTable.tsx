@@ -73,7 +73,6 @@ export default function ReportsTable({ reports }: Props) {
             <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
               Notes
             </th>
-            {/* ✅ Keep header left-aligned, like PatientManagementTable */}
             <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-left">
               Actions
             </th>
@@ -97,9 +96,8 @@ export default function ReportsTable({ reports }: Props) {
                 {r.provider}
               </td>
               <td className="px-4 py-3.5 text-sm text-gray-600">{r.notes}</td>
-              {/* ✅ Row actions aligned right */}
               <td className="px-4 py-3.5 whitespace-nowrap text-right">
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-2"> 
                   <ActionButton
                     variant="dark"
                     type="text"
@@ -108,9 +106,15 @@ export default function ReportsTable({ reports }: Props) {
                   <ActionButton
                     variant="light"
                     type="icon"
-                    ariaLabel="Download"
+                    iconType="edit"
+                    ariaLabel="Edit Report"
                   />
-                  <ActionButton variant="light" type="icon" ariaLabel="Share" />
+                  <ActionButton 
+                    variant="light" 
+                    type="icon" 
+                    iconType="export" 
+                    ariaLabel="Export Report" 
+                  />
                 </div>
               </td>
             </tr>
