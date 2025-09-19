@@ -383,7 +383,7 @@ export default function AssessmentFormPage() {
             >
               <ol className="">
                 {s1Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-3 py-3">
+                  <li key={q.id} className="flex items-start gap-1 py-3 ">
                     <span className="text-base text-gray-600 font-medium leading-6">
                       {idx + 1}.
                     </span>
@@ -408,7 +408,7 @@ export default function AssessmentFormPage() {
             >
               <ol className="">
                 {s2Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-3 py-3">
+                  <li key={q.id} className="flex items-start gap-1 py-3 ">
                     <span className="text-base text-gray-600 font-medium leading-6">
                       {idx + 1}.
                     </span>
@@ -433,7 +433,7 @@ export default function AssessmentFormPage() {
             >
               <ol className="">
                 {s3Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-3 py-3">
+                  <li key={q.id} className="flex items-start gap-1 py-3 ">
                     <span className="text-base text-gray-600 font-medium leading-6">
                       {idx + 1}.
                     </span>
@@ -458,7 +458,7 @@ export default function AssessmentFormPage() {
             >
               <ol className="">
                 {s4Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-3 py-3">
+                  <li key={q.id} className="flex items-start gap-1 py-3 ">
                     <span className="text-base text-gray-600 font-medium leading-6">
                       {idx + 1}.
                     </span>
@@ -488,7 +488,7 @@ export default function AssessmentFormPage() {
                       {g.heading}
                     </div>
                     <ol className="">
-                      <li className="flex items-start gap-3 py-3">
+                      <li className="flex items-start gap-1 py-3 ">
                         <span>1.</span>
                         <p className="flex-1 text-base text-gray-600 font-medium leading-6">
                           {g.label}
@@ -577,7 +577,7 @@ export default function AssessmentFormPage() {
             >
               <ol className="">
                 {s7Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-3 py-3">
+                  <li key={q.id} className="flex items-start gap-1 py-3 ">
                     <span>{idx + 1}.</span>
                     <S2Question
                       id={q.id}
