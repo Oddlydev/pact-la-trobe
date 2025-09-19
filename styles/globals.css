@@ -16,6 +16,7 @@ input[type="date"] {
 @theme {
   --font-dmsans: var(--font-dmsans);
   --font-bebas: var(--font-bebas);
+  --font-lexend: var(--font-lexend);
   --font-sans: var(--font-dmsans), ui-sans-serif, system-ui, sans-serif;
 
   /* =============================
