@@ -24,7 +24,7 @@ export default function RadioButtonInline({
 
   return (
     <fieldset className={["max-w-2xl", className].join(" ")}>
-      <div className="space-y-2 sm:flex sm:items-center sm:space-y-0 sm:space-x-2">
+      <div className="space-y-2 sm:flex sm:items-center sm:space-y-0 sm:space-x-2 gap-2">
         {options.map((opt) => (
           <div key={opt.id} className="flex items-center">
             <input
