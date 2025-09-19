@@ -338,24 +338,28 @@ export default function AssessmentFormPage() {
 
   return (
     <Layout>
-      <main className="mx-auto space-y-6">
+      <main className="mx-aut0 px-4 pb-4 pt-5 w-full rounded-xl border border-white bg-[rgba(0,0,0,0.00)] p-4 space-y-6">
         {/* Header */}
-        <header className="mb-4 flex items-center justify-between">
+        <header className="mb-10 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">
-              New Assessment Form
+              Patient Assessment Report
             </h1>
             <p className="text-sm text-gray-600">
-              Start a fresh evaluation to record patient needs and status
+              Review detailed insights from the latest evaluation
             </p>
           </div>
           <div className="flex gap-3">
             <PrimaryButton
               variant="dark"
-              iconType="submit"
-              label="Submit Form"
+              iconType="editReport"
+              label="Edit Report"
             />
-            <PrimaryButton variant="light" iconType="cancel" label="Cancel" />
+            <PrimaryButton
+              variant="light"
+              iconType="exportReport"
+              label="Export Report"
+            />
           </div>
         </header>
 

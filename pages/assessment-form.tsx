@@ -93,7 +93,7 @@ function DropdownQuestion({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex w-full justify-between items-center rounded-md bg-white px-3 py-2 text-sm font-medium leading-5 text-gray-600 shadow-sm border border-gray-300"
+          className="inline-flex w-full justify-between items-center rounded-md bg-white pl-4 pr-2.5 py-2.5 text-sm font-medium leading-5 text-gray-600 shadow-sm border border-gray-300"
         >
           <span className={selected ? "text-gray-800" : "text-gray-400"}>
             {selected ?? "Select Option"}
@@ -272,9 +272,9 @@ export default function AssessmentFormPage() {
 
   return (
     <Layout>
-      <main className="mx-auto space-y-6">
+      <main className="mx-auto space-y-6 mx-aut0 px-4 pb-4 pt-5 w-full rounded-xl border border-white bg-[rgba(0,0,0,0.00)] p-4">
         {/* Header */}
-        <header className="mb-4 flex items-center justify-between">
+        <header className="flex items-center justify-between mb-10">
           <div>
             <h1 className="text-xl font-bold text-gray-900">
               New Assessment Form
