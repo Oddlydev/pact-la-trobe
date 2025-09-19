@@ -30,7 +30,7 @@ export default function TextAreaField({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-slate-700 font-dmsans"
+          className="block text-sm font-medium text-gray-700 font-dmsans"
         >
           {label}
         </label>
@@ -43,7 +43,7 @@ export default function TextAreaField({
           rows={rows}
           className={[
             "block w-full rounded-md bg-white px-3 py-1.5",
-            "text-base placeholder:text-gray-400 font-dmsans text-gray-900",
+            "text-base placeholder:text-gray-500 placeholder:font-normal font-dmsans text-gray-900",
             "outline-1 outline-gray-300 focus:outline-1 focus:outline-blue-500",
             "sm:text-sm/6 resize-y",
           ].join(" ")}

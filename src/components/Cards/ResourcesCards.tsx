@@ -22,7 +22,7 @@ export default function ResourcesCard({
       className={[
         "group flex flex-col items-start w-full",
         "p-3 pb-4 gap-5",
-        "rounded-[12px] border border-brand-2 bg-transparent",
+        "rounded-[12px] border border-brand-2 bg-[rgba(0, 0, 0, 0.00);]",
         "shadow-[0_0_40px_0_rgba(171,190,194,0.30)]",
         "transition-all duration-300 ease-out",
         "hover:shadow-[inset_0_0_20px_rgba(171,190,194,0.40)] hover:-translate-y-1",
@@ -54,7 +54,7 @@ export default function ResourcesCard({
             "flex items-center gap-1 rounded-full border border-brand-3",
             "px-[14px] py-2 text-sm font-semibold leading-5",
             "transition-all duration-300 ease-out",
-            "text-black bg-transparent",
+            "text-black bg-[rgba(0, 0, 0, 0.00);]",
             // Card hover → filled button (black bg, white text, white border)
             "group-hover:border-brand-2 group-hover:bg-brand-3 group-hover:text-white",
           ].join(" ")}
