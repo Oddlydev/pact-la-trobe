@@ -71,14 +71,33 @@ function DropdownQuestion({
   label: string;
   options: string[];
 }) {
+  const [open, setOpen] = React.useState(false);
+  const [selected, setSelected] = React.useState<string | null>(null);
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (!ref.current) return;
+      if (!ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
   return (
     <div className="flex items-center justify-between gap-6 py-3 w-full">
       <p className="flex-1 text-base text-gray-600 font-medium leading-6">
         {label}
       </p>
-      <el-dropdown class="inline-block w-72">
-        <button className="inline-flex w-full justify-between rounded-md bg-white px-3 py-2 text-sm font-medium leading-5 text-gray-400 shadow-sm border border-gray-300">
-          Select Option
+      <div className="relative inline-block w-72" ref={ref}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="inline-flex w-full justify-between items-center rounded-md bg-white px-3 py-2 text-sm font-medium leading-5 text-gray-600 shadow-sm border border-gray-300"
+        >
+          <span className={selected ? "text-gray-800" : "text-gray-400"}>
+            {selected ?? "Select Option"}
+          </span>
           <svg
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -92,23 +111,27 @@ function DropdownQuestion({
             />
           </svg>
         </button>
-        <el-menu
-          anchor="bottom end"
-          popover
-          class="w-72 origin-top-right rounded-md bg-white shadow-lg outline-1 outline-black/5"
-        >
-          <div class="py-1">
-            {options.map((o) => (
-              <a
-                key={o}
-                class="block px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900"
-              >
-                {o}
-              </a>
-            ))}
+        {open && (
+          <div className="absolute right-0 z-10 mt-1 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5">
+            <ul className="py-1 max-h-60 overflow-auto">
+              {options.map((o) => (
+                <li key={o}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelected(o);
+                      setOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100"
+                  >
+                    {o}
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
-        </el-menu>
-      </el-dropdown>
+        )}
+      </div>
     </div>
   );
 }
@@ -292,7 +315,7 @@ export default function AssessmentFormPage() {
               title="Patient Identification & Functional Decline"
               borderColor="border-l-green-600"
             >
-              <ol className="divide-y divide-gray-200">
+              <ol className="">
                 {s1Items.map((q, idx) => (
                   <li key={q.id} className="flex items-start gap-3 py-3">
                     <span className="text-base text-gray-600 font-medium leading-6">
@@ -317,7 +340,7 @@ export default function AssessmentFormPage() {
               title="Symptom Burden & Unmet Needs"
               borderColor="border-l-amber-400"
             >
-              <ol className="divide-y divide-gray-200">
+              <ol className="">
                 {s2Items.map((q, idx) => (
                   <li key={q.id} className="flex items-start gap-3 py-3">
                     <span className="text-base text-gray-600 font-medium leading-6">
@@ -342,7 +365,7 @@ export default function AssessmentFormPage() {
               title="Condition-Specific Indicators"
               borderColor="border-l-red-600"
             >
-              <ol className="divide-y divide-gray-200">
+              <ol className="">
                 {s3Items.map((q, idx) => (
                   <li key={q.id} className="flex items-start gap-3 py-3">
                     <span className="text-base text-gray-600 font-medium leading-6">
@@ -367,7 +390,7 @@ export default function AssessmentFormPage() {
               title="Psychosocial & Advance Care Planning"
               borderColor="border-l-orange-500"
             >
-              <ol className="divide-y divide-gray-200">
+              <ol className="">
                 {s4Items.map((q, idx) => (
                   <li key={q.id} className="flex items-start gap-3 py-3">
                     <span className="text-base text-gray-600 font-medium leading-6">
@@ -392,7 +415,7 @@ export default function AssessmentFormPage() {
               title="Holistic, Social and Cultural Needs"
               borderColor="border-l-gray-500"
             >
-              <div className="divide-y divide-gray-200">
+              <div className="">
                 <DropdownQuestion
                   label="Are there identified cultural, religious or spiritual needs influencing care delivery?"
                   options={[
@@ -438,7 +461,7 @@ export default function AssessmentFormPage() {
               title="Clinical Action & Referrals"
               borderColor="border-l-gray-500"
             >
-              <ol className="divide-y divide-gray-200">
+              <ol className="">
                 {[
                   "Medication review",
                   "Anticipatory prescribing",
@@ -470,7 +493,7 @@ export default function AssessmentFormPage() {
               title="Documentation & Communication"
               borderColor="border-l-gray-500"
             >
-              <ol className="divide-y divide-gray-200">
+              <ol className="">
                 {s7Items.map((q, idx) => (
                   <li key={q.id} className="flex items-start gap-3 py-3">
                     <span className="w-5">{idx + 1}.</span>
