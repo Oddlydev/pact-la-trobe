@@ -83,7 +83,9 @@ export default function ActionButton({
     textColor = "text-white";
     if (forced) {
       if (isHover) {
-        look = "border border-black bg-[rgba(0, 0, 0, 0.00);] text-black";
+        // Match PrimaryButtons dark hover: white bg, black text, black border
+        look = "border border-black bg-white text-black";
+        textColor = "text-black";
       } else if (isFocus) {
         look = "border-2 border-gray-300 bg-black text-white";
       } else if (isActive) {
@@ -94,7 +96,8 @@ export default function ActionButton({
     } else {
       look = [
         "border border-gray-300 bg-black text-white", // default
-        "hover:border-black hover:bg-[rgba(0, 0, 0, 0.00);] hover:text-black", // hover
+        // Match PrimaryButtons dark hover
+        "hover:border-black hover:bg-white hover:text-black", // hover
         "focus:border-2 focus:border-gray-300 focus:bg-black focus:text-white", // focus
         "active:border active:border-gray-300 active:bg-black active:text-white", // active
       ].join(" ");

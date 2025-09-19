@@ -156,8 +156,9 @@ export default function PrimaryButton({
     look = [
       "border border-gray-300 bg-black text-white",
       "hover:bg-white hover:text-black hover:border-black",
-      "focus:border focus:border-gray-400",
-      "active:bg-gray-800 active:text-white",
+      // Match ActionButtons dark focus/active
+      "focus:border-2 focus:border-gray-300 focus:bg-black focus:text-white",
+      "active:border active:border-gray-300 active:bg-black active:text-white",
     ].join(" ");
   }
 
@@ -166,8 +167,9 @@ export default function PrimaryButton({
     look = [
       "border border-black bg-white text-black",
       "hover:bg-black hover:text-white hover:border-black",
-      "focus:border focus:border-gray-400",
-      "active:bg-gray-100 active:text-black",
+      // Match ActionButtons light focus/active
+      "focus:border-2 focus:border-brand-3",
+      "active:border active:border-brand-3",
     ].join(" ");
   }
 
