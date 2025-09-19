@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* Hide default calendar icon in Chrome, Safari, Edge */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+
+/* Hide in Firefox */
+input[type="date"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+
 @theme {
   --font-dmsans: var(--font-dmsans);
   --font-bebas: var(--font-bebas);
@@ -26,14 +39,17 @@
 }
 
 @layer base {
+
   html,
   body,
   #__next {
     height: 100%;
   }
+
   body {
     font-family: var(--font-dmsans);
-    overflow: hidden; /* prevent body from adding its own scrollbar */
+    overflow: hidden;
+    /* prevent body from adding its own scrollbar */
   }
 
   /* ----------------------------
@@ -42,16 +58,21 @@
   h1 {
     font-family: var(--font-dmsans, var(--font-sans));
     font-weight: 900;
-    font-size: 1.875rem; /* text-3xl */
-    line-height: 2.25rem; /* leading-9 */
-    letter-spacing: -0.02em; /* tracking-tighter */
+    font-size: 1.875rem;
+    /* text-3xl */
+    line-height: 2.25rem;
+    /* leading-9 */
+    letter-spacing: -0.02em;
+    /* tracking-tighter */
   }
 
   h2 {
     font-family: var(--font-dmsans, var(--font-sans));
     font-weight: 700;
-    font-size: 1.5rem; /* text-2xl */
-    line-height: 2rem; /* leading-8 */
+    font-size: 1.5rem;
+    /* text-2xl */
+    line-height: 2rem;
+    /* leading-8 */
     letter-spacing: -0.02em;
   }
 
@@ -61,8 +82,10 @@
   p {
     font-family: var(--font-dmsans, var(--font-sans));
     font-weight: 400;
-    font-size: 1rem; /* text-base */
-    line-height: 1.5rem; /* leading-6 */
+    font-size: 1rem;
+    /* text-base */
+    line-height: 1.5rem;
+    /* leading-6 */
     letter-spacing: 0em;
   }
 
@@ -71,7 +94,8 @@
   ----------------------------- */
   strong {
     font-family: var(--font-dmsans, var(--font-sans));
-    font-weight: 600; /* Semibold */
+    font-weight: 600;
+    /* Semibold */
     font-size: 1rem;
     line-height: 1.5rem;
   }
@@ -82,8 +106,10 @@
   small {
     font-family: var(--font-dmsans, var(--font-sans));
     font-weight: 400;
-    font-size: 0.875rem; /* text-sm */
-    line-height: 1.25rem; /* leading-5 */
+    font-size: 0.875rem;
+    /* text-sm */
+    line-height: 1.25rem;
+    /* leading-5 */
   }
 
   /* ----------------------------
@@ -92,8 +118,10 @@
   th {
     font-family: var(--font-bebas, var(--font-heading));
     font-weight: 400;
-    font-size: 1rem; /* text-base */
-    line-height: 1.5rem; /* leading-6 */
+    font-size: 1rem;
+    /* text-base */
+    line-height: 1.5rem;
+    /* leading-6 */
   }
 
   /* ----------------------------
@@ -102,9 +130,12 @@
   label,
   span {
     font-family: var(--font-dmsans, var(--font-sans));
-    font-weight: 500; /* Medium for better readability */
-    font-size: 1rem; /* text-base */
-    line-height: 1.5rem; /* leading-6 */
+    font-weight: 500;
+    /* Medium for better readability */
+    font-size: 1rem;
+    /* text-base */
+    line-height: 1.5rem;
+    /* leading-6 */
   }
 }
 
@@ -114,6 +145,7 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
   display: none;
 }
+
 .search-close-icon:hover {
   background: transparent;
 }
