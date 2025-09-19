@@ -6,7 +6,7 @@ type State = "default" | "hover" | "focus" | "active";
 type Props = {
   variant: Variant;
   label?: string;
-  state?: State; // force visual state for demo
+  state?: State;
   className?: string;
   disabled?: boolean;
   onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"];

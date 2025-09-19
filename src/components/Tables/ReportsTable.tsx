@@ -2,7 +2,6 @@ import React from "react";
 import DotTableRiskIndicator from "@/src/components/Indicators/DotTableRiskIndicator";
 import ActionButton from "@/src/components/Buttons/ActionButtons";
 
-// Small header filter/sort icon
 const HeaderIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +96,7 @@ export default function ReportsTable({ reports }: Props) {
               </td>
               <td className="px-4 py-3.5 text-sm text-gray-600">{r.notes}</td>
               <td className="px-4 py-3.5 whitespace-nowrap text-right">
-                <div className="flex items-center justify-end gap-2"> 
+                <div className="flex items-center justify-end gap-2">
                   <ActionButton
                     variant="dark"
                     type="text"
@@ -109,11 +108,11 @@ export default function ReportsTable({ reports }: Props) {
                     iconType="edit"
                     ariaLabel="Edit Report"
                   />
-                  <ActionButton 
-                    variant="light" 
-                    type="icon" 
-                    iconType="export" 
-                    ariaLabel="Export Report" 
+                  <ActionButton
+                    variant="light"
+                    type="icon"
+                    iconType="export"
+                    ariaLabel="Export Report"
                   />
                 </div>
               </td>

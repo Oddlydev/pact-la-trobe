@@ -55,7 +55,6 @@ export default function ResourcesCard({
           "px-[14px] py-2 text-sm font-semibold leading-5",
           "transition-all duration-300 ease-out",
           "text-black bg-[rgba(0, 0, 0, 0.00);]",
-          // Card hover → filled button (black bg, white text, white border)
           "group-hover:border-brand-2 group-hover:bg-brand-3 group-hover:text-white",
         ].join(" ")}
       >

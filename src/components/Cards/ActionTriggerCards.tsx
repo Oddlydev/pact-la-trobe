@@ -35,9 +35,9 @@ export default function ActionTriggerCard({
       className={[
         "group rounded-lg p-4 bg-[rgba(0,0,0,0.00)]",
         "bg-gradient-to-b from-white/5 to-white/0 backdrop-blur-md",
-        "border border-white/10", // full faint border
+        "border border-white/10",
         "border-l-4",
-        cfg.leftBorder, // apply severity color to left
+        cfg.leftBorder,
         "transition-all duration-300",
         "shadow-[inset_0_0_50px_-2px_rgba(253,230,138,0.14),0_0_6px_-1px_rgba(0,0,0,0.25)]", // default shadow
         "hover:rounded-lg hover:border-l-[3px] hover:bg-[rgba(0, 0, 0, 0.00);] hover:shadow-[0_0_6px_-1px_rgba(0,0,0,0.25)]", // hover shadow

@@ -11,7 +11,7 @@ export type PatientBannerProps = {
   gender?: string;
   location?: string;
   risk?: Risk;
-  latestReportAt?: string; // already formatted string
+  latestReportAt?: string;
   latestReportBy?: string;
   className?: string;
 };

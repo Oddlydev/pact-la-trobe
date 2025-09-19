@@ -67,7 +67,7 @@ export default function DatePickerField({
           placeholder={placeholder}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className={`${base} pr-10`} // padding-right for icon
+          className={`${base} pr-10`}
           {...rest}
         />
 
