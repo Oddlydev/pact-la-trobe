@@ -20,6 +20,7 @@ export default function Topbar() {
           <PrimaryButton
             variant="dark"
             label="Add Patient"
+            iconType="addPatient"
             onClick={() => setAddOpen(true)}
           />
 

@@ -129,7 +129,7 @@ export default function InputField({
 
     return [
       "block w-full rounded-md bg-white px-3 py-2",
-      "text-base placeholder:text-gray-400",
+      "text-base placeholder:text-gray-500 placeholder:text-sm placeholder:font-normal",
       "outline-1 -outline-offset-1",
       "font-dmsans text-gray-900",
       colorClasses,
@@ -163,7 +163,7 @@ export default function InputField({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-slate-700 font-dmsans"
+          className="block text-sm font-medium text-gray-700 font-dmsans"
         >
           {label}
         </label>

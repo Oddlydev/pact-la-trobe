@@ -7,7 +7,7 @@ type IconType = "submit" | "cancel" | "addPatient" | undefined;
 type Props = {
   variant: Variant;
   label: string;
-  iconType?: IconType; // ✅ choose icon automatically
+  iconType?: IconType;
   state?: State;
   className?: string;
   onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"];

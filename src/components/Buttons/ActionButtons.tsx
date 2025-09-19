@@ -83,7 +83,7 @@ export default function ActionButton({
     textColor = "text-white";
     if (forced) {
       if (isHover) {
-        look = "border border-black bg-transparent text-black";
+        look = "border border-black bg-[rgba(0, 0, 0, 0.00);] text-black";
       } else if (isFocus) {
         look = "border-2 border-gray-300 bg-black text-white";
       } else if (isActive) {
@@ -94,7 +94,7 @@ export default function ActionButton({
     } else {
       look = [
         "border border-gray-300 bg-black text-white", // default
-        "hover:border-black hover:bg-transparent hover:text-black", // hover
+        "hover:border-black hover:bg-[rgba(0, 0, 0, 0.00);] hover:text-black", // hover
         "focus:border-2 focus:border-gray-300 focus:bg-black focus:text-white", // focus
         "active:border active:border-gray-300 active:bg-black active:text-white", // active
       ].join(" ");
@@ -116,7 +116,7 @@ export default function ActionButton({
       }
     } else {
       look = [
-        "border border-brand-3 bg-transparent text-black", // default
+        "border border-brand-3 bg-[rgba(0, 0, 0, 0.00);] text-black", // default
         "hover:border-gray-300 hover:bg-black hover:text-white", // hover
         "focus:border-2 focus:border-brand-3", // focus
         "active:border active:border-brand-3", // active
