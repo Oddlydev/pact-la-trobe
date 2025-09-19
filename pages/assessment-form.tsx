@@ -93,7 +93,7 @@ function DropdownQuestion({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex w-full justify-between items-center rounded-md bg-white px-3 py-2 text-sm font-medium leading-5 text-gray-600 shadow-sm border border-gray-300"
+          className="inline-flex w-full justify-between items-center rounded-md bg-white pl-4 pr-2.5 py-2.5 text-sm font-medium leading-5 text-gray-600 shadow-sm border border-gray-300"
         >
           <span className={selected ? "text-gray-800" : "text-gray-400"}>
             {selected ?? "Select Option"}
