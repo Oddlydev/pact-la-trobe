@@ -17,8 +17,14 @@ function SectionCard({
   borderColor: string;
 }) {
   return (
-    <section className={["relative  mt-4 font-dmsans", borderColor].join(" ")}>
-      <div>{children}</div>
+    <section
+      className={[
+        "relative mt-4 font-dmsans rounded-2xl border border-gray-200 bg-white shadow-sm",
+        "border-l-4",
+        borderColor,
+      ].join(" ")}
+    >
+      <div className="px-6 pb-6 pt-3">{children}</div>
     </section>
   );
 }
@@ -115,11 +121,13 @@ function SectionBlock({
   title,
   children,
   borderColor,
+  noCard = false,
 }: {
   sectionNumber: number;
   title: string;
   children: React.ReactNode;
   borderColor: string;
+  noCard?: boolean;
 }) {
   return (
     <div className="relative flex gap-4">
@@ -150,21 +158,12 @@ function SectionBlock({
           <h3 className="text-xl font-bold text-gray-800">{title}</h3>
         </div>
 
-        <SectionCard borderColor={borderColor}>{children}</SectionCard>
+        {noCard ? (
+          children
+        ) : (
+          <SectionCard borderColor={borderColor}>{children}</SectionCard>
+        )}
       </div>
-    </div>
-  );
-}
-
-/* ------------------------
-   Page Divider
--------------------------*/
-function PageDivider({ text }: { text: string }) {
-  return (
-    <div className="relative my-8 flex items-center">
-      <div className="flex-grow border-t border-gray-300"></div>
-      <span className="mx-4 text-sm font-medium text-gray-500">{text}</span>
-      <div className="flex-grow border-t border-gray-300"></div>
     </div>
   );
 }
@@ -180,9 +179,6 @@ export default function AssessmentFormPage() {
   const [s4Answers, setS4Answers] = React.useState<Record<string, V>>({});
   const [s7Answers, setS7Answers] = React.useState<Record<string, V>>({});
 
-  /* ------------------------
-     Section Items
-  -------------------------*/
   const s1Items = [
     {
       id: "q1",
@@ -288,7 +284,7 @@ export default function AssessmentFormPage() {
         />
 
         <div className="flex gap-6">
-          {/* Left column: Sections */}
+          {/* Left column */}
           <div className="flex-1">
             {/* Section 1 */}
             <SectionBlock
@@ -394,7 +390,7 @@ export default function AssessmentFormPage() {
             <SectionBlock
               sectionNumber={5}
               title="Holistic, Social and Cultural Needs"
-              borderColor="border-l-green-600"
+              borderColor="border-l-gray-500"
             >
               <div className="divide-y divide-gray-200">
                 <DropdownQuestion
@@ -406,7 +402,7 @@ export default function AssessmentFormPage() {
                   ]}
                 />
                 <DropdownQuestion
-                  label="Is the person’s cultural background (e.g. Aboriginal/Torres Strait Islander, CALD) recorded and informing care?"
+                  label="Is the person’s cultural background recorded and informing care?"
                   options={["Yes", "No", "Unclear"]}
                 />
                 <DropdownQuestion
@@ -426,11 +422,11 @@ export default function AssessmentFormPage() {
                   options={["Yes", "No", "Unclear"]}
                 />
                 <DropdownQuestion
-                  label="Does the person have limited or no social contact (e.g. few visitors, no family nearby)?"
+                  label="Does the person have limited or no social contact?"
                   options={["Yes", "No"]}
                 />
                 <DropdownQuestion
-                  label="Are there any social or financial barriers (e.g. transport, language, costs) affecting care access?"
+                  label="Are there any social or financial barriers affecting care access?"
                   options={["None", "Some barriers", "Significant barriers"]}
                 />
               </div>
@@ -440,11 +436,11 @@ export default function AssessmentFormPage() {
             <SectionBlock
               sectionNumber={6}
               title="Clinical Action & Referrals"
-              borderColor="border-l-amber-400"
+              borderColor="border-l-gray-500"
             >
               <ol className="divide-y divide-gray-200">
                 {[
-                  "Medication review (e.g., opioid, PRN, anxiolytics)",
+                  "Medication review",
                   "Anticipatory prescribing",
                   "Mobility/oral care/pain relief support",
                   "Multidisciplinary case conference",
@@ -452,9 +448,7 @@ export default function AssessmentFormPage() {
                   "Allied health referrals",
                 ].map((label, idx) => (
                   <li key={idx} className="flex items-center gap-6 py-3">
-                    <span className="text-sm font-medium text-gray-600 w-5">
-                      {idx + 1}.
-                    </span>
+                    <span className="w-5">{idx + 1}.</span>
                     <p className="flex-1 text-base text-gray-700">{label}</p>
                     <RadioButtonInline
                       name={`sec6-${idx}`}
@@ -464,7 +458,6 @@ export default function AssessmentFormPage() {
                         { id: "monitoring", label: "Ongoing Monitoring" },
                       ]}
                       defaultValue="monitoring"
-                      className="shrink-0"
                     />
                   </li>
                 ))}
@@ -475,14 +468,12 @@ export default function AssessmentFormPage() {
             <SectionBlock
               sectionNumber={7}
               title="Documentation & Communication"
-              borderColor="border-l-purple-500"
+              borderColor="border-l-gray-500"
             >
               <ol className="divide-y divide-gray-200">
                 {s7Items.map((q, idx) => (
                   <li key={q.id} className="flex items-start gap-3 py-3">
-                    <span className="text-base text-gray-600 font-medium leading-6">
-                      {idx + 1}.
-                    </span>
+                    <span className="w-5">{idx + 1}.</span>
                     <S2Question
                       id={q.id}
                       label={q.label}
@@ -496,19 +487,25 @@ export default function AssessmentFormPage() {
               </ol>
             </SectionBlock>
 
-            {/* Section 8 */}
-            <SectionBlock sectionNumber={8} title="Comments or Notes">
-              <div>
+            {/* Section 8 - timeline continues, no card */}
+            <SectionBlock
+              sectionNumber={8}
+              title="Comments or Notes"
+              borderColor="border-l-gray-500"
+              noCard
+            >
+              <div className="mt-4">
                 <textarea
                   id="comment"
                   name="comment"
                   rows={4}
                   placeholder="Add your comment or note here..."
-                  className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600"
+                  className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 outline-gray-300"
                 />
+
                 <hr className="mt-6 border-t border-gray-200" />
 
-                <div className="mt-3 flex justify-end text-sm text-gray-600 font-normal leading-5">
+                <div className="mt-3 flex justify-end text-sm text-gray-500">
                   <span>Created By: Thompson Robert</span>
                   <span className="ml-4">2025 DEC 23 14:57</span>
                 </div>
