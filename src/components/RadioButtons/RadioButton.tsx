@@ -25,7 +25,7 @@ export default function RadioButton({
 
   return (
     <fieldset className={["max-w-md", className].join(" ")}>
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {options.map((opt) => (
           <div key={opt.id} className="flex items-center">
             <input
@@ -34,11 +34,11 @@ export default function RadioButton({
               name={groupName}
               checked={value === opt.id}
               onChange={() => setValue(opt.id)}
-              className="relative size-5 appearance-none rounded-full border border-gray-300 bg-white 
+              className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white 
                          before:absolute before:inset-1 before:rounded-full before:bg-white 
                          not-checked:before:hidden 
-                         checked:border-[var(--color-accent)] checked:bg-[var(--color-accent)] 
-                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] 
+                         checked:border-accent checked:bg-accent 
+                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent
                          disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 
                          forced-colors:appearance-auto forced-colors:before:hidden"
             />
