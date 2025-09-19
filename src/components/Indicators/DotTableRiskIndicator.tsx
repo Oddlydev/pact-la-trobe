@@ -25,7 +25,7 @@ const styles: Record<
     defaultLabel: "HIGH RISK",
   },
   moderate: {
-    border: "border-amber-400",
+    border: "border-amber-600",
     text: "text-gray-900",
     dot: "#FBBF24",
     defaultLabel: "MOD. RISK",

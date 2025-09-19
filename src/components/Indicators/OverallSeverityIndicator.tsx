@@ -14,7 +14,7 @@ const styles: Record<
 > = {
   critical: {
     bg: "bg-red-600",
-    text: "text-gray-50",
+    text: "text-white",
     defaultLabel: "CRITICAL/PRIORITY",
   },
   high: {

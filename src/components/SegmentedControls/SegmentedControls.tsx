@@ -86,15 +86,13 @@ export default function SegmentedControls({
 }: Props) {
   return (
     <div
-      className={`inline-flex items-center rounded-md bg-gray-200 gap-2.5 py-1 px-1.5 ${className}`}
+      className={`inline-flex items-center rounded-md bg-gray-200 py-1 px-1.5 ${className}`}
     >
       <button
         type="button"
         onClick={() => onChange("grid")}
         className={`inline-flex items-center gap-2 rounded-md p-2 transition text-xs font-dmsans font-medium leading-4 tracking-normal ${
-          value === "grid"
-            ? "bg-gray-100 text-black border-[0.5px] border-gray-300"
-            : "text-black opacity-80"
+          value === "grid" ? "bg-gray-100 text-black" : "text-black opacity-80"
         }`}
       >
         <GridIcon active={value === "grid"} />
@@ -105,9 +103,7 @@ export default function SegmentedControls({
         type="button"
         onClick={() => onChange("list")}
         className={`inline-flex items-center gap-2 rounded-md p-2 transition text-xs font-dmsans font-medium leading-4 tracking-normal ${
-          value === "list"
-            ? "bg-gray-100 text-black border-[0.5px] border-gray-300"
-            : "text-black opacity-80"
+          value === "list" ? "bg-gray-100 text-black" : "text-black opacity-80"
         }`}
       >
         <ListIcon active={value === "list"} />

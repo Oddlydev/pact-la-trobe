@@ -1,23 +1,33 @@
 import React from "react";
 import Layout from "@/src/components/Layout";
 import PrimaryButton from "@/src/components/Buttons/PrimaryButtons";
-import PatientCard from "@/src/components/Cards/PatientCard";
 import OverallSeverityCards from "@/src/components/Cards/OverallSeverityCards";
 import SummaryCards from "@/src/components/Cards/SummaryCards";
+import PatientBanner from "@/src/components/PatientBanner/PatientBanner";
+import RadioButtonInline from "@/src/components/RadioButtons/RadioButtonInline";
 
 /* ------------------------
    Helpers
 -------------------------*/
-function SectionCard({ children }: { children: React.ReactNode }) {
+function SectionCard({
+  children,
+  borderColor,
+}: {
+  children: React.ReactNode;
+  borderColor: string;
+}) {
   return (
-    <section className="relative rounded-2xl border border-gray-200 bg-white shadow-sm">
-      <div className="px-6 pb-6 pt-3">{children}</div>
+    <section className={["relative  mt-4 font-dmsans", borderColor].join(" ")}>
+      <div>{children}</div>
     </section>
   );
 }
 
 type Answer = "yes" | "no" | "unclear" | undefined;
 
+/* ------------------------
+   Question Types
+-------------------------*/
 function S2Question({
   id,
   label,
@@ -30,43 +40,69 @@ function S2Question({
   onChange: (v: Answer) => void;
 }) {
   return (
-    <div className="flex items-start justify-between gap-6 py-3">
-      <p className="max-w-[60ch] text-sm text-gray-800">{label}</p>
-      <fieldset className="shrink-0">
-        <legend className="sr-only">{label}</legend>
-        <div className="flex items-center gap-6 text-sm text-gray-700">
-          <label className="inline-flex items-center gap-2">
-            <input
-              name={id}
-              type="radio"
-              className="size-4 accent-emerald-600"
-              checked={value === "yes"}
-              onChange={() => onChange("yes")}
+    <div className="flex items-start justify-between gap-6 w-full">
+      <p className="flex-1 text-base text-gray-600 font-medium leading-6">
+        {label}
+      </p>
+      <RadioButtonInline
+        name={id}
+        options={[
+          { id: "yes", label: "Yes" },
+          { id: "no", label: "No" },
+          { id: "unclear", label: "Unclear" },
+        ]}
+        defaultValue={value ?? "no"}
+        className="shrink-0"
+      />
+    </div>
+  );
+}
+
+function DropdownQuestion({
+  label,
+  options,
+}: {
+  label: string;
+  options: string[];
+}) {
+  return (
+    <div className="flex items-center justify-between gap-6 py-3 w-full">
+      <p className="flex-1 text-base text-gray-600 font-medium leading-6">
+        {label}
+      </p>
+      <el-dropdown class="inline-block w-72">
+        <button className="inline-flex w-full justify-between rounded-md bg-white px-3 py-2 text-sm font-medium leading-5 text-gray-400 shadow-sm border border-gray-300">
+          Select Option
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+            className="h-5 w-5 text-gray-400"
+          >
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
             />
-            <span>Yes</span>
-          </label>
-          <label className="inline-flex items-center gap-2">
-            <input
-              name={id}
-              type="radio"
-              className="size-4 accent-emerald-600"
-              checked={value === "no"}
-              onChange={() => onChange("no")}
-            />
-            <span>No</span>
-          </label>
-          <label className="inline-flex items-center gap-2">
-            <input
-              name={id}
-              type="radio"
-              className="size-4 accent-emerald-600"
-              checked={value === "unclear"}
-              onChange={() => onChange("unclear")}
-            />
-            <span>Unclear</span>
-          </label>
-        </div>
-      </fieldset>
+          </svg>
+        </button>
+        <el-menu
+          anchor="bottom end"
+          popover
+          class="w-72 origin-top-right rounded-md bg-white shadow-lg outline-1 outline-black/5"
+        >
+          <div class="py-1">
+            {options.map((o) => (
+              <a
+                key={o}
+                class="block px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900"
+              >
+                {o}
+              </a>
+            ))}
+          </div>
+        </el-menu>
+      </el-dropdown>
     </div>
   );
 }
@@ -75,32 +111,61 @@ function S2Question({
    SectionBlock reusable
 -------------------------*/
 function SectionBlock({
+  sectionNumber,
   title,
-  items,
-  answers,
-  setAnswers,
+  children,
+  borderColor,
 }: {
+  sectionNumber: number;
   title: string;
-  items: { id: string; label: string }[];
-  answers: Record<string, Answer>;
-  setAnswers: React.Dispatch<React.SetStateAction<Record<string, Answer>>>;
+  children: React.ReactNode;
+  borderColor: string;
 }) {
   return (
-    <SectionCard>
-      <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-      <ol className="divide-y divide-gray-200 mt-4">
-        {items.map((q) => (
-          <li key={q.id}>
-            <S2Question
-              id={q.id}
-              label={q.label}
-              value={answers[q.id]}
-              onChange={(v) => setAnswers((prev) => ({ ...prev, [q.id]: v }))}
+    <div className="relative flex gap-4">
+      <div className="relative flex flex-col items-center">
+        <div className="z-10">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            viewBox="0 0 30 30"
+            fill="none"
+          >
+            <circle cx="15" cy="15" r="14" stroke="#4B5563" strokeWidth="2" />
+            <path
+              d="M23 10.913L21.0129 9L12.5226 17.1708L8.9871 13.7702L7 15.6832L12.5226 21L23 10.913Z"
+              fill="#4B5563"
             />
-          </li>
-        ))}
-      </ol>
-    </SectionCard>
+          </svg>
+        </div>
+        <div className="absolute top-8 bottom-0 w-[2px] bg-gray-600"></div>
+      </div>
+
+      <div className="flex-1 pb-4">
+        <div>
+          <span className="text-base font-medium text-gray-500">
+            Section {sectionNumber}
+          </span>
+          <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+        </div>
+
+        <SectionCard borderColor={borderColor}>{children}</SectionCard>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------
+   Page Divider
+-------------------------*/
+function PageDivider({ text }: { text: string }) {
+  return (
+    <div className="relative my-8 flex items-center">
+      <div className="flex-grow border-t border-gray-300"></div>
+      <span className="mx-4 text-sm font-medium text-gray-500">{text}</span>
+      <div className="flex-grow border-t border-gray-300"></div>
+    </div>
   );
 }
 
@@ -109,8 +174,15 @@ function SectionBlock({
 -------------------------*/
 export default function AssessmentFormPage() {
   type V = Answer;
+  const [s1Answers, setS1Answers] = React.useState<Record<string, V>>({});
+  const [s2Answers, setS2Answers] = React.useState<Record<string, V>>({});
+  const [s3Answers, setS3Answers] = React.useState<Record<string, V>>({});
+  const [s4Answers, setS4Answers] = React.useState<Record<string, V>>({});
+  const [s7Answers, setS7Answers] = React.useState<Record<string, V>>({});
 
-  // All section questions
+  /* ------------------------
+     Section Items
+  -------------------------*/
   const s1Items = [
     {
       id: "q1",
@@ -172,95 +244,284 @@ export default function AssessmentFormPage() {
     { id: "p6", label: "Adequate support from family" },
   ];
 
-  const s5Items = [
-    { id: "hs1", label: "Cultural or spiritual needs identified" },
-    { id: "hs2", label: "Cultural identity documented" },
-    { id: "hs3", label: "Informal caregiver involved" },
-    { id: "hs4", label: "Caregiver distress or needs" },
-    { id: "hs5", label: "Current ACP documented" },
-    { id: "hs6", label: "Care aligned with person’s wishes" },
-    { id: "hs7", label: "Social isolation present" },
-    { id: "hs8", label: "Barriers to accessing care" },
-    { id: "hs9", label: "Financial or transport barriers" },
-    { id: "hs10", label: "Communication or language needs" },
+  const s7Items = [
+    { id: "d1", label: "Document findings in EHR" },
+    { id: "d2", label: "Update ACP/goals of care" },
+    { id: "d3", label: "Family informed and involved" },
+    { id: "d4", label: "Assign nurse/clinician for follow-up" },
   ];
-
-  // States
-  const [s1Answers, setS1Answers] = React.useState<Record<string, V>>({});
-  const [s2Answers, setS2Answers] = React.useState<Record<string, V>>({});
-  const [s3Answers, setS3Answers] = React.useState<Record<string, V>>({});
-  const [s4Answers, setS4Answers] = React.useState<Record<string, V>>({});
-  const [s5Answers, setS5Answers] = React.useState<Record<string, V>>({});
 
   return (
     <Layout>
-      <main className="mx-auto max-w-7xl px-6 pb-16 pt-8 flex gap-6">
-        {/* Left column */}
-        <div className="flex-1 space-y-8">
-          {/* Header */}
-          <header className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                Patient Assessment Form
-              </h1>
-              <p className="text-sm text-gray-600">
-                Record patient needs and functional decline
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <PrimaryButton variant="dark" label="Save Draft" />
-              <PrimaryButton variant="light" label="Submit Form" />
-            </div>
-          </header>
+      <main className="mx-auto space-y-6">
+        {/* Header */}
+        <header className="mb-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">
+              New Assessment Form
+            </h1>
+            <p className="text-sm text-gray-600">
+              Start a fresh evaluation to record patient needs and status
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <PrimaryButton
+              variant="dark"
+              iconType="submit"
+              label="Submit Form"
+            />
+            <PrimaryButton variant="light" iconType="cancel" label="Cancel" />
+          </div>
+        </header>
 
-          {/* Patient Banner */}
-          <PatientCard
-            name="Christopher Jonathan Edward Patrick Harrison"
-            age={62}
-            gender="Male"
-            risks={["High concern in functional decline"]}
-            score={18}
-            riskLevel="moderate"
-          />
+        {/* Patient Banner */}
+        <PatientBanner
+          patientId="PT700012"
+          name="Benjamin Oliver George Henry Nicholas Kensington"
+          age="89"
+          dob="1936 FEB 21"
+          gender="Man"
+          location="Western General Hospital"
+          risk="CRITICAL/PRIORITY"
+          latestReportAt="2025 MAY 8 | 10:19"
+          latestReportBy="Louisa Durrell"
+        />
 
-          {/* Sections */}
-          <SectionBlock
-            title="Patient Identification & Functional Decline"
-            items={s1Items}
-            answers={s1Answers}
-            setAnswers={setS1Answers}
-          />
-          <SectionBlock
-            title="Symptom Burden & Unmet Needs"
-            items={s2Items}
-            answers={s2Answers}
-            setAnswers={setS2Answers}
-          />
-          <SectionBlock
-            title="Condition-Specific Indicators"
-            items={s3Items}
-            answers={s3Answers}
-            setAnswers={setS3Answers}
-          />
-          <SectionBlock
-            title="Psychosocial & Advance Care Planning"
-            items={s4Items}
-            answers={s4Answers}
-            setAnswers={setS4Answers}
-          />
-          <SectionBlock
-            title="Holistic, Social and Cultural Needs"
-            items={s5Items}
-            answers={s5Answers}
-            setAnswers={setS5Answers}
-          />
+        <div className="flex gap-6">
+          {/* Left column: Sections */}
+          <div className="flex-1">
+            {/* Section 1 */}
+            <SectionBlock
+              sectionNumber={1}
+              title="Patient Identification & Functional Decline"
+              borderColor="border-l-green-600"
+            >
+              <ol className="divide-y divide-gray-200">
+                {s1Items.map((q, idx) => (
+                  <li key={q.id} className="flex items-start gap-3 py-3">
+                    <span className="text-base text-gray-600 font-medium leading-6">
+                      {idx + 1}.
+                    </span>
+                    <S2Question
+                      id={q.id}
+                      label={q.label}
+                      value={s1Answers[q.id]}
+                      onChange={(v) =>
+                        setS1Answers((p) => ({ ...p, [q.id]: v }))
+                      }
+                    />
+                  </li>
+                ))}
+              </ol>
+            </SectionBlock>
+
+            {/* Section 2 */}
+            <SectionBlock
+              sectionNumber={2}
+              title="Symptom Burden & Unmet Needs"
+              borderColor="border-l-amber-400"
+            >
+              <ol className="divide-y divide-gray-200">
+                {s2Items.map((q, idx) => (
+                  <li key={q.id} className="flex items-start gap-3 py-3">
+                    <span className="text-base text-gray-600 font-medium leading-6">
+                      {idx + 1}.
+                    </span>
+                    <S2Question
+                      id={q.id}
+                      label={q.label}
+                      value={s2Answers[q.id]}
+                      onChange={(v) =>
+                        setS2Answers((p) => ({ ...p, [q.id]: v }))
+                      }
+                    />
+                  </li>
+                ))}
+              </ol>
+            </SectionBlock>
+
+            {/* Section 3 */}
+            <SectionBlock
+              sectionNumber={3}
+              title="Condition-Specific Indicators"
+              borderColor="border-l-red-600"
+            >
+              <ol className="divide-y divide-gray-200">
+                {s3Items.map((q, idx) => (
+                  <li key={q.id} className="flex items-start gap-3 py-3">
+                    <span className="text-base text-gray-600 font-medium leading-6">
+                      {idx + 1}.
+                    </span>
+                    <S2Question
+                      id={q.id}
+                      label={q.label}
+                      value={s3Answers[q.id]}
+                      onChange={(v) =>
+                        setS3Answers((p) => ({ ...p, [q.id]: v }))
+                      }
+                    />
+                  </li>
+                ))}
+              </ol>
+            </SectionBlock>
+
+            {/* Section 4 */}
+            <SectionBlock
+              sectionNumber={4}
+              title="Psychosocial & Advance Care Planning"
+              borderColor="border-l-orange-500"
+            >
+              <ol className="divide-y divide-gray-200">
+                {s4Items.map((q, idx) => (
+                  <li key={q.id} className="flex items-start gap-3 py-3">
+                    <span className="text-base text-gray-600 font-medium leading-6">
+                      {idx + 1}.
+                    </span>
+                    <S2Question
+                      id={q.id}
+                      label={q.label}
+                      value={s4Answers[q.id]}
+                      onChange={(v) =>
+                        setS4Answers((p) => ({ ...p, [q.id]: v }))
+                      }
+                    />
+                  </li>
+                ))}
+              </ol>
+            </SectionBlock>
+
+            {/* Section 5 */}
+            <SectionBlock
+              sectionNumber={5}
+              title="Holistic, Social and Cultural Needs"
+              borderColor="border-l-green-600"
+            >
+              <div className="divide-y divide-gray-200">
+                <DropdownQuestion
+                  label="Are there identified cultural, religious or spiritual needs influencing care delivery?"
+                  options={[
+                    "No concerns",
+                    "Mild concerns",
+                    "Significant distress or requests affecting care",
+                  ]}
+                />
+                <DropdownQuestion
+                  label="Is the person’s cultural background (e.g. Aboriginal/Torres Strait Islander, CALD) recorded and informing care?"
+                  options={["Yes", "No", "Unclear"]}
+                />
+                <DropdownQuestion
+                  label="Is an informal caregiver (e.g. family, friend) involved in day-to-day or emotional support?"
+                  options={["Yes", "No", "Sometimes"]}
+                />
+                <DropdownQuestion
+                  label="Has the carer expressed difficulty, fatigue, or emotional strain related to caregiving?"
+                  options={["No", "Some fatigue", "Significant strain"]}
+                />
+                <DropdownQuestion
+                  label="Is there a current ACP or documented goals of care?"
+                  options={["Yes", "No", "Unclear"]}
+                />
+                <DropdownQuestion
+                  label="Is current care consistent with documented or verbalised preferences?"
+                  options={["Yes", "No", "Unclear"]}
+                />
+                <DropdownQuestion
+                  label="Does the person have limited or no social contact (e.g. few visitors, no family nearby)?"
+                  options={["Yes", "No"]}
+                />
+                <DropdownQuestion
+                  label="Are there any social or financial barriers (e.g. transport, language, costs) affecting care access?"
+                  options={["None", "Some barriers", "Significant barriers"]}
+                />
+              </div>
+            </SectionBlock>
+
+            {/* Section 6 */}
+            <SectionBlock
+              sectionNumber={6}
+              title="Clinical Action & Referrals"
+              borderColor="border-l-amber-400"
+            >
+              <ol className="divide-y divide-gray-200">
+                {[
+                  "Medication review (e.g., opioid, PRN, anxiolytics)",
+                  "Anticipatory prescribing",
+                  "Mobility/oral care/pain relief support",
+                  "Multidisciplinary case conference",
+                  "Referral to Palliative Care team",
+                  "Allied health referrals",
+                ].map((label, idx) => (
+                  <li key={idx} className="flex items-center gap-6 py-3">
+                    <span className="text-sm font-medium text-gray-600 w-5">
+                      {idx + 1}.
+                    </span>
+                    <p className="flex-1 text-base text-gray-700">{label}</p>
+                    <RadioButtonInline
+                      name={`sec6-${idx}`}
+                      options={[
+                        { id: "immediate", label: "Immediate" },
+                        { id: "1week", label: "Within 1 week" },
+                        { id: "monitoring", label: "Ongoing Monitoring" },
+                      ]}
+                      defaultValue="monitoring"
+                      className="shrink-0"
+                    />
+                  </li>
+                ))}
+              </ol>
+            </SectionBlock>
+
+            {/* Section 7 */}
+            <SectionBlock
+              sectionNumber={7}
+              title="Documentation & Communication"
+              borderColor="border-l-purple-500"
+            >
+              <ol className="divide-y divide-gray-200">
+                {s7Items.map((q, idx) => (
+                  <li key={q.id} className="flex items-start gap-3 py-3">
+                    <span className="text-base text-gray-600 font-medium leading-6">
+                      {idx + 1}.
+                    </span>
+                    <S2Question
+                      id={q.id}
+                      label={q.label}
+                      value={s7Answers[q.id]}
+                      onChange={(v) =>
+                        setS7Answers((p) => ({ ...p, [q.id]: v }))
+                      }
+                    />
+                  </li>
+                ))}
+              </ol>
+            </SectionBlock>
+
+            {/* Section 8 */}
+            <SectionBlock sectionNumber={8} title="Comments or Notes">
+              <div>
+                <textarea
+                  id="comment"
+                  name="comment"
+                  rows={4}
+                  placeholder="Add your comment or note here..."
+                  className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600"
+                />
+                <hr className="mt-6 border-t border-gray-200" />
+
+                <div className="mt-3 flex justify-end text-sm text-gray-600 font-normal leading-5">
+                  <span>Created By: Thompson Robert</span>
+                  <span className="ml-4">2025 DEC 23 14:57</span>
+                </div>
+              </div>
+            </SectionBlock>
+          </div>
+
+          {/* Right column */}
+          <aside className="w-80 space-y-6">
+            <OverallSeverityCards />
+            <SummaryCards />
+          </aside>
         </div>
-
-        {/* Right column */}
-        <aside className="w-80 space-y-6">
-          <OverallSeverityCards />
-          <SummaryCards />
-        </aside>
       </main>
     </Layout>
   );

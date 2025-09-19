@@ -2,7 +2,6 @@ import React, {
   InputHTMLAttributes,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
@@ -17,17 +16,14 @@ export type InputFieldProps = {
   defaultValue?: string;
   placeholder?: string;
   validate?: (value: string) => string | null | undefined;
-  showErrorOn?: "blur" | "change"; // when to trigger validate
-  state?: ValidationState; // manually force a state
-  message?: string; // validation or helper message
+  showErrorOn?: "blur" | "change";
+  state?: ValidationState;
+  message?: string;
 } & Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "className" | "id" | "name" | "value" | "defaultValue"
 >;
 
-// -----------------------
-//  Icons
-// -----------------------
 const ErrorIcon = ({ className = "" }) => (
   <svg
     viewBox="0 0 16 16"
@@ -87,11 +83,10 @@ export default function InputField({
   onBlur,
   validate,
   showErrorOn = "blur",
-  state, // external override
-  message, // external message
+  state,
+  message,
   ...rest
 }: InputFieldProps) {
-  // 👇 Just use the id from props, or fallback to name
   const inputId = id ?? name ?? "field";
 
   const [focused, setFocused] = useState(false);

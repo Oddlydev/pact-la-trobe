@@ -44,7 +44,7 @@ export default function TextAreaField({
           className={[
             "block w-full rounded-md bg-white px-3 py-1.5",
             "text-base placeholder:text-gray-400 font-dmsans text-gray-900",
-            "outline-1 outline-gray-300 focus:outline-1 focus:outline-blue-500",
+            "outline-1 outline-gray-300 focus:outline-2 focus:outline-blue-500",
             "sm:text-sm/6 resize-y",
           ].join(" ")}
           {...rest}
