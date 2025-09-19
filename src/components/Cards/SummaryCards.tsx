@@ -87,47 +87,48 @@ export default function SummaryCards() {
             key={i}
             className={`rounded-xl bg-white shadow p-3 ${cfg.borderColor}`}
           >
-            {/* Header */}
-            <div className="flex items-start justify-between gap-1">
-              <div className="flex items-center gap-2">
-                {/* Step number */}
-                <span className="flex items-center justify-center w-5 h-5 aspect-square rounded-full bg-black text-white text-[11px]">
-                  {c.step}
-                </span>
+            {/* Wrapper */}
+            <div className="flex flex-col">
+              {/* Header */}
+              <div className="flex justify-between gap-1">
+                {/* Left: Step + Title */}
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center justify-center w-5 h-5 aspect-square rounded-full bg-black text-white text-[11px]">
+                    {c.step}
+                  </span>
+                  <h3 className="text-sm leading-5 font-semibold text-black font-dmsans">
+                    {c.title}
+                  </h3>
+                </div>
 
-                {/* Title */}
-                <h3 className="flex items-center gap-3 text-sm leading-5 font-semibold text-black font-dmsans">
-                  {c.title}
-                </h3>
+                {/* Right: Score */}
+                <div className="ml-2 flex flex-col items-end leading-none">
+                  <span
+                    className={`overflow-hidden text-ellipsis ${cfg.numColor} text-2xl leading-6 font-semibold font-dmsans`}
+                  >
+                    {c.score}
+                  </span>
+                  <span className="text-gray-500 text-right text-xs font-light font-dmsans">
+                    /{c.total}
+                  </span>
+                </div>
               </div>
 
-              {/* Score */}
-              <div className="ml-2 flex flex-col items-end leading-none">
+              {/* Severity + KPS */}
+              <div className="flex items-center gap-2 mt-2.5">
                 <span
-                  className={`overflow-hidden text-ellipsis ${cfg.numColor} text-2xl font-semibold font-dmsans`}
+                  className={`${cfg.labelColor} font-semibold text-base leading-6 font-dmsans`}
+                  style={{ fontFeatureSettings: "'dlig' on" }}
                 >
-                  {c.score}
+                  {cfg.label}
                 </span>
-                <span className="text-gray-500 text-right textxs font-light font-dmsans">
-                  /{c.total}
+                <span
+                  className="text-gray-500 text-right font-normal text-sm leading-5 font-dmsans"
+                  style={{ fontFeatureSettings: "'dlig' on" }}
+                >
+                  • KPS : {c.kps}
                 </span>
               </div>
-            </div>
-
-            {/* Severity + KPS */}
-            <div className="flex items-center gap-2 self-stretch mt-2.5">
-              <span
-                className={`${cfg.labelColor} font-semibold text-base leading-6 font-dmsans`}
-                style={{ fontFeatureSettings: "'dlig' on" }}
-              >
-                {cfg.label}
-              </span>
-              <span
-                className="text-gray-500 text-right font-normal text-sm leading-5 font-dmsans"
-                style={{ fontFeatureSettings: "'dlig' on" }}
-              >
-                • KPS : {c.kps}
-              </span>
             </div>
 
             {/* Body */}
@@ -136,13 +137,13 @@ export default function SummaryCards() {
                 {c.description}
               </p>
             )}
-            <div className="mt-2.5 space-y-2">
+            <div className="mt-2.5 space-y-2 text-sm">
               {c.recommendation && (
                 <div className="mt-2.5">
                   <h6 className="font-medium block text-gray-700 leading-5">
                     Recommendation
                   </h6>
-                  <span className="text-gray-500 text-right font-normal text-sm leading-5 font-dmsans">
+                  <span className="text-gray-500 text-right font-normal text-sm leading-5">
                     {c.recommendation}
                   </span>
                 </div>
@@ -153,7 +154,7 @@ export default function SummaryCards() {
                   <h6 className="font-medium block text-gray-700 leading-5">
                     Action
                   </h6>
-                  <p className="font-medium block text-gray-500 leading-5">
+                  <p className="font-normal text-sm block text-gray-500 leading-5">
                     {c.action}
                   </p>
                 </div>
