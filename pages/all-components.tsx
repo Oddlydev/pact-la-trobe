@@ -243,8 +243,22 @@ export default function ComponentsShowcase() {
         {/* Primary Buttons */}
         <Section title="Primary Buttons">
           <div className="flex flex-col gap-3">
-            <PrimaryButton variant="dark" label="Add Patient" />
-            <PrimaryButton variant="light" label="Add Patient" />
+            <PrimaryButton
+              variant="dark"
+              iconType="submit"
+              label="Submit Form"
+            />
+            <PrimaryButton variant="light" iconType="cancel" label="Cancel" />
+            <PrimaryButton
+              variant="dark"
+              iconType="addPatient"
+              label="Add Patient"
+            />
+            <PrimaryButton
+              variant="light"
+              iconType="addPatient"
+              label="Add Patient"
+            />
           </div>
         </Section>
 

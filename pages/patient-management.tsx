@@ -96,7 +96,7 @@ export default function PatientManagementPage() {
         {/* Header */}
         <header className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black leading-9 tracking-tighter text-black">
+            <h1 className="text-3xl font-black leading-9 tracking-tighter text-black font-dmsans">
               Patient Management
             </h1>
             <p className="text-base leading-6 font-normal text-gray-500">

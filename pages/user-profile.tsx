@@ -1,7 +1,6 @@
 import Head from "next/head";
 import { useState } from "react";
 import Layout from "@/src/components/Layout";
-import InputField from "@/src/components/InputFields/InputFields";
 import VerifyPhoneModal from "@/src/components/Modal/VerifyPhoneModal";
 import ChangePasswordModal from "@/src/components/Modal/ChangePasswordModal";
 
@@ -93,15 +92,53 @@ export default function ProfilePage() {
               {/* Phone Number Row */}
               <div className="mb-4 flex items-end gap-3">
                 <div className="flex-1">
-                  <InputField
-                    label="Phone Number"
-                    name="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    readOnly={editingField !== "phone"}
-                  />
+                  <label
+                    htmlFor="phone-number"
+                    className="block text-sm font-medium text-gray-700 leading-5"
+                  >
+                    Phone Number
+                  </label>
+                  <div className="mt-1">
+                    <div className="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-indigo-600">
+                      <div className="grid shrink-0 grid-cols-1 focus-within:relative">
+                        <select
+                          id="country"
+                          name="country"
+                          autoComplete="country"
+                          aria-label="Country"
+                          className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                        >
+                          <option>US</option>
+                          <option>CA</option>
+                          <option>EU</option>
+                        </select>
+                        <svg
+                          viewBox="0 0 16 16"
+                          fill="currentColor"
+                          aria-hidden="true"
+                          className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+                          />
+                        </svg>
+                      </div>
+                      <input
+                        id="phone-number"
+                        type="text"
+                        name="phone-number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        readOnly={editingField !== "phone"}
+                        placeholder="123-456-7890"
+                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+                      />
+                    </div>
+                  </div>
                 </div>
+
                 {editingField === "phone" ? (
                   <div className="flex items-center gap-2">
                     <button
@@ -119,8 +156,8 @@ export default function ProfilePage() {
                           <path
                             d="M3.33325 9.33301L5.66659 11.6663L12.6666 4.33301"
                             stroke="white"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                         </svg>{" "}
                         Save
@@ -140,8 +177,8 @@ export default function ProfilePage() {
                         <path
                           d="M12 4L4.00054 11.9995M11.9995 12L4 4.00057"
                           stroke="black"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                     </button>
@@ -159,12 +196,18 @@ export default function ProfilePage() {
               {/* Password Row */}
               <div className="flex items-end gap-3">
                 <div className="flex-1">
-                  <InputField
-                    label="Password"
-                    name="password"
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700 leading-5"
+                  >
+                    Password
+                  </label>
+                  <input
+                    id="password"
                     type="password"
                     defaultValue="********"
                     readOnly
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-lg outline-none shadow-sm text-gray-900"
                   />
                 </div>
                 <button
@@ -200,7 +243,6 @@ export default function ProfilePage() {
                   Security Notice:
                 </span>
                 <span className="text-gray-500 text-xs leading-4 font-normal">
-                  {" "}
                   Changes to your phone number require SMS verification.
                   Password changes will log you out of all other devices for
                   security.
