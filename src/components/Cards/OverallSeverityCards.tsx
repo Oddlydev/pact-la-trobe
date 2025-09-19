@@ -47,7 +47,7 @@ export default function OverallSeverityCards() {
         return (
           <div
             key={level}
-            className="bg-white rounded-xl shadow p-3 flex flex-col gap-3.5"
+            className="bg-white rounded-xl box-shadow-[inset_0_0_20px_rgba(171,190,194,0.40)] p-3 flex flex-col gap-3.5"
           >
             {/* Title */}
             <h3 className="text-gray-800 font-dm text-base font-semibold leading-6 tracking-normal">
