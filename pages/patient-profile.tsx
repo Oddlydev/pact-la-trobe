@@ -1,16 +1,17 @@
 import React, { useState } from "react";
+import Link from "next/link";
 import Layout from "@/src/components/Layout";
 import PatientBanner from "@/src/components/PatientBanner/PatientBanner";
 import ActionTriggerCard from "@/src/components/Cards/ActionTriggerCards";
 import Pagination from "@/src/components/Pagination/Pagination";
 import SearchBar from "@/src/components/SearchBar/SearchBar";
 import ReportsTable from "@/src/components/Tables/ReportsTable";
+import PrimaryButton from "@/src/components/Buttons/PrimaryButtons";
 
 export default function PatientProfilePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // ✅ Structured table data (like screenshot)
   const reports = [
     {
       id: 1,
@@ -111,13 +112,18 @@ export default function PatientProfilePage() {
       <div>
         <div className="rounded-xl border border-white bg-[rgba(0,0,0,0.00)] p-4">
           {/* Page Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-black leading-9 text-black">
-              Profile Overview
-            </h1>
-            <p className="text-gray-500 text-sm font-normal leading-6">
-              Access personal information, history, and care status
-            </p>
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-black leading-9 text-black">
+                Profile Overview
+              </h1>
+              <p className="text-gray-500 text-sm font-normal leading-6">
+                Access personal information, history, and care status
+              </p>
+            </div>
+            <Link href="/assessment-form" className="shrink-0" aria-label="Create new assessment">
+              <PrimaryButton variant="dark" iconType="assessment" label="New Assessment" />
+            </Link>
           </div>
 
           {/* Patient Banner */}

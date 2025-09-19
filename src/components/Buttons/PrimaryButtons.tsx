@@ -2,7 +2,7 @@ import React from "react";
 
 type Variant = "dark" | "light";
 type State = "default" | "hover" | "focus" | "active";
-type IconType = "submit" | "cancel" | "addPatient" | undefined;
+type IconType = "submit" | "cancel" | "addPatient" | "assessment" | undefined;
 
 type Props = {
   variant: Variant;
@@ -125,6 +125,45 @@ const AddPatientIcon = ({ className = "h-5 w-5" }) => (
   </svg>
 );
 
+const AssessmentIcon = ({ className = "h-5 w-5" }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+  >
+    <path
+      d="M15.8333 10.8334V6.66675C15.8333 4.30972 15.8333 3.13121 15.1011 2.39898C14.3688 1.66675 13.1903 1.66675 10.8333 1.66675H7.5C5.14297 1.66675 3.96447 1.66675 3.23223 2.39898C2.5 3.13121 2.5 4.30972 2.5 6.66675V13.3334C2.5 15.6904 2.5 16.8689 3.23223 17.6012C3.96447 18.3334 5.14297 18.3334 7.5 18.3334H11.6667"
+      stroke="white"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M12.0833 1.66675H6.25C6.25 2.84526 6.25 3.43451 6.61612 3.80063C6.98223 4.16675 7.57149 4.16675 8.75 4.16675H9.58333C10.7618 4.16675 11.3511 4.16675 11.7173 3.80063C12.0833 3.43451 12.0833 2.84526 12.0833 1.66675Z"
+      stroke="white"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M5.83337 12.5001H9.16671M5.83337 9.16675H12.5"
+      stroke="white"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M17.5 15.8333H15M15 15.8333H12.5M15 15.8333V18.3333M15 15.8333V13.3333"
+      stroke="white"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+);
+
 /* ------------------------
    Main Button
 -------------------------*/
@@ -156,7 +195,6 @@ export default function PrimaryButton({
     look = [
       "border border-gray-300 bg-black text-white",
       "hover:bg-white hover:text-black hover:border-black",
-      // Match ActionButtons dark focus/active
       "focus:border-2 focus:border-gray-300 focus:bg-black focus:text-white",
       "active:border active:border-gray-300 active:bg-black active:text-white",
     ].join(" ");
@@ -167,17 +205,17 @@ export default function PrimaryButton({
     look = [
       "border border-black bg-white text-black",
       "hover:bg-black hover:text-white hover:border-black",
-      // Match ActionButtons light focus/active
       "focus:border-2 focus:border-brand-3",
       "active:border active:border-brand-3",
     ].join(" ");
   }
 
-  // ✅ choose icon
+  // choose icon
   let Icon: React.ReactNode = null;
   if (iconType === "submit") Icon = <SubmitIcon className="h-5 w-5" />;
   if (iconType === "cancel") Icon = <CancelIcon className="h-5 w-5" />;
   if (iconType === "addPatient") Icon = <AddPatientIcon className="h-5 w-5" />;
+  if (iconType === "assessment") Icon = <AssessmentIcon className="h-5 w-5" />;
 
   return (
     <button
