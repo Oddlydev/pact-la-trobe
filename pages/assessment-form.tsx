@@ -272,9 +272,9 @@ export default function AssessmentFormPage() {
 
   return (
     <Layout>
-      <main className="mx-auto space-y-6">
+      <main className="mx-auto space-y-6 mx-aut0 px-4 pb-4 pt-5 w-full rounded-xl border border-white bg-[rgba(0,0,0,0.00)] p-4">
         {/* Header */}
-        <header className="mb-4 flex items-center justify-between">
+        <header className="flex items-center justify-between mb-10">
           <div>
             <h1 className="text-xl font-bold text-gray-900">
               New Assessment Form

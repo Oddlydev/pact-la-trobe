@@ -2,7 +2,14 @@ import React from "react";
 
 type Variant = "dark" | "light";
 type State = "default" | "hover" | "focus" | "active";
-type IconType = "submit" | "cancel" | "addPatient" | "assessment" | undefined;
+type IconType =
+  | "submit"
+  | "cancel"
+  | "addPatient"
+  | "assessment"
+  | "editReport"
+  | "exportReport"
+  | undefined;
 
 type Props = {
   variant: Variant;
@@ -164,6 +171,72 @@ const AssessmentIcon = ({ className = "h-5 w-5" }) => (
   </svg>
 );
 
+const EditReportIcon = ({ className = "h-5 w-5" }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    className={className}
+  >
+    <path
+      d="M15.8333 9.9998V6.6665C15.8333 4.30948 15.8333 3.13097 15.1011 2.39874C14.3688 1.6665 13.1903 1.6665 10.8333 1.6665H7.5C5.14297 1.6665 3.96447 1.6665 3.23223 2.39874C2.5 3.13097 2.5 4.30948 2.5 6.6665V13.3331C2.5 15.6902 2.5 16.8687 3.23223 17.601C3.96447 18.3331 5.14297 18.3331 7.5 18.3331H9.16667"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12.0833 1.6665H6.25C6.25 2.84501 6.25 3.43427 6.61612 3.80039C6.98223 4.1665 7.57149 4.1665 8.75 4.1665H9.58333C10.7618 4.1665 11.3511 4.1665 11.7173 3.80039C12.0833 3.43427 12.0833 2.84501 12.0833 1.6665Z"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.8335 12.4998H9.16683M5.8335 9.1665H12.5002"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.1138 18.0439L11.6665 18.3333L11.9559 16.8861C12.0148 16.5921 12.1593 16.3222 12.3712 16.1102L15.7591 12.7224C16.0555 12.4259 16.5363 12.4259 16.8328 12.7224L17.2775 13.1671C17.5739 13.4636 17.5739 13.9443 17.2775 14.2408L13.8896 17.6286C13.6777 17.8406 13.4077 17.9851 13.1138 18.0439Z"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const ExportReportIcon = ({ className = "h-5 w-5" }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    className={className}
+  >
+    <path
+      d="M15.8333 9.16675C15.8333 8.4855 15.8333 7.85891 15.7065 7.55263C15.5796 7.24635 15.3388 7.00549 14.857 6.52377L10.9099 2.57665C10.4942 2.16091 10.2863 1.95304 10.0288 1.82987C9.97517 1.80425 9.92033 1.78151 9.86433 1.76176C9.59508 1.66675 9.30117 1.66675 8.71317 1.66675C6.00902 1.66675 4.65692 1.66675 3.74111 2.40514C3.55609 2.55431 3.38757 2.72284 3.23839 2.90786C2.5 3.82367 2.5 5.17576 2.5 7.87995V11.6667C2.5 14.8094 2.5 16.3808 3.47631 17.3571C4.45262 18.3334 6.02397 18.3334 9.16667 18.3334H15.8333M10 2.08341V2.50008C10 4.85711 10 6.03561 10.7323 6.76785C11.4645 7.50008 12.643 7.50008 15 7.50008H15.4167"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M17.5002 11.6667H15.8335C15.3732 11.6667 15.0002 12.0398 15.0002 12.5001V13.7501M15.0002 13.7501V15.8334M15.0002 13.7501H17.0835M5.8335 15.8334V14.1667M5.8335 14.1667V11.6667H7.0835C7.77385 11.6667 8.3335 12.2264 8.3335 12.9167C8.3335 13.6071 7.77385 14.1667 7.0835 14.1667H5.8335ZM10.4168 11.6667H11.4882C12.2772 11.6667 12.9168 12.2886 12.9168 13.0557V14.4445C12.9168 15.2116 12.2772 15.8334 11.4882 15.8334H10.4168V11.6667Z"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 /* ------------------------
    Main Button
 -------------------------*/
@@ -216,6 +289,8 @@ export default function PrimaryButton({
   if (iconType === "cancel") Icon = <CancelIcon className="h-5 w-5" />;
   if (iconType === "addPatient") Icon = <AddPatientIcon className="h-5 w-5" />;
   if (iconType === "assessment") Icon = <AssessmentIcon className="h-5 w-5" />;
+  if (iconType === "editReport") Icon = <EditReportIcon className="h-5 w-5" />;
+  if (iconType === "exportReport") Icon = <ExportReportIcon className="h-5 w-5" />;
 
   return (
     <button

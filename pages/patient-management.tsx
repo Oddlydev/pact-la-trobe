@@ -92,7 +92,7 @@ export default function PatientManagementPage() {
 
   return (
     <Layout>
-      <main className="mx-aut0 px-4 pb-4 pt-5 w-full rounded-xl border border-white bg-[rgba(0,0,0,0.00)] p-4">
+      <main className="mx-auto px-4 pb-4 pt-5 w-full rounded-xl border border-white bg-[rgba(0,0,0,0.00)] p-4">
         {/* Header */}
         <header className="mb-6 flex items-center justify-between">
           <div>
