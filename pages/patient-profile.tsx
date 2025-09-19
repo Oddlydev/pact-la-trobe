@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Layout from "@/src/components/Layout";
-import PatientBanner from "@/src/components/PatientBanner/PatientBanner";
+import PatientBanner from "@/src/components/Banner/PatientBanner";
 import ActionTriggerCard from "@/src/components/Cards/ActionTriggerCards";
 import Pagination from "@/src/components/Pagination/Pagination";
-import SearchBar from "@/src/components/SearchBar/SearchBar";
+import SearchBar from "@/src/components/Forms/SearchBar";
 import ReportsTable from "@/src/components/Tables/ReportsTable";
 import PrimaryButton from "@/src/components/Buttons/PrimaryButtons";
 
@@ -121,8 +121,16 @@ export default function PatientProfilePage() {
                 Access personal information, history, and care status
               </p>
             </div>
-            <Link href="/assessment-form" className="shrink-0" aria-label="Create new assessment">
-              <PrimaryButton variant="dark" iconType="assessment" label="New Assessment" />
+            <Link
+              href="/assessment-form"
+              className="shrink-0"
+              aria-label="Create new assessment"
+            >
+              <PrimaryButton
+                variant="dark"
+                iconType="assessment"
+                label="New Assessment"
+              />
             </Link>
           </div>
 

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import Layout from "@/src/components/Layout";
-import PatientBanner from "@/src/components/PatientBanner/PatientBanner";
+import PatientBanner from "@/src/components/Banner/PatientBanner";
 import ActionTriggerCard from "@/src/components/Cards/ActionTriggerCards";
 import DotTableRiskIndicator from "@/src/components/Indicators/DotTableRiskIndicator";
 import ActionButton from "@/src/components/Buttons/ActionButtons";
 import Pagination from "@/src/components/Pagination/Pagination";
-import SearchBar from "@/src/components/SearchBar/SearchBar";
+import SearchBar from "@/src/components/Forms/SearchBar";
 
 export default function PatientProfilePage() {
   const [currentPage, setCurrentPage] = useState(1);

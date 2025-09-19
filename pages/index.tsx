@@ -3,7 +3,7 @@ import { useState } from "react";
 import Sidebar from "@/src/components/Navigation/Sidebar";
 import StatisticsCard from "@/src/components/Cards/StatisticsCard";
 import Chip from "@/src/components/Chips/Chips";
-import SearchBar from "@/src/components/SearchBar/SearchBar";
+import SearchBar from "@/src/components/Forms/SearchBar";
 import Pagination from "@/src/components/Pagination/Pagination";
 import Topbar from "@/src/components/Navigation/Topbar";
 import PatientGrid from "@/src/components/Tables/PatientGrid";

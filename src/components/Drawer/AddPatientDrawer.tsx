@@ -1,7 +1,7 @@
 import React from "react";
-import InputField from "@/src/components/InputFields/InputFields";
-import TextAreaField from "@/src/components/InputFields/TextArea";
-import DatePickerField from "@/src/components/InputFields/DatePicker";
+import InputField from "@/src/components/Forms/InputFields";
+import TextAreaField from "@/src/components/Forms/TextArea";
+import DatePickerField from "@/src/components/Forms/DatePicker";
 import RadioButtonInline from "@/src/components/RadioButtons/RadioButtonInline";
 import FormButton from "@/src/components/Buttons/FormButtons";
 

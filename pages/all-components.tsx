@@ -11,7 +11,7 @@ import BannerRiskIndicator from "@/src/components/Indicators/BannerRiskIndicator
 //   UI Controls & Form Elements
 // ===============================
 import Pagination from "@/src/components/Pagination/Pagination";
-import PatientBanner from "@/src/components/PatientBanner/PatientBanner";
+import PatientBanner from "@/src/components/Banner/PatientBanner";
 import RadioButton from "@/src/components/RadioButtons/RadioButton";
 import RadioButtonInline from "@/src/components/RadioButtons/RadioButtonInline";
 import SegmentedControls from "@/src/components/SegmentedControls/SegmentedControls";
@@ -20,10 +20,10 @@ import SegmentedControls from "@/src/components/SegmentedControls/SegmentedContr
 import Chip from "@/src/components/Chips/Chips";
 
 // Search Bar
-import SearchBar from "@/src/components/SearchBar/SearchBar";
+import SearchBar from "@/src/components/Forms/SearchBar";
 
 // Input Fields
-import InputField from "@/src/components/InputFields/InputFields";
+import InputField from "@/src/components/Forms/InputFields";
 
 // ===============================
 //   Buttons
@@ -46,8 +46,8 @@ import ActionTriggerCard from "@/src/components/Cards/ActionTriggerCards";
 //   Layout
 // ===============================
 import Layout from "@/src/components/Layout";
-import TextAreaField from "@/src/components/InputFields/TextArea";
-import DatePickerField from "@/src/components/InputFields/DatePicker";
+import TextAreaField from "@/src/components/Forms/TextArea";
+import DatePickerField from "@/src/components/Forms/DatePicker";
 
 // ==========================================================
 //  Section Wrapper

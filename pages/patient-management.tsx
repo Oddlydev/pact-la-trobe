@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Layout from "@/src/components/Layout";
-import EditPatientDrawer from "@/src/components/Patients/EditPatientDrawer";
+import EditPatientDrawer from "@/src/components/Drawer/EditPatientDrawer";
 import ConfirmDeleteModal from "@/src/components/Modal/ConfirmDeleteModal";
-import SearchBar from "@/src/components/SearchBar/SearchBar";
+import SearchBar from "@/src/components/Forms/SearchBar";
 import Pagination from "@/src/components/Pagination/Pagination";
 import PatientManagementTable from "@/src/components/Tables/PatientManagementTable";
 

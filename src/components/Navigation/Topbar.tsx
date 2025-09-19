@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PrimaryButton from "../Buttons/PrimaryButtons";
-import AddPatientDrawer from "@/src/components/Patients/AddPatientDrawer";
+import AddPatientDrawer from "@/src/components/Drawer/AddPatientDrawer";
 
 export default function Topbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);

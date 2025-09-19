@@ -1,5 +1,5 @@
 import { useState } from "react";
-import InputField from "@/src/components/InputFields/InputFields";
+import InputField from "@/src/components/Forms/InputFields";
 import FormButton from "@/src/components/Buttons/FormButtons";
 
 interface VerifyPhoneModalProps {

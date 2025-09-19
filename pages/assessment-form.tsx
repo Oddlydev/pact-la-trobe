@@ -3,7 +3,7 @@ import Layout from "@/src/components/Layout";
 import PrimaryButton from "@/src/components/Buttons/PrimaryButtons";
 import OverallSeverityCards from "@/src/components/Cards/OverallSeverityCards";
 import SummaryCards from "@/src/components/Cards/SummaryCards";
-import PatientBanner from "@/src/components/PatientBanner/PatientBanner";
+import PatientBanner from "@/src/components/Banner/PatientBanner";
 import RadioButtonInline from "@/src/components/RadioButtons/RadioButtonInline";
 
 /* ------------------------

@@ -1,5 +1,5 @@
 import Head from "next/head";
-import InputField from "@/src/components/InputFields/InputFields";
+import InputField from "@/src/components/Forms/InputFields";
 import FormButton from "@/src/components/Buttons/FormButtons";
 
 export default function LoginPage() {
