@@ -1,4 +1,5 @@
 import React from "react";
+import BannerRiskIndicator from "../Indicators/BannerRiskIndicator";
 
 type Risk = "LOW RISK" | "MODERATE" | "HIGH" | "CRITICAL";
 
@@ -15,25 +16,6 @@ export type PatientBannerProps = {
   className?: string;
 };
 
-const RiskPill: React.FC<{ label: Risk }> = ({ label }) => {
-  const styles: Record<Risk, string> = {
-    "LOW RISK": "bg-green-600 text-gray-900 ring-1 ring-green-900/40",
-    MODERATE: "bg-amber-400 text-gray-900 ring-1 ring-amber-900/30",
-    HIGH: "bg-orange-400 text-gray-900 ring-1 ring-orange-900/30",
-    CRITICAL: "bg-red-600 text-white ring-1 ring-red-900/40",
-  };
-  return (
-    <span
-      className={[
-        "px-3 py-1 rounded-md text-xs font-semibold uppercase",
-        styles[label],
-      ].join(" ")}
-    >
-      {label}
-    </span>
-  );
-};
-
 export default function PatientBanner({
   patientId = "PT000000",
   name = "Reginald Christensen",
@@ -47,10 +29,10 @@ export default function PatientBanner({
   className = "",
 }: PatientBannerProps) {
   return (
-    <div className={["w-full", className].join(" ")}>
+    <div className={["w-full font-dmsans", className].join(" ")}>
       <div className="rounded-xl bg-black p-5">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-x-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -78,28 +60,27 @@ export default function PatientBanner({
               {patientId}
             </span>
           </div>
-          <RiskPill label={risk} />
+          <BannerRiskIndicator variant={"low"} />
         </div>
 
-        <div className="text-white mt-2 text-2xl font-semibold leading-6 tracking-normal">
+        <div className="text-white text-2xl font-semibold leading-6 tracking-normal">
           {name}
         </div>
 
         <div className="mt-7 flex items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              <span className="relative inline-flex h-14 w-14 flex-col items-center justify-center rounded-full border border-gray-600 ">
-                <span className="text-lg font-semibold text-white tracking-tight">
+            <div className="flex items-center">
+              <span className="relative inline-flex size-14 flex-col items-center justify-center rounded-full border border-gray-600 bg-[rgba(0, 0, 0, 0.00]">
+                <span className="text-lg font-semibold text-zinc-200 tracking-tight">
                   {age}
                 </span>
                 <span className="text-sm leading-5 tracking-normal font-normal text-zinc-400">
                   Age
                 </span>
               </span>
-              <div></div>
             </div>
 
-            <div className="h-8 w-px bg-gray-300 rounded-full" />
+            <div className="h-7.5 w-px bg-gray-300 rounded-full" />
 
             <div>
               <div className="text-base text-zinc-200 font-semibold leading-6 tracking-normal">
@@ -110,7 +91,7 @@ export default function PatientBanner({
               </div>
             </div>
 
-            <div className="h-8 w-px bg-gray-300 rounded-full" />
+            <div className="h-7.5 w-px bg-gray-300 rounded-full" />
 
             <div>
               <div className="text-zinc-200 font-semibold leading-6 tracking-normal">
@@ -121,7 +102,7 @@ export default function PatientBanner({
               </div>
             </div>
 
-            <div className="h-8 w-px bg-gray-300 rounded-full" />
+            <div className="h-7.5 w-px bg-gray-300 rounded-full" />
 
             <div>
               <div className="text-zinc-200 font-semibold leading-6 tracking-normal">

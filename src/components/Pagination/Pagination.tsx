@@ -40,38 +40,24 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  totalItems?: number;
-  itemsPerPage?: number;
 }
 
 export default function Pagination({
   currentPage,
   totalPages,
   onPageChange,
-  totalItems,
-  itemsPerPage,
 }: PaginationProps) {
-  const hasCounts =
-    typeof totalItems === "number" && typeof itemsPerPage === "number";
-  const start = hasCounts ? (currentPage - 1) * (itemsPerPage as number) + 1 : 0;
-  const end = hasCounts
-    ? Math.min(currentPage * (itemsPerPage as number), totalItems as number)
-    : 0;
   return (
-    <div className="flex items-center justify-between border-t border-[var(--color-brand-8)] pt-3 text-gray-600 text-sm leading-5 font-medium">
-      {/* Range text (if counts provided) */}
-      <span>
-        {hasCounts
-          ? `Showing ${start} to ${end} of ${totalItems} patients`
-          : `Page ${currentPage} of ${totalPages}`}
-      </span>
+    <div className="flex items-center justify-between border-t-[0.5px] border-brand-8 pt-3 text-gray-600 text-sm leading-5">
+      {/* Hardcoded text */}
+      <span className="font-normal">Showing 1 to 10 of 100 patients</span>
 
       <div className="inline-flex rounded-md shadow-sm">
         {/* Prev */}
         <button
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
-          className={`px-3 py-1 border border-gray-300 ${
+          className={`p-[9px] border border-gray-300 ${
             currentPage === 1
               ? "text-gray-400 cursor-not-allowed"
               : "hover:bg-gray-100"
@@ -85,7 +71,7 @@ export default function Pagination({
           <button
             key={p}
             onClick={() => onPageChange(p)}
-            className={`px-3 py-1 border border-gray-300 -ml-px ${
+            className={`px-[17px] py-[9px] border border-gray-300 -ml-px ${
               p === currentPage
                 ? "bg-gray-200 font-semibold text-black"
                 : "bg-white hover:bg-gray-100 text-gray-600"
@@ -99,7 +85,7 @@ export default function Pagination({
         <button
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
-          className={`px-3 py-1 border border-gray-300 -ml-px ${
+          className={`p-[9px] border border-gray-300 -ml-px ${
             currentPage === totalPages
               ? "text-gray-400 cursor-not-allowed"
               : "hover:bg-gray-100"
