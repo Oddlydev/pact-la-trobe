@@ -91,7 +91,7 @@ export default function ResourceSinglePage() {
 
               <div className="size-large">
                 <img
-                  src="/assets/images/card-imgs/single-inner-card-img.jpg"
+                  src="/assets/images/card-imgs/single-inner-card-img.png"
                   alt="Caregiver walking with a patient in a park"
                   className="rounded-xl"
                 />
