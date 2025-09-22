@@ -1,4 +1,5 @@
 import React from "react";
+import BannerRiskIndicator from "../Indicators/BannerRiskIndicator";
 
 export type RiskLevel = "low" | "moderate" | "high" | "critical";
 
@@ -130,8 +131,8 @@ export default function PatientCard({
   return (
     <div
       className={[
-        "w-full rounded-lg p-5 text-white transition-all duration-300",
-        "border-l-[3px] bg-[rgba(0,0,0,0.00)]",
+        "w-full rounded-lg p-4 text-white transition-all duration-300",
+        "border-l-[3px] bg-[rgba(0,0,0,0.00)] font-dmsans",
         styles.border,
         "shadow-[inset_0_0_50px_-2px_rgba(254,215,170,0.14),0_0_6px_-1px_rgba(0,0,0,0.25)]",
         "hover:shadow-[0_0_6px_-1px_rgba(0,0,0,0.25)]",
@@ -144,7 +145,7 @@ export default function PatientCard({
         <div className="flex flex-col gap-5">
           <span
             className={[
-              "px-2 py-1 text-xs font-semibold rounded-md uppercase w-fit",
+              "px-2 py-1.5 text-xs font-semibold rounded-md uppercase w-fit",
               styles.badge,
             ].join(" ")}
           >
