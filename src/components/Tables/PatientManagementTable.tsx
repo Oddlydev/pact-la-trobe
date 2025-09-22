@@ -170,7 +170,7 @@ export default function PatientManagementTable({
                 </div>
               )}
             </th>
-            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans  w-48 pl-0">
+            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center w-48 pl-0">
               Actions
             </th>
           </tr>
@@ -186,7 +186,7 @@ export default function PatientManagementTable({
               <td className="px-4 py-3.5 text-center text-sm text-gray-600">
                 {p.gender}
               </td>
-              <td className="px-4 py-3.5 whitespace-nowrap flex  w-48 pl-0">
+              <td className="px-4 py-3.5 whitespace-nowrap flex  w-48 pl-0 justify-end">
                 <div className="flex items-center justify-end gap-2">
                   <ActionButton
                     variant="dark"
