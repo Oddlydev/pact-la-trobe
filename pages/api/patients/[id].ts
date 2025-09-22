@@ -24,25 +24,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === "DELETE") {
       const reason = (req.body?.reason as string) || null;
-      const conn = await pool.getConnection();
-      try {
-        await conn.beginTransaction();
-        try {
-          await conn.execute(
-            `INSERT INTO patient_deletions (patientId, reason, deletedAt) VALUES (?, ?, NOW())`,
-            [id, reason]
-          );
-        } catch (err) {
-          // If archive table missing, ignore and continue with delete
-        }
-        await conn.execute(`DELETE FROM patients WHERE patientId = ?`, [id]);
-        await conn.commit();
-      } catch (err) {
-        await conn.rollback();
-        throw err;
-      } finally {
-        conn.release();
-      }
+      await pool.execute(
+        `UPDATE patients SET deleteReason = ? WHERE patientId = ?`,
+        [reason, id]
+      );
       return res.status(200).json({ ok: true });
     }
 
