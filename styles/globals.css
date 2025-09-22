@@ -12,7 +12,6 @@ input[type="date"] {
   appearance: textfield;
 }
 
-
 @theme {
   --font-dmsans: var(--font-dmsans);
   --font-bebas: var(--font-bebas);
@@ -40,7 +39,6 @@ input[type="date"] {
 }
 
 @layer base {
-
   html,
   body,
   #__next {
@@ -149,4 +147,162 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .search-close-icon:hover {
   background: transparent;
+}
+
+/* ---------------------------------------------
+   Resource Single (WYSIWYG) styles
+---------------------------------------------- */
+
+.single-inner h2 {
+  color: var(--gray-800, #1f2937);
+  text-align: center;
+  font-feature-settings: "dlig" on;
+  font-family: var(--font-dmsans, "DM Sans");
+  font-size: var(--font-size-text-5xl, 48px);
+  font-style: normal;
+  font-weight: var(--font-weight-font-semibold, 600);
+  line-height: 125%;
+  letter-spacing: var(--letter-spacing-tracking-tighter, -0.8px);
+}
+
+.single-inner h3 {
+  color: var(--gray-800, #1f2937);
+  font-feature-settings: "dlig" on;
+  font-family: var(--font-dmsans, "DM Sans");
+  font-size: var(--font-size-text-3xl, 30px);
+  font-style: normal;
+  font-weight: var(--font-weight-font-semibold, 600);
+  line-height: var(--leading-line-height-leading-9, 36px);
+  letter-spacing: var(--letter-spacing-tracking-tighter, -0.8px);
+  margin-top: 1.5rem;
+}
+
+.single-inner p {
+  color: var(--gray-500, #6b7280);
+  font-feature-settings: "dlig" on;
+  font-family: var(--font-dmsans, "DM Sans");
+  font-size: var(--font-size-text-base, 16px);
+  font-style: normal;
+  font-weight: var(--font-weight-font-normal, 400);
+  line-height: var(--leading-line-height-leading-7, 28px);
+  letter-spacing: var(--letter-spacing-tracking-normal, 0);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.single-inner ol {
+  @apply ml-6 list-decimal;
+}
+
+.single-inner ol > *:not(:last-child) {
+  /* space-y-3 */
+  --tw-space-y-reverse: 0;
+  margin-block-start: calc(0.75rem * var(--tw-space-y-reverse));
+}
+
+.single-inner ol {
+  @apply py-2 pl-6 text-base leading-7 font-normal text-gray-500;
+}
+
+/* link styles are defined globally for .single-inner a below */
+
+.single-inner ul {
+  @apply ml-6;
+}
+
+.single-inner ul > *:not(:last-child) {
+  --tw-space-y-reverse: 0;
+  margin-block-start: calc(0.75rem * var(--tw-space-y-reverse));
+}
+
+.single-inner ul {
+  @apply py-2 text-base font-normal text-gray-500 leading-7;
+}
+
+.single-inner ul li {
+  position: relative;
+  padding-left: 2rem; /* 8 spacing */
+}
+
+.single-inner ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  width: 16px;
+  height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M14.6667 7.99967C14.6667 4.31777 11.6819 1.33301 8.00004 1.33301C4.31814 1.33301 1.33337 4.31777 1.33337 7.99967C1.33337 11.6815 4.31814 14.6663 8.00004 14.6663C11.6819 14.6663 14.6667 11.6815 14.6667 7.99967Z' fill='%23111827' stroke='%23111827' stroke-width='1.5'/%3E%3Cpath d='M5.33337 8.49967C5.33337 8.49967 6.40004 9.10801 6.93337 9.99967C6.93337 9.99967 8.53337 6.49967 10.6667 5.33301' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat center;
+  background-size: contain;
+}
+
+.single-inner blockquote {
+  @apply border-l-4 border-slate-200 lg:pl-5;
+  color: var(--gray-900, #111827);
+  font-family: var(--font-dmsans, "DM Sans");
+  font-size: var(--font-size-text-base, 16px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: var(--leading-line-height-leading-7, 28px);
+}
+
+.single-inner blockquote p {
+  @apply py-0;
+  color: var(--gray-900, #111827);
+  font-family: var(--font-dmsans, "DM Sans");
+  font-size: var(--font-size-text-base, 16px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: var(--leading-line-height-leading-7, 28px);
+}
+
+.single-inner span {
+  color: var(--gray-500, #6b7280);
+  font-feature-settings: "dlig" on;
+  font-family: var(--font-dmsans, "DM Sans");
+  font-size: var(--font-size-text-xs, 12px);
+  font-style: normal;
+  font-weight: var(--font-weight-font-normal, 400);
+  line-height: var(--leading-line-height-leading-4, 16px);
+  letter-spacing: var(--letter-spacing-tracking-normal, 0);
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.single-inner .size-large img {
+  @apply w-full pt-4;
+}
+.single-inner .cover-large {
+  @apply w-full pt-4;
+}
+.single-inner .cover-large img {
+  @apply mb-0 h-full w-full object-cover;
+}
+
+/* New: link and strong styles inside WYSIWYG scope */
+.single-inner a {
+  color: var(--Accent-Color, #1d70b8);
+  font-family: var(--font-dmsans, "DM Sans");
+  font-size: var(--font-size-text-base, 16px);
+  font-style: normal;
+  font-weight: 500;
+  line-height: var(--leading-line-height-leading-7, 28px);
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: none;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
+}
+
+.single-inner strong {
+  color: var(--gray-900, #111827);
+  font-family: var(--font-dmsans, "DM Sans");
+  font-size: var(--font-size-text-base, 16px);
+  font-style: normal;
+  font-weight: var(--font-weight-font-semibold, 600);
+  line-height: var(--leading-line-height-leading-7, 28px);
+  letter-spacing: var(--letter-spacing-tracking-normal, 0);
 }
