@@ -172,25 +172,6 @@ function SectionBlock({
 }) {
   return (
     <div className="relative flex gap-4">
-      <div className="relative flex flex-col items-center">
-        <div className="z-10">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
-            viewBox="0 0 30 30"
-            fill="none"
-          >
-            <circle cx="15" cy="15" r="14" stroke="#4B5563" strokeWidth="2" />
-            <path
-              d="M23 10.913L21.0129 9L12.5226 17.1708L8.9871 13.7702L7 15.6832L12.5226 21L23 10.913Z"
-              fill="#4B5563"
-            />
-          </svg>
-        </div>
-        <div className="absolute top-8 bottom-0 w-[2px] bg-gray-600"></div>
-      </div>
-
       <div className="flex-1 pb-4">
         <div>
           <span className="text-base font-medium text-gray-500">
