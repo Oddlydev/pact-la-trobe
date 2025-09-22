@@ -29,13 +29,18 @@ const severityConfig: Record<
   },
 };
 
-export default function OverallSeverityCards() {
-  const cards: { level: SeverityLevel; score: number; total: number }[] = [
+type Props = { level?: SeverityLevel };
+
+export default function OverallSeverityCards({ level = "moderate" }: Props) {
+  // Keep full set available if needed in future
+  const allCards: { level: SeverityLevel; score: number; total: number }[] = [
     { level: "critical", score: 41, total: 53 },
     { level: "high", score: 23, total: 53 },
     { level: "moderate", score: 18, total: 53 },
     { level: "low", score: 10, total: 53 },
   ];
+  // Only show one card per request
+  const cards = allCards.filter((c) => c.level === level);
 
   const progress = 83;
 
