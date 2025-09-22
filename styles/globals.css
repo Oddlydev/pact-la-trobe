@@ -298,6 +298,11 @@ input[type="search"]::-webkit-search-results-decoration {
   text-underline-position: from-font;
 }
 
+/* Utility: show only the first child card of OverallSeverityCards when needed */
+.only-first-cards > div.space-y-4 > *:not(:first-child) {
+  display: none;
+}
+
 .single-inner strong {
   color: var(--gray-900, #111827);
   font-family: var(--font-dmsans, "DM Sans");
