@@ -6,6 +6,7 @@ export type RadioButtonInlineProps = {
   options?: RadioOption[];
   defaultValue?: string;
   className?: string;
+  onChange?: (value: string) => void;
 };
 
 export default function RadioButtonInline({

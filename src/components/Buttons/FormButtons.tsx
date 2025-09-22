@@ -9,11 +9,13 @@ type Props = {
   state?: State;
   className?: string;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset";
   onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
 };
 
 export default function FormButton({
   variant,
+  type,
   label = "Form Button",
   state,
   className = "",
@@ -79,7 +81,7 @@ export default function FormButton({
 
   return (
     <button
-      type="button"
+      type={type ?? "button"}
       onClick={onClick}
       disabled={disabled}
       className={[...base, look, className].join(" ")}
