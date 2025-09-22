@@ -85,7 +85,7 @@ export default function Topbar() {
                 </a>
 
                 <a
-                  href="#"
+                  href="/patient-management/"
                   className="flex items-center gap-1.5 w-full hover:bg-gray-100 rounded  "
                 >
                   {/* User Management Icon */}
@@ -122,7 +122,7 @@ export default function Topbar() {
                 </a>
 
                 <a
-                  href="#"
+                  href="/user-profile/"
                   className="flex items-center gap-1.5 w-full hover:bg-gray-100 rounded  "
                 >
                   {/* Profile Management Icon */}
