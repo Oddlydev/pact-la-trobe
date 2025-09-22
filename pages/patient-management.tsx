@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import type { GetServerSideProps } from "next";
+import { getPool, type DbPatientRow } from "@/lib/mysql";
 import Layout from "@/src/components/Layout";
 import EditPatientDrawer from "@/src/components/Drawer/EditPatientDrawer";
 import ConfirmDeleteModal from "@/src/components/Modal/ConfirmDeleteModal";
@@ -14,10 +16,16 @@ type Patient = {
   gender: "M" | "F";
 };
 
+type PageProps = {
+  initialPatients: Patient[];
+};
+
 const allPatients: Patient[] = [];
 
-export default function PatientManagementPage() {
-  const [patients, setPatients] = useState<Patient[]>(allPatients);
+export default function PatientManagementPage({ initialPatients }: PageProps) {
+  const [patients, setPatients] = useState<Patient[]>(
+    initialPatients?.length ? initialPatients : allPatients
+  );
   const [search, setSearch] = useState("");
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -180,3 +188,25 @@ export default function PatientManagementPage() {
     </Layout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
+  try {
+    const pool = getPool();
+    const [rows] = await pool.query<DbPatientRow[]>(
+      `SELECT * FROM patients WHERE (deleteReason IS NULL OR deleteReason = '') ORDER BY id DESC`
+    );
+    const initialPatients: Patient[] = rows.map((r) => {
+      const g = String(r.gender || "").trim().toUpperCase();
+      return {
+        id: r.patientId,
+        name: `${r.firstName || ""} ${r.lastName || ""}`.trim(),
+        address: r.address || "",
+        phone: r.phone || "",
+        gender: g === "FEMALE" || g === "F" ? "F" : "M",
+      } as Patient;
+    });
+    return { props: { initialPatients } };
+  } catch {
+    return { props: { initialPatients: [] } };
+  }
+};

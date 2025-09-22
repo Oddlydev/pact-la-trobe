@@ -107,7 +107,10 @@ export default function PatientManagementTable({
             <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
               Contact No.
             </th>
-            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center relative" data-gender-filter>
+            <th
+              className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center relative"
+              data-gender-filter
+            >
               <button
                 type="button"
                 onClick={onGenderFilterClick}
@@ -118,19 +121,33 @@ export default function PatientManagementTable({
                 Gender <HeaderIcon />
               </button>
               {genderMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-3 z-20" data-gender-filter>
-                  <p className="px-1 pb-2 text-xs font-medium text-gray-500 text-left">Filter by gender</p>
-                  {([
-                    { key: "M", label: "Men" },
-                    { key: "F", label: "Women" },
-                    { key: "NA", label: "Not Prefer" },
-                  ] as const).map((opt) => (
-                    <label key={opt.key} className="flex items-center gap-2 py-1 text-sm text-gray-700">
+                <div
+                  className="absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-3 z-20"
+                  data-gender-filter
+                >
+                  <p className="px-1 pb-2 text-xs font-medium text-gray-500 text-left">
+                    Filter by gender
+                  </p>
+                  {(
+                    [
+                      { key: "M", label: "Men" },
+                      { key: "F", label: "Women" },
+                      { key: "NA", label: "Not Prefer" },
+                    ] as const
+                  ).map((opt) => (
+                    <label
+                      key={opt.key}
+                      className="flex items-center gap-2 py-1 text-sm text-gray-700"
+                    >
                       <input
                         type="checkbox"
                         className="h-4 w-4 rounded border-gray-300"
-                        checked={Boolean(genderFilters && (genderFilters as any)[opt.key])}
-                        onChange={(e) => onGenderFilterChange?.(opt.key, e.target.checked)}
+                        checked={Boolean(
+                          genderFilters && (genderFilters as any)[opt.key]
+                        )}
+                        onChange={(e) =>
+                          onGenderFilterChange?.(opt.key, e.target.checked)
+                        }
                         data-gender-filter
                       />
                       <span>{opt.label}</span>
@@ -153,7 +170,7 @@ export default function PatientManagementTable({
                 </div>
               )}
             </th>
-            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-left">
+            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans  w-48 pl-0">
               Actions
             </th>
           </tr>
@@ -169,7 +186,7 @@ export default function PatientManagementTable({
               <td className="px-4 py-3.5 text-center text-sm text-gray-600">
                 {p.gender}
               </td>
-              <td className="px-4 py-3.5 whitespace-nowrap text-right">
+              <td className="px-4 py-3.5 whitespace-nowrap flex  w-48 pl-0">
                 <div className="flex items-center justify-end gap-2">
                   <ActionButton
                     variant="dark"
