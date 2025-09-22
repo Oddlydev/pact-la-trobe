@@ -1,5 +1,6 @@
 import React from "react";
 import ActionButton from "@/src/components/Buttons/ActionButtons";
+import FormButton from "@/src/components/Buttons/FormButtons";
 
 // Patient type
 type Patient = {
@@ -14,6 +15,12 @@ type Props = {
   patients: Patient[];
   onEdit: (p: Patient) => void;
   onDelete: (p: Patient) => void;
+  onGenderFilterClick?: () => void;
+  genderMenuOpen?: boolean;
+  genderFilters?: { M: boolean; F: boolean; NA: boolean };
+  onGenderFilterChange?: (key: "M" | "F" | "NA", checked: boolean) => void;
+  onGenderFilterClear?: () => void;
+  onGenderFilterClose?: () => void;
 };
 
 // Small header icon
@@ -76,6 +83,12 @@ export default function PatientManagementTable({
   patients,
   onEdit,
   onDelete,
+  onGenderFilterClick,
+  genderMenuOpen,
+  genderFilters,
+  onGenderFilterChange,
+  onGenderFilterClear,
+  onGenderFilterClose,
 }: Props) {
   return (
     <div className="overflow-x-auto">
@@ -94,10 +107,51 @@ export default function PatientManagementTable({
             <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
               Contact No.
             </th>
-            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center">
-              <div className="flex items-center justify-center gap-1">
+            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center relative" data-gender-filter>
+              <button
+                type="button"
+                onClick={onGenderFilterClick}
+                className="flex items-center justify-center gap-1 w-full hover:text-gray-700"
+                aria-label="Open gender filter"
+                data-gender-filter
+              >
                 Gender <HeaderIcon />
-              </div>
+              </button>
+              {genderMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-3 z-20" data-gender-filter>
+                  <p className="px-1 pb-2 text-xs font-medium text-gray-500 text-left">Filter by gender</p>
+                  {([
+                    { key: "M", label: "Men" },
+                    { key: "F", label: "Women" },
+                    { key: "NA", label: "Not Prefer" },
+                  ] as const).map((opt) => (
+                    <label key={opt.key} className="flex items-center gap-2 py-1 text-sm text-gray-700">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300"
+                        checked={Boolean(genderFilters && (genderFilters as any)[opt.key])}
+                        onChange={(e) => onGenderFilterChange?.(opt.key, e.target.checked)}
+                        data-gender-filter
+                      />
+                      <span>{opt.label}</span>
+                    </label>
+                  ))}
+                  <div className="mt-3 flex gap-2 justify-end">
+                    <FormButton
+                      variant="light"
+                      label="Clear"
+                      onClick={onGenderFilterClear}
+                      className="!px-3 !py-1.5 !text-xs"
+                    />
+                    <FormButton
+                      variant="dark"
+                      label="Close"
+                      onClick={onGenderFilterClose}
+                      className="!px-3 !py-1.5 !text-xs"
+                    />
+                  </div>
+                </div>
+              )}
             </th>
             <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-left">
               Actions
