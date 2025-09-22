@@ -14,60 +14,10 @@ type Patient = {
   gender: "M" | "F";
 };
 
-const allPatients: Patient[] = [
-  {
-    id: "PT134434",
-    name: "Pathirannehelage Don Nimal Sirisena Bandara Pathirannehelage",
-    address: "1087 Harrington–Blythe Crescent, South Yarra, Melbourne VIC 3141",
-    phone: "+61 3 9876 5432",
-    gender: "M",
-  },
-  {
-    id: "PT134434",
-    name: "Annabelle Sophia Catherine Alexandra Whitmore–Sutherland",
-    address: "530 Harrington–Wentworth Gardens, Braddon, Canberra ACT 2612",
-    phone: "+61 7 3344 2211",
-    gender: "F",
-  },
-  {
-    id: "PT134434",
-    name: "Sandra Bullock",
-    address: "6 Forest Ln, Cairns QLD 4870",
-    phone: "+61 8 8222 7788",
-    gender: "F",
-  },
-  {
-    id: "PT134434",
-    name: "Ranasinghe Arachchige Don Sanath Teran Jayasuriya",
-    address: "1579 Whitmore–Sutherland Avenue, Cottesloe, Perth WA 6011",
-    phone: "+61 3 6221 9090",
-    gender: "M",
-  },
-  {
-    id: "PT134435",
-    name: "Smith Johnathan",
-    address: "42 Elm Street, Springfield, IL 62701",
-    phone: "+61 8 9467 1234",
-    gender: "M",
-  },
-  {
-    id: "PT134436",
-    name: "Nguyen Thi Mai",
-    address: "23 Nguyen Hue Street, Ho Chi Minh City, Vietnam",
-    phone: "+61 412 345 678",
-    gender: "F",
-  },
-  {
-    id: "PT134437",
-    name: "Garcia Maria",
-    address: "789 Calle del Sol, Madrid, Spain",
-    phone: "+61 423 987 654",
-    gender: "F",
-  },
-];
+const allPatients: Patient[] = [];
 
 export default function PatientManagementPage() {
-  const [patients] = useState(allPatients);
+  const [patients, setPatients] = useState<Patient[]>(allPatients);
   const [search, setSearch] = useState("");
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -89,6 +39,31 @@ export default function PatientManagementPage() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  React.useEffect(() => {
+    const load = async () => {
+      try {
+        const resp = await fetch("/api/patients");
+        const json = await resp.json();
+        if (resp.ok && json?.ok) {
+          const mapped: Patient[] = (json.data as any[]).map((r) => ({
+            id: r.id,
+            name: r.name,
+            address: r.address || "",
+            phone: r.phone || "",
+            gender: r.gender === "F" ? "F" : "M",
+          }));
+          setPatients(mapped);
+        }
+      } catch (e) {
+        // keep fallback data silently
+      }
+    };
+    load();
+    const handler = () => load();
+    window.addEventListener("patients:reload", handler);
+    return () => window.removeEventListener("patients:reload", handler);
+  }, []);
 
   return (
     <Layout>

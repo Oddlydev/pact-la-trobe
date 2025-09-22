@@ -1,29 +1,9 @@
-"use client";
-import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
-import client from "@/lib/apolloClient";
+import React from "react";
 import InputField from "@/src/components/Forms/InputFields";
 import TextAreaField from "@/src/components/Forms/TextArea";
 import DatePickerField from "@/src/components/Forms/DatePicker";
 import RadioButtonInline from "@/src/components/RadioButtons/RadioButtonInline";
 import FormButton from "@/src/components/Buttons/FormButtons";
-
-// GraphQL mutation for wp_patients
-const CREATE_PATIENT = gql`
-  mutation CreatePatient($input: CreatePatientInput!) {
-    createPatient(input: $input) {
-      patient {
-        id
-        firstName
-        lastName
-        address
-        phone
-        dob
-        gender
-      }
-    }
-  }
-`;
 
 type Props = {
   open: boolean;
@@ -31,62 +11,39 @@ type Props = {
 };
 
 export default function AddPatientDrawer({ open, onClose }: Props) {
-  // State for form fields
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    address: "",
-    phone: "",
-    dob: "",
-    gender: "male",
-  });
-
-  // GraphQL mutation hook
-  const [createPatient, { loading, error }] = useMutation(CREATE_PATIENT, {
-    client,
-  });
-
   if (!open) return null;
 
-  // Normalize and update state
-  const handleChange = (name: string, value: any) => {
-    let safeValue = value;
-
-    // If it's an event, get its target.value
-    if (value && typeof value === "object" && "target" in value) {
-      safeValue = (value as any).target.value;
-    }
-
-    // If it's still an object, stringify it
-    if (typeof safeValue === "object" && safeValue !== null) {
-      safeValue = String(safeValue);
-    }
-
-    setFormData((prev) => ({ ...prev, [name]: safeValue }));
-  };
-
-  // Submit form
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    const payload = {
+      firstName: String(fd.get("firstName") || "").trim(),
+      lastName: String(fd.get("lastName") || "").trim(),
+      address: String(fd.get("address") || "").trim(),
+      phone: String(fd.get("phone") || "").trim(),
+      dob: String(fd.get("dob") || "") || null,
+      gender: String(fd.get("gender") || "") || null,
+    };
+
     try {
-      console.log("Submitting formData:", formData);
-
-      await createPatient({
-        variables: {
-          input: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            address: formData.address,
-            phone: formData.phone,
-            dob: formData.dob,
-            gender: formData.gender,
-          },
-        },
+      const resp = await fetch("/api/patients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-
+      const data = await resp.json();
+      if (!resp.ok || !data?.ok) throw new Error(data?.error || "Failed to save");
+      // Notify any listeners to refresh
+      try {
+        window.dispatchEvent(new Event("patients:reload"));
+      } catch {}
       onClose();
+      form.reset();
     } catch (err) {
-      console.error("Error creating patient", err);
+      console.error("Add patient failed", err);
+      alert("Failed to save patient. Please try again.");
     }
   };
 
@@ -100,11 +57,8 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
       />
 
       {/* Drawer */}
-      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
-        <form
-          className="flex h-full flex-col divide-y divide-gray-300"
-          onSubmit={handleSubmit}
-        >
+      <div className="absolute right-0 top-0 h-full w-full max-w-md transform transition-transform duration-500 ease-in-out bg-white shadow-xl">
+        <form className="flex h-full flex-col divide-y divide-gray-300" onSubmit={handleSubmit}>
           {/* Header */}
           <div className="bg-gray-900 p-6 flex items-start justify-between">
             <div>
@@ -131,13 +85,11 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                 label="First name"
                 name="firstName"
                 placeholder="Enter first name"
-                onChange={(e: any) => handleChange("firstName", e)}
               />
               <InputField
                 label="Last name"
                 name="lastName"
                 placeholder="Enter last name"
-                onChange={(e: any) => handleChange("lastName", e)}
               />
             </div>
 
@@ -146,7 +98,6 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
               name="address"
               rows={2}
               placeholder="Enter address"
-              onChange={(e: any) => handleChange("address", e)}
             />
 
             <InputField
@@ -160,14 +111,9 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                   : undefined
               }
               showErrorOn="blur"
-              onChange={(e: any) => handleChange("phone", e)}
             />
 
-            <DatePickerField
-              label="Date of Birth"
-              name="dob"
-              onChange={(val: any) => handleChange("dob", val)}
-            />
+            <DatePickerField label="Date of Birth" name="dob" />
 
             <div>
               <label className="block text-sm font-medium text-slate-700 font-dmsans mb-2">
@@ -181,7 +127,6 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                   { id: "na", label: "Prefer not to answer" },
                 ]}
                 defaultValue="male"
-                onChange={(val: string) => handleChange("gender", val)}
               />
             </div>
           </div>
@@ -189,16 +134,8 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
           {/* Footer */}
           <div className="flex justify-end gap-3 px-6 py-4">
             <FormButton variant="light" label="Cancel" onClick={onClose} />
-            <FormButton
-              variant="dark"
-              type="submit"
-              label={loading ? "Saving..." : "Save"}
-            />
+            <FormButton variant="dark" label="Save" type="submit" />
           </div>
-
-          {error && (
-            <p className="text-red-500 px-6 py-2">Error: {error.message}</p>
-          )}
         </form>
       </div>
     </div>
