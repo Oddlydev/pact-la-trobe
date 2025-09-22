@@ -85,11 +85,13 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                 label="First name"
                 name="firstName"
                 placeholder="Enter first name"
+                required
               />
               <InputField
                 label="Last name"
                 name="lastName"
                 placeholder="Enter last name"
+                required
               />
             </div>
 
@@ -113,7 +115,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
               showErrorOn="blur"
             />
 
-            <DatePickerField label="Date of Birth" name="dob" />
+            <DatePickerField label="Date of Birth" name="dob" required />
 
             <div>
               <label className="block text-sm font-medium text-slate-700 font-dmsans mb-2">
@@ -127,6 +129,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                   { id: "na", label: "Prefer not to answer" },
                 ]}
                 defaultValue="male"
+                required
               />
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 export type RadioOption = { id: string; label: string };
 export type RadioButtonInlineProps = {
@@ -7,6 +7,7 @@ export type RadioButtonInlineProps = {
   defaultValue?: string;
   className?: string;
   onChange?: (value: string) => void;
+  required?: boolean;
 };
 
 export default function RadioButtonInline({
@@ -18,10 +19,17 @@ export default function RadioButtonInline({
   ],
   defaultValue = "no",
   className = "",
+  onChange,
+  required,
 }: RadioButtonInlineProps) {
   const autoName = useId();
   const groupName = name ?? `rbi-${autoName}`;
   const [value, setValue] = useState<string>(defaultValue);
+
+  // Keep internal selection in sync if defaultValue changes after mount
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   return (
     <fieldset className={["max-w-2xl", className].join(" ")}>
@@ -32,8 +40,13 @@ export default function RadioButtonInline({
               id={`rbi-${opt.id}`}
               type="radio"
               name={groupName}
+              value={opt.id}
               checked={value === opt.id}
-              onChange={() => setValue(opt.id)}
+              onChange={() => {
+                setValue(opt.id);
+                onChange?.(opt.id);
+              }}
+              required={required}
               className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white 
                          before:absolute before:inset-1 before:rounded-full before:bg-white 
                          not-checked:before:hidden 

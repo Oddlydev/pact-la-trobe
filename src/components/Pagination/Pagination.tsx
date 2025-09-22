@@ -40,17 +40,24 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  itemsPerPage?: number;
+  totalItems?: number;
 }
 
 export default function Pagination({
   currentPage,
   totalPages,
   onPageChange,
+  itemsPerPage = 10,
+  totalItems,
 }: PaginationProps) {
+  const start = (currentPage - 1) * itemsPerPage + 1;
+  const end = Math.min(currentPage * itemsPerPage, totalItems ?? currentPage * itemsPerPage);
   return (
     <div className="flex items-center justify-between border-t-[0.5px] border-brand-8 pt-3 text-gray-600 text-sm leading-5">
-      {/* Hardcoded text */}
-      <span className="font-normal">Showing 1 to 10 of 100 patients</span>
+      <span className="font-normal">
+        {`Showing ${totalItems ? start : 0} to ${totalItems ? end : 0} of ${totalItems ?? 0} patients`}
+      </span>
 
       <div className="inline-flex rounded-md shadow-sm">
         {/* Prev */}

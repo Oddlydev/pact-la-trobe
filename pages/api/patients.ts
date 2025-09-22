@@ -42,8 +42,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "POST") {
       const { firstName, lastName, address, phone, dob, gender } = req.body || {};
 
-      if (!firstName || !lastName) {
-        return res.status(400).json({ ok: false, error: "Missing required fields: firstName, lastName" });
+      if (!firstName || !lastName || !dob || !gender) {
+        return res.status(400).json({ ok: false, error: "Missing required fields: firstName, lastName, dob, gender" });
       }
 
       const patientId = generatePatientId();
@@ -74,4 +74,3 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ ok: false, error: err?.message || "Internal Server Error" });
   }
 }
-
