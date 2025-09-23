@@ -604,7 +604,7 @@ export default function AssessmentFormPage() {
           </div>
 
           {/* Right column */}
-          <aside className="w-80 space-y-6">
+          <aside className="w-80 space-y-6 p-2 bg-gray-200 rounded-2xl">
             <div className="only-first-cards">
               <OverallSeverityCards />
             </div>
