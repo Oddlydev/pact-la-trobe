@@ -148,7 +148,7 @@ export default function PatientTable({ patients }: Props) {
                 Last Updated Date <HeaderIcon />
               </div>
             </th>
-            <th className="w-56 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-56 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center">
               Actions
             </th>
           </tr>
