@@ -13,10 +13,12 @@ export default function PatientProfilePage() {
   const totalItems = 37;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
+  // Use deterministic values to avoid SSR/CSR hydration mismatches
   const reports = Array.from({ length: totalItems }, (_, i) => ({
     id: i + 1,
     date: `03-MAY-2025 16:3${i % 10}`,
-    score: Math.floor(Math.random() * 53),
+    // Deterministic pseudo-score in range 0..52
+    score: (i * 17 + 11) % 53,
     risk: i % 3 === 0 ? "critical" : i % 3 === 1 ? "low" : "moderate",
     provider: `Provider ${i + 1}`,
     speciality: "Geriatrics",
