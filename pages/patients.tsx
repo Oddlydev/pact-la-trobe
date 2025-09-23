@@ -130,7 +130,20 @@ export default function PatientProfilePage() {
               {paginatedReports.map((r) => (
                 <tr key={r.id} className="border-t">
                   <td className="px-4 py-2">{r.date}</td>
-                  <td className="px-4 py-2">{r.score}</td>
+
+                  {/* Score column fixed to one line */}
+                  <td className="px-4 py-2">
+                    <span className="flex items-center gap-1">
+                      <span className="font-semibold text-gray-800">
+                        {r.score}
+                      </span>
+                      <span className="text-gray-400 text-xs">/53</span>
+                      <span className="text-[10px] text-gray-500">
+                        PCAT Score
+                      </span>
+                    </span>
+                  </td>
+
                   <td className="px-4 py-2">
                     <DotTableRiskIndicator variant={r.risk as any} />
                   </td>
