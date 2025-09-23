@@ -176,7 +176,7 @@ export default function SummaryCards() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {cards.slice(0, 2).map((c, i) => renderCard(c, i))}
       <div className="rounded-lg text-black font-bold text-lg">
         Decision Support Modifiers

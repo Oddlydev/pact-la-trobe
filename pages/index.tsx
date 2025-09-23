@@ -73,7 +73,7 @@ export default function HomePage() {
         "Has risk for recurrent falls",
       ],
       score: 15,
-      riskLevel: "low" as RiskLevel,
+      riskLevel: "moderate" as RiskLevel,
     },
     {
       name: "Ethan Rodriguez",
@@ -91,7 +91,6 @@ export default function HomePage() {
       age: 64,
       gender: "F",
       risks: [
-        "Social isolation",
         "Caregiver is unable to continue care",
         "Has risk for recurrent falls",
       ],
@@ -103,7 +102,6 @@ export default function HomePage() {
       age: 88,
       gender: "M",
       risks: [
-        "Frequent hospital admissions",
         "Caregiver is unable to continue care",
         "Has risk for recurrent falls",
       ],
@@ -115,7 +113,6 @@ export default function HomePage() {
       age: 70,
       gender: "F",
       risks: [
-        "Post-surgery recovery",
         "Caregiver is unable to continue care",
         "Has risk for recurrent falls",
       ],
@@ -127,7 +124,6 @@ export default function HomePage() {
       age: 66,
       gender: "M",
       risks: [
-        "High fall risk",
         "Caregiver is unable to continue care",
         "Has risk for recurrent falls",
       ],
@@ -143,7 +139,7 @@ export default function HomePage() {
         "Has risk for recurrent falls",
       ],
       score: 15,
-      riskLevel: "low" as RiskLevel,
+      riskLevel: "high" as RiskLevel,
     },
     {
       name: "Ethan Rodriguez",
@@ -154,14 +150,13 @@ export default function HomePage() {
         "Has risk for recurrent falls",
       ],
       score: 34,
-      riskLevel: "high" as RiskLevel,
+      riskLevel: "critical" as RiskLevel,
     },
     {
       name: "Amelia Chen",
       age: 64,
       gender: "F",
       risks: [
-        "Social isolation",
         "Caregiver is unable to continue care",
         "Has risk for recurrent falls",
       ],
@@ -173,7 +168,6 @@ export default function HomePage() {
       age: 88,
       gender: "M",
       risks: [
-        "Frequent hospital admissions",
         "Caregiver is unable to continue care",
         "Has risk for recurrent falls",
       ],
@@ -185,7 +179,6 @@ export default function HomePage() {
       age: 70,
       gender: "F",
       risks: [
-        "Post-surgery recovery",
         "Caregiver is unable to continue care",
         "Has risk for recurrent falls",
       ],

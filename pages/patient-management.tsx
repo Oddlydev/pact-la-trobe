@@ -33,14 +33,19 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
   const [genderMenuOpen, setGenderMenuOpen] = useState(false);
-  const [genderFilters, setGenderFilters] = useState<{ M: boolean; F: boolean; NA: boolean }>({ M: false, F: false, NA: false });
+  const [genderFilters, setGenderFilters] = useState<{
+    M: boolean;
+    F: boolean;
+    NA: boolean;
+  }>({ M: false, F: false, NA: false });
 
   const itemsPerPage = 10;
 
   // Filter
   const filtered = patients.filter((p) => {
     const q = search.toLowerCase();
-    const textMatch = p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
+    const textMatch =
+      p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
     const anyGender = genderFilters.M || genderFilters.F || genderFilters.NA;
     const genderMatch = !anyGender
       ? true
@@ -66,13 +71,20 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
         const json = await resp.json();
         if (resp.ok && json?.ok) {
           const mapped: Patient[] = (json.data as any[]).map((r) => {
-            const g = String(r.gender || "").trim().toUpperCase();
+            const g = String(r.gender || "")
+              .trim()
+              .toUpperCase();
             return {
               id: r.id,
               name: r.name,
               address: r.address || "",
               phone: r.phone || "",
-              gender: g === "FEMALE" || g === "F" ? ("F" as const) : g === "MALE" || g === "M" ? ("M" as const) : ("NA" as any),
+              gender:
+                g === "FEMALE" || g === "F"
+                  ? ("F" as const)
+                  : g === "MALE" || g === "M"
+                    ? ("M" as const)
+                    : ("NA" as any),
             };
           });
           setPatients(mapped);
@@ -92,7 +104,7 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
     if (!genderMenuOpen) return;
     const handler = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
-      if (!t.closest('[data-gender-filter]')) {
+      if (!t.closest("[data-gender-filter]")) {
         setGenderMenuOpen(false);
       }
     };
@@ -114,7 +126,7 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
             </p>
           </div>
 
-          <div className="w-full max-w-sm flex items-center gap-2 relative">
+          <div className="w-full max-w-md flex items-center gap-2 relative">
             <SearchBar
               placeholder="Search Patient by name or ID"
               value={search}
@@ -140,7 +152,9 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
           onGenderFilterChange={(key, checked) =>
             setGenderFilters((prev) => ({ ...prev, [key]: checked }))
           }
-          onGenderFilterClear={() => setGenderFilters({ M: false, F: false, NA: false })}
+          onGenderFilterClear={() =>
+            setGenderFilters({ M: false, F: false, NA: false })
+          }
           onGenderFilterClose={() => setGenderMenuOpen(false)}
         />
 
@@ -196,7 +210,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
       `SELECT * FROM patients WHERE (deleteReason IS NULL OR deleteReason = '') ORDER BY id DESC`
     );
     const initialPatients: Patient[] = rows.map((r) => {
-      const g = String(r.gender || "").trim().toUpperCase();
+      const g = String(r.gender || "")
+        .trim()
+        .toUpperCase();
       return {
         id: r.patientId,
         name: `${r.firstName || ""} ${r.lastName || ""}`.trim(),

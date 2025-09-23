@@ -29,17 +29,19 @@ export default function Topbar() {
 
           {/* Date + Time */}
           <div>
-            <div className="text-zinc-900 font-semibold text-sm">
+            <div className="text-zinc-900 font-semibold text-sm font-dmsans">
               2025 DEC 23
             </div>
-            <div className="text-zinc-500 font-normal text-xs">02:57 PM</div>
+            <div className="text-zinc-500 font-normal text-xs text-right font-dmsans">
+              02:57 PM
+            </div>
           </div>
 
           {/* User Icon */}
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white font-bold"
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white font-dmsans text-xl font-black"
             >
               T
             </button>

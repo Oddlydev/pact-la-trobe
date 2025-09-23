@@ -9,7 +9,7 @@ type Props = {
   type: ButtonType;
   label?: string;
   ariaLabel?: string;
-  iconType?: "edit" | "export";
+  iconType?: "edit" | "export" | "viewPatient" | "viewReport";
   state?: State;
   className?: string;
   onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
@@ -19,35 +19,31 @@ type Props = {
 const PersonIcon = ({ className = "h-5 w-5" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
     fill="none"
-    className={className}
   >
     <path
-      d="M13.3333 14.6666V12.6666C13.3333 10.781 13.3333 9.83811 12.7475 9.25238C12.1617 8.66658 11.2189 8.66658 9.33332 8.66658H6.66666C4.78104 8.66658 3.83823 8.66658 3.25244 9.25238C2.66666 9.83811 2.66666 10.781 2.66666 12.6666C2.66666 13.2878 2.66666 13.5984 2.76815 13.8434C2.90348 14.1702 3.16304 14.4297 3.48974 14.565C3.73478 14.6666 4.0454 14.6666 4.66666 14.6666"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M12.5 6.66667C12.5 4.36548 10.6345 2.5 8.33329 2.5C6.03211 2.5 4.16663 4.36548 4.16663 6.66667C4.16663 8.96783 6.03211 10.8333 8.33329 10.8333C10.6345 10.8333 12.5 8.96783 12.5 6.66667Z"
+      stroke="white"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     />
     <path
-      d="M6.33332 8.66658L8.33332 14.6666M4.66666 8.99991V14.6666"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M14.5833 17.5V11.6666M11.6666 14.5833H17.5"
+      stroke="white"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     />
     <path
-      d="M8 12.6666H9.66667C10.2189 12.6666 10.6667 13.1143 10.6667 13.6666C10.6667 14.2188 10.2189 14.6666 9.66667 14.6666H8.33333"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M10.3333 4.33336V3.66669C10.3333 2.37803 9.28866 1.33336 7.99999 1.33336C6.71132 1.33336 5.66666 2.37803 5.66666 3.66669V4.33336C5.66666 5.62203 6.71132 6.66669 7.99999 6.66669C9.28866 6.66669 10.3333 5.62203 10.3333 4.33336Z"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M2.5 16.6667C2.5 13.445 5.11168 10.8334 8.33333 10.8334C9.57267 10.8334 10.7218 11.2199 11.6667 11.879"
+      stroke="white"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     />
   </svg>
 );
@@ -114,6 +110,87 @@ const ExportIcon = ({ className = "h-5 w-5" }) => (
   </svg>
 );
 
+// View Patient icon (provided)
+const ViewPatientIcon = ({ className = "h-5 w-5" }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    className={className}
+  >
+    <path
+      d="M13.3334 14.6665V12.6665C13.3334 10.7809 13.3334 9.83804 12.7476 9.2523C12.1618 8.6665 11.219 8.6665 9.33341 8.6665H6.66675C4.78113 8.6665 3.83832 8.6665 3.25253 9.2523C2.66675 9.83804 2.66675 10.7809 2.66675 12.6665C2.66675 13.2878 2.66675 13.5984 2.76824 13.8434C2.90357 14.1701 3.16313 14.4296 3.48983 14.565C3.73487 14.6665 4.04549 14.6665 4.66675 14.6665"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M6.33341 8.6665L8.33341 14.6665M4.66675 8.99984V14.6665"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8 12.6665H9.66667C10.2189 12.6665 10.6667 13.1142 10.6667 13.6665C10.6667 14.2188 10.2189 14.6665 9.66667 14.6665H8.33333"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10.3334 4.33325V3.66659C10.3334 2.37792 9.28875 1.33325 8.00008 1.33325C6.71141 1.33325 5.66675 2.37792 5.66675 3.66659V4.33325C5.66675 5.62192 6.71141 6.66658 8.00008 6.66658C9.28875 6.66658 10.3334 5.62192 10.3334 4.33325Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// View Report icon (provided)
+const ViewReportIcon = ({ className = "h-5 w-5" }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="17"
+    viewBox="0 0 16 17"
+    fill="none"
+    className={className}
+  >
+    <path
+      d="M13.3333 10.7567V5.42334C13.3333 3.53772 13.3333 2.59491 12.7475 2.00913C12.1617 1.42334 11.2189 1.42334 9.33329 1.42334H6.66663C4.78101 1.42334 3.8382 1.42334 3.25241 2.00913C2.66663 2.59491 2.66663 3.53772 2.66663 5.42334V10.7567C2.66663 12.6423 2.66663 13.5851 3.25241 14.1709C3.8382 14.7567 4.78101 14.7567 6.66663 14.7567H9.33329C11.2189 14.7567 12.1617 14.7567 12.7475 14.1709C13.3333 13.5851 13.3333 12.6423 13.3333 10.7567Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10.3333 1.42334H5.66663C5.66663 2.36615 5.66663 2.83755 5.95952 3.13045C6.25241 3.42334 6.72383 3.42334 7.66663 3.42334H8.33329C9.27609 3.42334 9.74749 3.42334 10.0404 3.13045C10.3333 2.83755 10.3333 2.36615 10.3333 1.42334Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5 7.42334L5.66667 8.09001L7 6.42334"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.66663 11.4233H10.6666M8.66663 7.42334H10.6666"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.66016 11.3345H5.66682"
+      stroke="currentColor"
+      strokeWidth="1.33333"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export default function ActionButton({
   variant,
   type,
@@ -136,7 +213,7 @@ export default function ActionButton({
           "inline-flex items-center justify-center rounded-full h-10 w-10 border transition-all duration-150 select-none",
         ]
       : [
-          "inline-flex items-center gap-2 text-sm font-medium rounded-full leading-none p-2.5 border transition-all duration-150 select-none",
+          "inline-flex items-center gap-1 text-sm font-medium rounded-full leading-none p-2.5 border transition-all duration-150 select-none",
         ];
 
   let look = "";
@@ -200,6 +277,10 @@ export default function ActionButton({
         <EditIcon className="h-5 w-5" />
       ) : iconType === "export" ? (
         <ExportIcon className="h-5 w-5" />
+      ) : iconType === "viewPatient" ? (
+        <ViewPatientIcon className="h-5 w-5" />
+      ) : iconType === "viewReport" ? (
+        <ViewReportIcon className="h-5 w-5" />
       ) : (
         <PersonIcon className="h-5 w-5" />
       )}

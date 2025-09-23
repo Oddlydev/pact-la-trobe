@@ -92,23 +92,23 @@ export default function PatientManagementTable({
 }: Props) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
+      <table className="w-full table-fixed text-left text-sm">
         <thead className="border-b border-slate-200">
           <tr>
-            <th className="pr-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-28 pr-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
               Patient ID
             </th>
-            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-64 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
               Patient Name
             </th>
-            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-64 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
               Address
             </th>
-            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-36 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
               Contact No.
             </th>
             <th
-              className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center relative"
+              className="w-24 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center relative"
               data-gender-filter
             >
               <button
@@ -170,7 +170,7 @@ export default function PatientManagementTable({
                 </div>
               )}
             </th>
-            <th className="px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center w-48 pl-0">
+            <th className="w-20 py-3.5 pr-0 pl-0 text-base font-semibold text-black leading-6 font-dmsans text-left">
               Actions
             </th>
           </tr>
@@ -178,16 +178,24 @@ export default function PatientManagementTable({
 
         <tbody className="divide-y divide-gray-200">
           {patients.map((p) => (
-            <tr key={p.id} className="hover:bg-gray-50">
-              <td className="pr-4 py-3.5 text-sm text-gray-600">{p.id}</td>
-              <td className="px-4 py-3.5 text-sm text-gray-600">{p.name}</td>
-              <td className="px-4 py-3.5 text-sm text-gray-600">{p.address}</td>
-              <td className="px-4 py-3.5 text-sm text-gray-600">{p.phone}</td>
-              <td className="px-4 py-3.5 text-center text-sm text-gray-600">
+            <tr key={p.id} className="hover:bg-gray-50 align-top">
+              <td className="pr-4 py-3.5 text-sm text-gray-600 whitespace-nowrap">
+                {p.id}
+              </td>
+              <td className="px-4 py-3.5 text-sm text-gray-600 whitespace-normal break-words">
+                {p.name}
+              </td>
+              <td className="px-4 py-3.5 text-sm text-gray-600 whitespace-normal break-words">
+                {p.address}
+              </td>
+              <td className="px-4 py-3.5 text-sm text-gray-600 whitespace-normal break-words">
+                {p.phone}
+              </td>
+              <td className="pr-2 pl-2 py-3.5 text-center text-sm text-gray-600 whitespace-nowrap">
                 {p.gender}
               </td>
-              <td className="px-4 py-3.5 whitespace-nowrap flex  w-48 pl-0 justify-end">
-                <div className="flex items-center justify-end gap-2">
+              <td className="w-20 py-3.5 pr-0 pl-0 whitespace-nowrap flex">
+                <div className="flex items-center justify-end gap-1.5">
                   <ActionButton
                     variant="dark"
                     type="text"

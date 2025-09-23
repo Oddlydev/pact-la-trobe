@@ -24,7 +24,7 @@ function SectionCard({
         borderColor,
       ].join(" ")}
     >
-      <div className="px-6 pb-6 pt-3">{children}</div>
+      <div className="px-4 py-3">{children}</div>
     </section>
   );
 }
@@ -85,7 +85,7 @@ function DropdownQuestion({
   }, []);
 
   return (
-    <div className="flex items-center justify-between gap-6 py-3 w-full">
+    <div className="q-item flex items-center justify-between gap-6 py-2 w-full">
       <p className="flex-1 text-base text-gray-600 font-medium leading-6">
         {label}
       </p>
@@ -254,6 +254,22 @@ export default function AssessmentFormPage() {
     { id: "l1", label: "Liver: Decompensated cirrhosis" },
   ];
 
+  const s3Groups = (() => {
+    const strip = (x: { id: string; label: string }) => ({
+      ...x,
+      label: x.label.includes(":") ? x.label.split(":")[1].trim() : x.label,
+    });
+    return [
+      { title: "Cancer", items: s3Items.filter((x) => x.id.startsWith("c")).map(strip) },
+      { title: "Dementia/Frailty", items: s3Items.filter((x) => x.id.startsWith("d")).map(strip) },
+      { title: "Neurological (e.g., MND, MS)", items: s3Items.filter((x) => x.id.startsWith("n")).map(strip) },
+      { title: "Heart/Vascular", items: s3Items.filter((x) => x.id.startsWith("h")).map(strip) },
+      { title: "Respiratory", items: s3Items.filter((x) => x.id.startsWith("r")).map(strip) },
+      { title: "Renal", items: s3Items.filter((x) => x.id.startsWith("re")).map(strip) },
+      { title: "Liver", items: s3Items.filter((x) => x.id.startsWith("l")).map(strip) },
+    ];
+  })();
+
   const s4Items = [
     { id: "p1", label: "Patient/family preference for comfort care" },
     { id: "p2", label: "No ACP or unclear goals of care" },
@@ -317,13 +333,13 @@ export default function AssessmentFormPage() {
             >
               <ol className="">
                 {s1Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-1 py-3 ">
-                    <span className="text-base text-gray-600 font-medium leading-6">
-                      {idx + 1}.
-                    </span>
+                  <li
+                    key={q.id}
+                    className="flex items-start py-2 text-gray-600 font-medium leading-6"
+                  >
                     <S2Question
                       id={q.id}
-                      label={q.label}
+                      label={`${idx + 1}.\u00A0${q.label}`}
                       value={s1Answers[q.id]}
                       onChange={(v) =>
                         setS1Answers((p) => ({ ...p, [q.id]: v }))
@@ -342,13 +358,13 @@ export default function AssessmentFormPage() {
             >
               <ol className="">
                 {s2Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-1 py-3 ">
-                    <span className="text-base text-gray-600 font-medium leading-6">
-                      {idx + 1}.
-                    </span>
+                  <li
+                    key={q.id}
+                    className="flex items-start py-2 text-gray-600 font-medium leading-6"
+                  >
                     <S2Question
                       id={q.id}
-                      label={q.label}
+                      label={`${idx + 1}.\u00A0${q.label}`}
                       value={s2Answers[q.id]}
                       onChange={(v) =>
                         setS2Answers((p) => ({ ...p, [q.id]: v }))
@@ -365,23 +381,30 @@ export default function AssessmentFormPage() {
               title="Condition-Specific Indicators"
               borderColor="border-l-red-600"
             >
-              <ol className="">
-                {s3Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-1 py-3 ">
-                    <span className="text-base text-gray-600 font-medium leading-6">
-                      {idx + 1}.
-                    </span>
-                    <S2Question
-                      id={q.id}
-                      label={q.label}
-                      value={s3Answers[q.id]}
-                      onChange={(v) =>
-                        setS3Answers((p) => ({ ...p, [q.id]: v }))
-                      }
-                    />
-                  </li>
+              <div className="space-y-3">
+                {s3Groups.map((g) => (
+                  <div key={g.title}>
+                    <div className="text-gray-700 font-semibold">{g.title}</div>
+                    <ol className="">
+                      {g.items.map((q, idx) => (
+                        <li
+                          key={q.id}
+                          className="flex items-start py-2 text-gray-600 font-medium leading-6"
+                        >
+                          <S2Question
+                            id={q.id}
+                            label={`${idx + 1}.\u00A0${q.label}`}
+                            value={s3Answers[q.id]}
+                            onChange={(v) =>
+                              setS3Answers((p) => ({ ...p, [q.id]: v }))
+                            }
+                          />
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
                 ))}
-              </ol>
+              </div>
             </SectionBlock>
 
             {/* Section 4 */}
@@ -392,13 +415,13 @@ export default function AssessmentFormPage() {
             >
               <ol className="">
                 {s4Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-1 py-3 ">
-                    <span className="text-base text-gray-600 font-medium leading-6">
-                      {idx + 1}.
-                    </span>
+                  <li
+                    key={q.id}
+                    className="flex items-start py-2 text-gray-600 font-medium leading-6"
+                  >
                     <S2Question
                       id={q.id}
-                      label={q.label}
+                      label={`${idx + 1}.\u00A0${q.label}`}
                       value={s4Answers[q.id]}
                       onChange={(v) =>
                         setS4Answers((p) => ({ ...p, [q.id]: v }))
@@ -415,7 +438,7 @@ export default function AssessmentFormPage() {
               title="Holistic, Social and Cultural Needs"
               borderColor="border-l-gray-500"
             >
-              <div className="">
+              <div className="q-list">
                 <DropdownQuestion
                   label="Are there identified cultural, religious or spiritual needs influencing care delivery?"
                   options={[
@@ -470,9 +493,11 @@ export default function AssessmentFormPage() {
                   "Referral to Palliative Care team",
                   "Allied health referrals",
                 ].map((label, idx) => (
-                  <li key={idx} className="flex items-center gap-6 py-3">
-                    <span className="w-5">{idx + 1}.</span>
-                    <p className="flex-1 text-base text-gray-700">{label}</p>
+                  <li
+                    key={idx}
+                    className="flex items-start gap-1 py-2 text-gray-600 font-medium leading-6"
+                  >
+                    <p className="flex-1 text-base text-gray-700">{`${idx + 1}.\u00A0${label}`}</p>
                     <RadioButtonInline
                       name={`sec6-${idx}`}
                       options={[
@@ -495,11 +520,13 @@ export default function AssessmentFormPage() {
             >
               <ol className="">
                 {s7Items.map((q, idx) => (
-                  <li key={q.id} className="flex items-start gap-1 py-3 ">
-                    <span className="w-5">{idx + 1}.</span>
+                  <li
+                    key={q.id}
+                    className="flex items-start py-2 text-gray-600 font-medium leading-6"
+                  >
                     <S2Question
                       id={q.id}
-                      label={q.label}
+                      label={`${idx + 1}.\u00A0${q.label}`}
                       value={s7Answers[q.id]}
                       onChange={(v) =>
                         setS7Answers((p) => ({ ...p, [q.id]: v }))
@@ -537,9 +564,9 @@ export default function AssessmentFormPage() {
           </div>
 
           {/* Right column */}
-          <aside className="w-80 space-y-6 p-2 bg-gray-200 rounded-2xl h-full">
+          <aside className="w-80 space-y-2 p-2 bg-gray-200 rounded-2xl h-full">
             <div className="only-first-cards">
-              <OverallSeverityCards />
+              <OverallSeverityCards limit={1} />
             </div>
             <SummaryCards />
           </aside>

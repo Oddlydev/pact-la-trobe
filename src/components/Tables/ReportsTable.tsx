@@ -101,6 +101,7 @@ export default function ReportsTable({ reports }: Props) {
                     variant="dark"
                     type="text"
                     label="View Report"
+                    iconType="viewReport"
                   />
                   <ActionButton
                     variant="light"

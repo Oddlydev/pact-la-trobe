@@ -114,7 +114,7 @@ export default function Sidebar() {
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
       className={`flex flex-col bg-black text-white h-screen transition-all duration-200 ease-in-out pt-6 px-2.5 h-full
-        ${expanded ? "w-64" : "w-16"} `}
+        ${expanded ? "w-60" : "w-16"} `}
     >
       {/* Top section */}
       <div className="flex items-center justify-center">

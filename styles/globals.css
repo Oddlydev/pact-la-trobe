@@ -127,7 +127,8 @@ input[type="date"] {
      Labels (for forms, radio, etc.)
   ----------------------------- */
   label,
-  span {
+  span,
+  div {
     font-family: var(--font-dmsans, var(--font-sans));
     font-weight: 500;
     /* Medium for better readability */
@@ -148,6 +149,13 @@ input[type="search"]::-webkit-search-results-decoration {
 .search-close-icon:hover {
   background: transparent;
 }
+
+/* Numbering helper for assessment-form Section 5 */
+ .q-list { counter-reset: s5; }
+ .q-item > p::before {
+   counter-increment: s5;
+   content: counter(s5) ".\00A0";
+ }
 
 /* ---------------------------------------------
    Resource Single (WYSIWYG) styles

@@ -156,7 +156,7 @@ export default function PatientTable({ patients }: Props) {
         <tbody className="divide-y divide-gray-200">
           {patients.map((p, idx) => (
             <tr key={p.id || idx}>
-              <td className="px-4 py-3.5 font-dmsans text-sm text-gray-600">
+              <td className="px-4 py-3.5 font-dmsans text-sm text-gray-600 flex items-start">
                 {p.id}
               </td>
               <td className="px-4 py-3.5 font-dmsans text-sm text-gray-600">
@@ -187,6 +187,7 @@ export default function PatientTable({ patients }: Props) {
                     variant="dark"
                     type="text"
                     label="View Patient"
+                    iconType="viewPatient"
                   />
                   <button className="flex items-center justify-center rounded-full border border-black p-2.5 hover:bg-gray-100">
                     <ReportIcon />

@@ -21,6 +21,7 @@ const riskStyles: Record<
     score: string;
     scoreLabel: string;
     label: string;
+    shadow: string;
   }
 > = {
   low: {
@@ -29,6 +30,8 @@ const riskStyles: Record<
     score: "text-green-700",
     scoreLabel: "text-green-700",
     label: "LOW RISK",
+    shadow:
+      "shadow-[inset_0_0_50px_-2px_rgba(187,247,208,0.14),0_0_6px_-1px_rgba(0,0,0,0.25)]",
   },
   moderate: {
     border: "border-l-amber-400",
@@ -36,6 +39,8 @@ const riskStyles: Record<
     score: "text-amber-700",
     scoreLabel: "text-amber-700",
     label: "MODERATE RISK",
+    shadow:
+      "shadow-[inset_0_0_50px_-2px_rgba(253,230,138,0.14),0_0_6px_-1px_rgba(0,0,0,0.25)]",
   },
   high: {
     border: "border-l-orange-500",
@@ -43,6 +48,8 @@ const riskStyles: Record<
     score: "text-orange-700",
     scoreLabel: "text-orange-700",
     label: "HIGH RISK",
+    shadow:
+      "shadow-[inset_0_0_50px_-2px_rgba(254,215,170,0.14),0_0_6px_-1px_rgba(0,0,0,0.25)]",
   },
   critical: {
     border: "border-l-red-600",
@@ -50,6 +57,7 @@ const riskStyles: Record<
     score: "text-red-600",
     scoreLabel: "text-red-600",
     label: "CRITICAL/PRIORITY",
+    shadow: "shadow-[inset_0_0_50px_-2px_rgba(254,202,202,0.14)]",
   },
 };
 
@@ -116,6 +124,7 @@ const RiskIcon = () => (
     />
   </svg>
 );
+
 const CaregiverIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -164,7 +173,7 @@ export default function PatientCard({
         "w-full rounded-lg p-4 text-white transition-all duration-300",
         "border-l-[3px] bg-[rgba(0,0,0,0.00)] font-dmsans",
         styles.border,
-        "shadow-[inset_0_0_50px_-2px_rgba(254,215,170,0.14),0_0_6px_-1px_rgba(0,0,0,0.25)]",
+        styles.shadow,
         "hover:shadow-[0_0_6px_-1px_rgba(0,0,0,0.25)]",
         className,
       ].join(" ")}
@@ -181,11 +190,13 @@ export default function PatientCard({
           >
             {styles.label}
           </span>
-          <h3 className="text-base font-semibold text-black">{name}</h3>
+          <h3 className="text-base font-semibold text-black leading-6 font-dmsans">
+            {name}
+          </h3>
         </div>
         {/* Score */}
-        <div className="flex flex-col items-end gap-1">
-          <div className="flex items-baseline gap-1">
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <div className="flex flex-col items-end leading-none">
             <span
               className={["text-2xl font-bold leading-none", styles.score].join(
                 " "
@@ -193,10 +204,13 @@ export default function PatientCard({
             >
               {score}
             </span>
-            <span className="text-xs text-gray-400">/53</span>
+            <span className="text-xs text-gray-400 leading-none">/53</span>
           </div>
           <span
-            className={["text-[8px] font-normal", styles.scoreLabel].join(" ")}
+            className={[
+              "text-[8px] font-normal whitespace-nowrap",
+              styles.scoreLabel,
+            ].join(" ")}
           >
             PCAT Score
           </span>
@@ -204,7 +218,7 @@ export default function PatientCard({
       </div>
 
       {/* Age / Gender */}
-      <p className="text-sm text-gray-500 font-normal">
+      <p className="text-sm text-gray-500 font-normal font-dmsans">
         Age: {age} • {gender}
       </p>
 
@@ -217,7 +231,7 @@ export default function PatientCard({
             ) : r === "Has risk for recurrent falls" ? (
               <RiskIcon />
             ) : (
-              <HeartIcon /> // fallback for other risks
+              <HeartIcon /> // fallback
             )}
             <span>{r}</span>
           </li>

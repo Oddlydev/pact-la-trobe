@@ -214,9 +214,9 @@ export default function SummaryCards() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {cards.slice(0, 5).map((c, i) => renderCard(c, i))}
-      <div className="rounded-lg text-gray-700 font-semibold text-sm px-3 py-2">
+      <div className="rounded-lg text-gray-700 font-semibold pb-3 text-sm px-3 py-2">
         Decision Support Modifiers
       </div>
       {cards.slice(5).map((c, i) => renderCard(c, i + 5))}
