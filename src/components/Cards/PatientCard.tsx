@@ -26,22 +26,22 @@ const riskStyles: Record<
   low: {
     border: "border-l-green-600",
     badge: "bg-green-600 text-gray-900",
-    score: "text-green-600",
-    scoreLabel: "text-green-600",
+    score: "text-green-700",
+    scoreLabel: "text-green-700",
     label: "LOW RISK",
   },
   moderate: {
     border: "border-l-amber-400",
     badge: "bg-amber-400 text-gray-900",
-    score: "text-amber-400",
-    scoreLabel: "text-amber-400",
+    score: "text-amber-700",
+    scoreLabel: "text-amber-700",
     label: "MODERATE RISK",
   },
   high: {
     border: "border-l-orange-500",
     badge: "bg-orange-500 text-gray-900",
-    score: "text-orange-500",
-    scoreLabel: "text-orange-500",
+    score: "text-orange-700",
+    scoreLabel: "text-orange-700",
     label: "HIGH RISK",
   },
   critical: {
@@ -116,6 +116,36 @@ const RiskIcon = () => (
     />
   </svg>
 );
+const CaregiverIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+  >
+    <path
+      d="M4.89744 1.48868C5.7578 0.955605 6.50873 1.17043 6.95982 1.51262C7.14479 1.65292 7.23725 1.72308 7.29168 1.72308C7.3461 1.72308 7.43856 1.65292 7.62354 1.51262C8.07463 1.17043 8.82555 0.955605 9.68591 1.48868C10.8151 2.18829 11.0706 4.49632 8.4661 6.44354C7.97004 6.81442 7.722 6.99981 7.29168 6.99981C6.86135 6.99981 6.61332 6.81442 6.11725 6.44354C3.51282 4.49632 3.76831 2.18829 4.89744 1.48868Z"
+      stroke="#4B5563"
+      strokeWidth="0.875"
+      strokeLinecap="round"
+    />
+    <path
+      d="M2.33334 8.16675H3.73032C3.90191 8.16675 4.07114 8.20542 4.22461 8.27968L5.41576 8.85601C5.56923 8.93027 5.73846 8.96889 5.91005 8.96889H6.51823C7.10647 8.96889 7.58334 9.43036 7.58334 9.99958C7.58334 10.0226 7.56759 10.0428 7.54473 10.0491L6.06254 10.459C5.79663 10.5325 5.51193 10.5068 5.26459 10.3871L3.99124 9.77109"
+      stroke="#4B5563"
+      strokeWidth="0.875"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M7.58334 9.62502L10.2625 8.80187C10.7374 8.65388 11.2508 8.82935 11.5483 9.24136C11.7635 9.53921 11.6758 9.9658 11.3625 10.1466L6.97837 12.6761C6.69954 12.837 6.37053 12.8763 6.06388 12.7853L2.33334 11.6783"
+      stroke="#4B5563"
+      strokeWidth="0.875"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 export default function PatientCard({
   name,
@@ -155,22 +185,21 @@ export default function PatientCard({
         </div>
         {/* Score */}
         <div className="flex flex-col items-end gap-1">
-          {/* Main score */}
+          <div className="flex items-baseline gap-1">
+            <span
+              className={["text-2xl font-bold leading-none", styles.score].join(
+                " "
+              )}
+            >
+              {score}
+            </span>
+            <span className="text-xs text-gray-400">/53</span>
+          </div>
           <span
-            className={["text-2xl font-bold leading-none", styles.score].join(
-              " "
-            )}
-          >
-            {score}
-          </span>
-          {/* Out of total */}
-          <span className="text-xs text-gray-400">/53</span>
-          {/* Label */}
-          <p
             className={["text-[8px] font-normal", styles.scoreLabel].join(" ")}
           >
             PCAT Score
-          </p>
+          </span>
         </div>
       </div>
 
@@ -183,7 +212,13 @@ export default function PatientCard({
       <ul className="mt-3 space-y-1 text-sm font-normal text-gray-500">
         {risks.map((r, i) => (
           <li key={i} className="flex items-center gap-2">
-            {i % 2 === 0 ? <HeartIcon /> : <RiskIcon />}
+            {r === "Caregiver is unable to continue care" ? (
+              <CaregiverIcon />
+            ) : r === "Has risk for recurrent falls" ? (
+              <RiskIcon />
+            ) : (
+              <HeartIcon /> // fallback for other risks
+            )}
             <span>{r}</span>
           </li>
         ))}

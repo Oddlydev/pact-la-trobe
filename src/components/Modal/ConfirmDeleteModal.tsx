@@ -67,9 +67,6 @@ export default function ConfirmDeleteModal({
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Enter a reason (required)"
                 />
-                {!reason.trim() && (
-                  <p className="mt-1 text-xs text-red-600">Reason is required to delete a patient.</p>
-                )}
               </div>
             </div>
           </div>

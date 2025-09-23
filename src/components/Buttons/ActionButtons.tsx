@@ -136,7 +136,7 @@ export default function ActionButton({
           "inline-flex items-center justify-center rounded-full h-10 w-10 border transition-all duration-150 select-none",
         ]
       : [
-          "inline-flex items-center gap-2 text-sm font-medium rounded-full p-2.5 border transition-all duration-150 select-none",
+          "inline-flex items-center gap-2 text-sm font-medium rounded-full leading-none p-2.5 border transition-all duration-150 select-none",
         ];
 
   let look = "";

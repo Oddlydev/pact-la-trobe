@@ -48,7 +48,7 @@ export default function DotTableRiskIndicator({
   return (
     <div
       className={[
-        "w-full rounded-sm px-2 py-2.5 gap-x-2.5 flex justify-center items-center border text-xs text-center font-semibold font-dmsans uppercase tracking-normal",
+        "w-full rounded-sm px-2 py-2.5 gap-x-2.5 flex justify-center items-center border",
         cfg.border,
         cfg.text,
         className,
@@ -65,7 +65,9 @@ export default function DotTableRiskIndicator({
           <circle cx="5" cy="5" r="5" fill={cfg.dot} />
         </svg>
       </div>
-      <span>{label || cfg.defaultLabel}</span>
+      <span className=" text-xs text-center font-semibold font-dmsans uppercase tracking-normal">
+        {label || cfg.defaultLabel}
+      </span>
     </div>
   );
 }

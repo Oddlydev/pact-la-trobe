@@ -34,6 +34,6 @@ export type DbPatientRow = {
   phone: string;
   dob: string | null;
   gender: string | null;
+  deleteReason?: string | null;
   createdAt?: string | null;
 };
-

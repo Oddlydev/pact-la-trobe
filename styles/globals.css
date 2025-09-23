@@ -133,8 +133,8 @@ input[type="date"] {
     /* Medium for better readability */
     font-size: 1rem;
     /* text-base */
-    line-height: 1.5rem;
-    /* leading-6 */
+    line-height: 100%;
+    /* leading-1 */
   }
 }
 

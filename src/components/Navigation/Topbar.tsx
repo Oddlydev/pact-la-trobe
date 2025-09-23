@@ -46,7 +46,7 @@ export default function Topbar() {
 
             {/* Dropdown */}
             {dropdownOpen && (
-              <div className=" absolute right-0 mt-2 w-56 flex flex-col items-start gap-3.5 py-3.5 pl-3.5 pr-6 rounded-lg bg-zinc-100 shadow-[0_4px_4px_0_rgba(0,0,0,0.25),_0_0_8px_0_rgba(171,190,194,0.10)_inset] text-black text-sm font-medium">
+              <div className=" absolute right-0 z-50 mt-2 w-56 flex flex-col items-start gap-3.5 py-3.5 pl-3.5 pr-6 rounded-lg bg-zinc-100 shadow-[0_4px_4px_0_rgba(0,0,0,0.25),_0_0_8px_0_rgba(171,190,194,0.10)_inset] text-black text-sm font-medium">
                 <a
                   href="#"
                   className="flex items-center gap-1.5 w-full hover:bg-gray-100 rounded"
@@ -85,7 +85,7 @@ export default function Topbar() {
                 </a>
 
                 <a
-                  href="/patient-management/"
+                  href="#"
                   className="flex items-center gap-1.5 w-full hover:bg-gray-100 rounded  "
                 >
                   {/* User Management Icon */}

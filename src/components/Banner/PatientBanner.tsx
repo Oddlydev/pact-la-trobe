@@ -71,10 +71,10 @@ export default function PatientBanner({
           <div className="flex items-center gap-3">
             <div className="flex items-center">
               <span className="relative inline-flex size-14 flex-col items-center justify-center rounded-full border border-gray-600 bg-[rgba(0, 0, 0, 0.00]">
-                <span className="text-lg font-semibold text-zinc-200 tracking-tight">
+                <span className="text-lg font-semibold text-zinc-200 tracking-tight leading-4">
                   {age}
                 </span>
-                <span className="text-sm leading-5 tracking-normal font-normal text-zinc-400">
+                <span className="text-sm tracking-normal font-normal text-zinc-400 leading-5">
                   Age
                 </span>
               </span>

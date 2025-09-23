@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import type { GetServerSideProps } from "next";
+import { getPool, type DbPatientRow } from "@/lib/mysql";
 import Layout from "@/src/components/Layout";
 import EditPatientDrawer from "@/src/components/Drawer/EditPatientDrawer";
 import ConfirmDeleteModal from "@/src/components/Modal/ConfirmDeleteModal";
@@ -14,10 +16,16 @@ type Patient = {
   gender: "M" | "F";
 };
 
+type PageProps = {
+  initialPatients: Patient[];
+};
+
 const allPatients: Patient[] = [];
 
-export default function PatientManagementPage() {
-  const [patients, setPatients] = useState<Patient[]>(allPatients);
+export default function PatientManagementPage({ initialPatients }: PageProps) {
+  const [patients, setPatients] = useState<Patient[]>(
+    initialPatients?.length ? initialPatients : allPatients
+  );
   const [search, setSearch] = useState("");
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -57,14 +65,16 @@ export default function PatientManagementPage() {
         const resp = await fetch("/api/patients");
         const json = await resp.json();
         if (resp.ok && json?.ok) {
-          const mapped: Patient[] = (json.data as any[]).map((r) => ({
-            id: r.id,
-            name: r.name,
-            address: r.address || "",
-            phone: r.phone || "",
-            gender:
-              r.gender === "F" ? "F" : r.gender === "M" ? "M" : ("NA" as any),
-          }));
+          const mapped: Patient[] = (json.data as any[]).map((r) => {
+            const g = String(r.gender || "").trim().toUpperCase();
+            return {
+              id: r.id,
+              name: r.name,
+              address: r.address || "",
+              phone: r.phone || "",
+              gender: g === "FEMALE" || g === "F" ? ("F" as const) : g === "MALE" || g === "M" ? ("M" as const) : ("NA" as any),
+            };
+          });
           setPatients(mapped);
         }
       } catch (e) {
@@ -76,6 +86,19 @@ export default function PatientManagementPage() {
     window.addEventListener("patients:reload", handler);
     return () => window.removeEventListener("patients:reload", handler);
   }, []);
+
+  // Close gender menu on outside click
+  React.useEffect(() => {
+    if (!genderMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      const t = e.target as HTMLElement;
+      if (!t.closest('[data-gender-filter]')) {
+        setGenderMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [genderMenuOpen]);
 
   return (
     <Layout>
@@ -97,53 +120,6 @@ export default function PatientManagementPage() {
               value={search}
               onChange={setSearch}
             />
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setGenderMenuOpen((v) => !v)}
-                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
-              >
-                Gender
-                <svg className="ml-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M6 8L10 12L14 8" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-              {genderMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-3 z-10">
-                  {[
-                    { key: "M", label: "Men" },
-                    { key: "F", label: "Women" },
-                    { key: "NA", label: "Not Prefer" },
-                  ].map((opt) => (
-                    <label key={opt.key} className="flex items-center gap-2 py-1 text-sm text-gray-700">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300"
-                        checked={(genderFilters as any)[opt.key]}
-                        onChange={(e) =>
-                          setGenderFilters((prev) => ({ ...prev, [opt.key]: e.target.checked } as any))
-                        }
-                      />
-                      <span>{opt.label}</span>
-                    </label>
-                  ))}
-                  <div className="mt-2 flex gap-2">
-                    <button
-                      type="button"
-                      className="text-xs text-gray-600 underline"
-                      onClick={() => setGenderFilters({ M: false, F: false, NA: false })}
-                    >
-                      Clear
-                    </button>
-                    <button
-                      type="button"
-                      className="ml-auto text-xs text-gray-600 underline"
-                      onClick={() => setGenderMenuOpen(false)}
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         </header>
 
@@ -158,6 +134,14 @@ export default function PatientManagementPage() {
             setPatientToDelete(p);
             setDeleteOpen(true);
           }}
+          onGenderFilterClick={() => setGenderMenuOpen((v) => !v)}
+          genderMenuOpen={genderMenuOpen}
+          genderFilters={genderFilters}
+          onGenderFilterChange={(key, checked) =>
+            setGenderFilters((prev) => ({ ...prev, [key]: checked }))
+          }
+          onGenderFilterClear={() => setGenderFilters({ M: false, F: false, NA: false })}
+          onGenderFilterClose={() => setGenderMenuOpen(false)}
         />
 
         {/* Pagination */}
@@ -204,3 +188,25 @@ export default function PatientManagementPage() {
     </Layout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
+  try {
+    const pool = getPool();
+    const [rows] = await pool.query<DbPatientRow[]>(
+      `SELECT * FROM patients WHERE (deleteReason IS NULL OR deleteReason = '') ORDER BY id DESC`
+    );
+    const initialPatients: Patient[] = rows.map((r) => {
+      const g = String(r.gender || "").trim().toUpperCase();
+      return {
+        id: r.patientId,
+        name: `${r.firstName || ""} ${r.lastName || ""}`.trim(),
+        address: r.address || "",
+        phone: r.phone || "",
+        gender: g === "FEMALE" || g === "F" ? "F" : "M",
+      } as Patient;
+    });
+    return { props: { initialPatients } };
+  } catch {
+    return { props: { initialPatients: [] } };
+  }
+};

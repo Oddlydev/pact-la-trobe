@@ -34,7 +34,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     if (req.method === "GET") {
-      const [rows] = await pool.query<DbPatientRow[]>("SELECT * FROM patients ORDER BY id DESC");
+      const [rows] = await pool.query<DbPatientRow[]>(
+        `SELECT * FROM patients
+         WHERE (deleteReason IS NULL OR deleteReason = '')
+         ORDER BY id DESC`
+      );
       const data = rows.map(toApiPatient);
       return res.status(200).json({ ok: true, data });
     }
