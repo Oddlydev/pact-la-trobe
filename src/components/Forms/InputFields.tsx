@@ -128,12 +128,13 @@ export default function InputField({
     }
 
     return [
-      "block w-full rounded-md bg-white px-3 py-2",
+      "block w-full rounded-md bg-transparent px-3 py-2",
       "text-base placeholder:text-gray-500 placeholder:text-sm placeholder:font-normal",
       "outline-1 -outline-offset-1",
       "font-dmsans text-gray-900",
       colorClasses,
       "sm:text-sm sm:leading-6",
+      "autofill:shadow-[inset_0_0_0_1000px_white]", // Tailwind autofill fix
     ].join(" ");
   }, [focused, currentState]);
 

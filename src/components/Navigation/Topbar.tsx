@@ -85,7 +85,7 @@ export default function Topbar() {
                 </a>
 
                 <a
-                  href="/patient-management/"
+                  href="#"
                   className="flex items-center gap-1.5 w-full hover:bg-gray-100 rounded  "
                 >
                   {/* User Management Icon */}

@@ -148,7 +148,7 @@ export default function PatientTable({ patients }: Props) {
                 Last Updated Date <HeaderIcon />
               </div>
             </th>
-            <th className="w-56 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center">
+            <th className="w-56 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-left">
               Actions
             </th>
           </tr>
@@ -173,8 +173,10 @@ export default function PatientTable({ patients }: Props) {
               </td>
               <td className="px-4 py-3.5 font-dmsans text-sm text-gray-600">
                 <div className="flex flex-col">
-                  <span>{p.lastUpdated.split(" ")[0]}</span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-gray-600 text-sm leading-5 font-normal">
+                    {p.lastUpdated.split(" ")[0]}
+                  </span>
+                  <span className=" text-gray-600 text-sm leading-5 font-normal">
                     {p.lastUpdated.split(" ")[1]}
                   </span>
                 </div>

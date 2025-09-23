@@ -165,8 +165,8 @@ export default function Sidebar() {
           <div className="flex flex-col items-start self-stretch">
             {/* Name + SVG row */}
             <div className="flex justify-between items-start self-stretch">
-              <div className="text-2xl font-medium font-bebas text-white">
-                THOMPSON ROBERT
+              <div className="text-2xl font-medium font-dmsans text-white">
+                Thomson Robert
               </div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
