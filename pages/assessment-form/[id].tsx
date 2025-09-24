@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Layout from "@/src/components/Layout";
 import PrimaryButton from "@/src/components/Buttons/PrimaryButtons";
@@ -43,9 +43,6 @@ function SectionCard({
 
 type Answer = "yes" | "no" | "unclear" | undefined;
 
-/* ------------------------
-   Question Types
--------------------------*/
 function S2Question({
   id,
   label,
@@ -154,9 +151,6 @@ function DropdownQuestion({
   );
 }
 
-/* ------------------------
-   SectionBlock reusable
--------------------------*/
 type SectionStatus = "empty" | "inProgress" | "complete";
 
 function SectionBlock({
@@ -218,14 +212,12 @@ function SectionBlock({
       </svg>
     );
   }
-
   return (
     <div className="relative flex gap-4">
       <div className="relative flex flex-col items-center">
         <div className="z-10">{renderIcon()}</div>
         <div className="absolute top-8 bottom-0 w-[2px] bg-gray-600"></div>
       </div>
-
       <div className="flex-1 pb-4">
         <div>
           <span className="text-base font-medium text-gray-500">
@@ -233,7 +225,6 @@ function SectionBlock({
           </span>
           <h3 className="text-xl font-bold text-gray-800">{title}</h3>
         </div>
-
         {noCard ? (
           children
         ) : (
@@ -251,6 +242,20 @@ export default function AssessmentFormPage() {
   const router = useRouter();
   const { id } = router.query; // patient id like PT200013
 
+  const [patient, setPatient] = useState<any>(null);
+
+  // Fetch patient info for the banner
+  useEffect(() => {
+    if (id) {
+      fetch(`/api/patient-profile/${id}`)
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.ok) setPatient(res.data);
+        })
+        .catch(() => setPatient(null));
+    }
+  }, [id]);
+
   type V = Answer;
   const [s1Answers, setS1Answers] = React.useState<Record<string, V>>({});
   const [s2Answers, setS2Answers] = React.useState<Record<string, V>>({});
@@ -262,7 +267,7 @@ export default function AssessmentFormPage() {
 
   function handleSubmit() {
     const payload = {
-      patientId: id, // ✅ dynamic from URL
+      patientId: id,
       answers: {
         ...s1Answers,
         ...s2Answers,
@@ -288,9 +293,7 @@ export default function AssessmentFormPage() {
           alert("Error: " + data.error);
         }
       })
-      .catch((err) => {
-        console.error("Submit error", err);
-      });
+      .catch((err) => console.error("Submit error", err));
   }
 
   function getSectionStatus<T extends string>(
@@ -327,21 +330,23 @@ export default function AssessmentFormPage() {
           </div>
         </header>
 
-        {/* Patient Banner */}
-        <PatientBanner
-          patientId={String(id)}
-          name="---"
-          age="---"
-          dob="---"
-          gender="---"
-          location="---"
-          risk="---"
-          latestReportAt="---"
-          latestReportBy="---"
-        />
+        {/* Patient Banner with real data */}
+        {patient && (
+          <PatientBanner
+            patientId={patient.id}
+            name={patient.name}
+            age={patient.age || "N/A"}
+            dob={patient.dob || "-"}
+            gender={patient.gender}
+            location="Residential Aged Care Facility"
+            risk={patient.riskLevel?.toUpperCase()}
+            latestReportAt="2024 NOV 17 | 21:07"
+            latestReportBy="Dr. Smith"
+          />
+        )}
 
+        {/* Sections + Right Sidebar */}
         <div className="flex gap-6">
-          {/* Left column */}
           <div className="flex-1">
             {/* Section 1 */}
             <SectionBlock
@@ -548,8 +553,6 @@ export default function AssessmentFormPage() {
               </div>
             </SectionBlock>
           </div>
-
-          {/* Right column */}
           <aside className="w-80 space-y-2 p-2 bg-gray-200 rounded-2xl h-full">
             <div className="only-first-cards">
               <OverallSeverityCards limit={1} />
