@@ -42,7 +42,7 @@ export default function Pagination({
 
   return (
     <div className="flex items-center justify-between border-t border-gray-200 pt-3 text-gray-600 text-sm leading-5">
-      <span>{`Showing ${start} to ${end} of ${totalItems} resources`}</span>
+      <span>{`Showing ${start} to ${end} of ${totalItems} resources, patients`}</span>
 
       <div className="inline-flex rounded-md shadow-sm">
         {/* Prev */}
