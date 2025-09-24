@@ -30,27 +30,35 @@ const severityConfig: Record<
 };
 
 type Props = {
-  // Optional: limit how many cards render. If omitted, show all.
+  score: number;
+  total: number;
   limit?: number;
 };
 
-export default function OverallSeverityCards({ limit }: Props) {
+function getSeverity(score: number, total: number): SeverityLevel {
+  const ratio = total > 0 ? score / total : 0;
+  if (ratio >= 0.8) return "critical";
+  if (ratio >= 0.6) return "high";
+  if (ratio >= 0.3) return "moderate";
+  return "low";
+}
+
+export default function OverallSeverityCards({ score, total, limit }: Props) {
+  const level = getSeverity(score, total);
+  const cfg = severityConfig[level];
+  const progress = total > 0 ? Math.round((score / total) * 100) : 0;
+
   const cards: { level: SeverityLevel; score: number; total: number }[] = [
-    { level: "critical", score: 41, total: 53 },
-    { level: "high", score: 23, total: 53 },
-    { level: "moderate", score: 18, total: 53 },
-    { level: "low", score: 10, total: 53 },
+    { level, score, total },
   ];
 
-  const progress = 83;
-
-  const visibleCards = typeof limit === "number" ? cards.slice(0, limit) : cards;
+  const visibleCards =
+    typeof limit === "number" ? cards.slice(0, limit) : cards;
 
   return (
     <div className="space-y-3">
       {visibleCards.map(({ level, score, total }) => {
         const cfg = severityConfig[level];
-
         return (
           <div
             key={level}

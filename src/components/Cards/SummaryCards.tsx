@@ -39,92 +39,112 @@ const severityCfg: Record<
   },
 };
 
-export default function SummaryCards() {
+type Props = {
+  sectionScores: Record<string, number>;
+  totals: Record<string, number>;
+};
+
+function getSeverity(score: number, total: number): Severity {
+  const ratio = total > 0 ? score / total : 0;
+  if (ratio >= 0.66) return "high";
+  if (ratio >= 0.33) return "moderate";
+  return "low";
+}
+
+// 🔹 Helper to generate text dynamically based on severity
+function generateTexts(
+  section: string,
+  severity: Severity,
+  score: number,
+  total: number
+): Pick<SummaryCard, "description" | "recommendation" | "action"> {
+  if (severity === "low") {
+    return {
+      description: `Low concern: minimal issues detected in ${section.toLowerCase()}.`,
+      recommendation: "Continue routine monitoring and reassessment.",
+      action: "No urgent action required.",
+    };
+  }
+  if (severity === "moderate") {
+    return {
+      description: `Moderate concern: partial issues identified in ${section.toLowerCase()}.`,
+      recommendation: "Begin care planning and involve relevant teams.",
+      action: "Action required within 1 week.",
+    };
+  }
+  return {
+    description: `High concern: significant issues in ${section.toLowerCase()}.`,
+    recommendation: "Escalate care immediately with specialist involvement.",
+    action:
+      "Urgent response required (referral, MDT meeting, medication review).",
+  };
+}
+
+export default function SummaryCards({ sectionScores, totals }: Props) {
   const cards: SummaryCard[] = [
-    // Keep original 1–3
     {
       step: 1,
       title: "Patient Identification & Functional Decline",
-      score: 1,
-      total: 8,
-      severity: "low",
+      score: sectionScores.s1,
+      total: totals.s1,
+      severity: getSeverity(sectionScores.s1, totals.s1),
       kps: 80,
-      description: "Monitor. Reassess periodically as condition changes.",
-      recommendation: "Suitable for routine care and ongoing monitoring.",
-      action: "Continue monitoring unless other risk indicators exist",
     },
     {
       step: 2,
-      title: "Patient Identification & Functional Decline",
-      score: 3,
-      total: 8,
-      severity: "moderate",
-      kps: 80,
-      description:
-        "Begin care planning. Discuss goals of care with patient/family.",
-      recommendation:
-        "Action required within 1 week. Monitor closely and prioritise timely care.",
-      action: "Align with moderate–to–high stratification for timely action",
+      title: "Symptom Burden & Unmet Needs",
+      score: sectionScores.s2,
+      total: totals.s2,
+      severity: getSeverity(sectionScores.s2, totals.s2),
     },
     {
       step: 3,
-      title: "Patient Identification & Functional Decline",
-      score: 6,
-      total: 8,
-      severity: "high",
-      kps: 80,
-      description: "Trigger for Specialist Palliative Care referral",
-      recommendation:
-        "Action required immediately (e.g., medication review, referral, MDT case meeting).",
-      action: "Escalate care immediately, regardless of stratification score",
+      title: "Condition-Specific Indicators",
+      score: sectionScores.s3,
+      total: totals.s3,
+      severity: getSeverity(sectionScores.s3, totals.s3),
     },
-    // Added 4–7
     {
       step: 4,
       title: "Psychosocial & Advance Care Planning",
-      score: 5,
-      total: 6,
-      severity: "high",
+      score: sectionScores.s4,
+      total: totals.s4,
+      severity: getSeverity(sectionScores.s4, totals.s4),
       severityText: "Psychological Risk",
-      description:
-        "Discuss concerns with patient/family. Engage social work, psychology, or ACP team as appropriate.",
     },
     {
       step: 5,
       title: "Holistic, Social and Cultural Needs",
-      score: 8,
-      total: 16,
-      severity: "moderate",
-      severityText: "Moderate Concern",
-      description:
-        "Review support needs. Consider involving social work, pastoral care, or Aboriginal liaison officer.",
+      score: sectionScores.s5,
+      total: totals.s5,
+      severity: getSeverity(sectionScores.s5, totals.s5),
+      severityText: "Support Needs",
     },
     {
       step: 6,
       title: "Clinical Action & Referrals",
-      score: 12,
-      total: 18,
-      severity: "moderate",
-      severityText: "Low Urgency",
-      recommendation:
-        "Action required within 1 week. Monitor closely and prioritise timely care.",
-      action: "Align with moderate–to–high stratification for timely action",
+      score: sectionScores.s6,
+      total: totals.s6,
+      severity: getSeverity(sectionScores.s6, totals.s6),
+      severityText: "Referral Urgency",
     },
     {
       step: 7,
       title: "Documentation & Communication",
-      score: 4,
-      total: 4,
-      severity: "low",
-      severityText: "Optimal",
-      recommendation:
-        "Documentation and communication complete. No further action required.",
-      action: "Safe to proceed with planned care",
+      score: sectionScores.s7,
+      total: totals.s7,
+      severity: getSeverity(sectionScores.s7, totals.s7),
+      severityText: "Documentation Quality",
     },
-  ];
+  ].map((c) => ({
+    ...c,
+    ...generateTexts(c.title, c.severity, c.score, c.total),
+  }));
 
   const renderCard = (c: SummaryCard, i: number) => {
     const cfg = severityCfg[c.severity];
+    const showExtras = c.step > 5; // ✅ only show recommendation/action for step 6 and 7
+
     return (
       <div
         key={i}
@@ -186,29 +206,31 @@ export default function SummaryCards() {
             {c.description}
           </p>
         )}
-        <div className="mt-2.5 space-y-2 text-sm">
-          {c.recommendation && (
-            <div className="mt-2.5">
-              <h6 className="font-medium block text-gray-700 leading-5">
-                Recommendation
-              </h6>
-              <span className="text-gray-500 text-right font-normal text-sm leading-5">
-                {c.recommendation}
-              </span>
-            </div>
-          )}
+        {showExtras && (
+          <div className="mt-2.5 space-y-2 text-sm">
+            {c.recommendation && (
+              <div className="mt-2.5">
+                <h6 className="font-medium block text-gray-700 leading-5">
+                  Recommendation
+                </h6>
+                <span className="text-gray-500 text-right font-normal text-sm leading-5">
+                  {c.recommendation}
+                </span>
+              </div>
+            )}
 
-          {c.action && (
-            <div className="text-sm text-gray-500">
-              <h6 className="font-medium block text-gray-700 leading-5">
-                Action
-              </h6>
-              <p className="font-normal text-sm block text-gray-500 leading-5">
-                {c.action}
-              </p>
-            </div>
-          )}
-        </div>
+            {c.action && (
+              <div className="text-sm text-gray-500">
+                <h6 className="font-medium block text-gray-700 leading-5">
+                  Action
+                </h6>
+                <p className="font-normal text-sm block text-gray-500 leading-5">
+                  {c.action}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
