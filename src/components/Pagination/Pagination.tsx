@@ -1,14 +1,7 @@
 import React from "react";
 
 const PrevIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    aria-hidden
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -19,14 +12,7 @@ const PrevIcon = () => (
 );
 
 const NextIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    aria-hidden
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -40,24 +26,23 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  itemsPerPage?: number;
-  totalItems?: number;
+  itemsPerPage: number;
+  totalItems: number;
 }
 
 export default function Pagination({
   currentPage,
   totalPages,
   onPageChange,
-  itemsPerPage = 10,
+  itemsPerPage,
   totalItems,
 }: PaginationProps) {
   const start = (currentPage - 1) * itemsPerPage + 1;
-  const end = Math.min(currentPage * itemsPerPage, totalItems ?? currentPage * itemsPerPage);
+  const end = Math.min(currentPage * itemsPerPage, totalItems);
+
   return (
-    <div className="flex items-center justify-between border-t-[0.5px] border-brand-8 pt-3 text-gray-600 text-sm leading-5">
-      <span className="font-normal">
-        {`Showing ${totalItems ? start : 0} to ${totalItems ? end : 0} of ${totalItems ?? 0} patients`}
-      </span>
+    <div className="flex items-center justify-between border-t border-gray-200 pt-3 text-gray-600 text-sm leading-5">
+      <span>{`Showing ${start} to ${end} of ${totalItems} resources`}</span>
 
       <div className="inline-flex rounded-md shadow-sm">
         {/* Prev */}

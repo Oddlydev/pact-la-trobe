@@ -1,65 +1,52 @@
+import { ApolloClient, InMemoryCache, HttpLink, gql } from "@apollo/client";
 import Head from "next/head";
 import { useState } from "react";
 import Layout from "@/src/components/Layout";
 import ResourcesCard from "@/src/components/Cards/ResourcesCards";
-import { ResourcesCardProps } from "@/src/components/Cards/ResourcesCards";
 import Pagination from "@/src/components/Pagination/Pagination";
 
-export default function ResourcesPage() {
-  const resources: ResourcesCardProps[] = [
-    {
-      image: "/assets/images/card-imgs/resources-card-img.png",
-      category: "Guidelines",
-      description:
-        "Latest clinical guidelines and care protocols to support medical staff with updated practices.",
-      link: "/resources/guidelines",
-      linkType: "internal",
-    },
-    {
-      image: "/assets/images/card-imgs/resources-card-img.png",
-      category: "Training",
-      description:
-        "Access training materials, tutorials, and skill development sessions for healthcare staff.",
-      link: "/resources/training",
-      linkType: "internal",
-    },
-    {
-      image: "/assets/images/card-imgs/resources-card-img.png",
-      category: "External Research",
-      description:
-        "Stay up-to-date with the latest external publications, peer-reviewed journals, and case studies.",
-      link: "https://www.ncbi.nlm.nih.gov/",
-      linkType: "external",
-    },
-    {
-      image: "/assets/images/card-imgs/resources-card-img.png",
-      category: "Patient Resources",
-      description:
-        "Downloadable patient information sheets and self-care management materials.",
-      link: "/resources/patient-info",
-      linkType: "internal",
-    },
-    {
-      image: "/assets/images/card-imgs/resources-card-img.png",
-      category: "External Research",
-      description:
-        "Stay up-to-date with the latest external publications, peer-reviewed journals, and case studies.",
-      link: "https://www.ncbi.nlm.nih.gov/",
-      linkType: "external",
-    },
-    {
-      image: "/assets/images/card-imgs/resources-card-img.png",
-      category: "Patient Resources",
-      description:
-        "Downloadable patient information sheets and self-care management materials.",
-      link: "/resources/patient-info",
-      linkType: "internal",
-    },
-  ];
+const RESOURCES_QUERY = gql`
+  query GetResources {
+    resources(first: 100, where: { status: PUBLISH }) {
+      nodes {
+        id
+        title
+        excerpt
+        slug
+        uri
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
+        categories {
+          nodes {
+            id
+            name
+          }
+        }
+        resourcesTypes {
+          nodes {
+            id
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+`;
 
-  // 👉 Pagination only for UI
+export default function ResourcesPage({ resources }: { resources: any[] }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10; // 👈 hardcoded or dynamic, but not linked to cards
+  const pageSize = 6;
+
+  const totalItems = resources.length;
+  const paginated = resources.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const totalPages = Math.ceil(totalItems / pageSize);
 
   return (
     <>
@@ -78,21 +65,61 @@ export default function ResourcesPage() {
 
           {/* Resources Grid */}
           <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 mt-6">
-            {resources.map((res, idx) => (
-              <ResourcesCard key={idx} {...res} />
+            {paginated.map((res) => (
+              <ResourcesCard key={res.id} {...res} />
             ))}
           </div>
 
           {/* Pagination */}
-          <div className="mt-6">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
+          {totalPages > 1 && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                itemsPerPage={pageSize}
+                totalItems={totalItems}
+              />
+            </div>
+          )}
         </div>
       </Layout>
     </>
   );
+}
+
+export async function getStaticProps() {
+  const client = new ApolloClient({
+    link: new HttpLink({
+      uri:
+        process.env.NEXT_PUBLIC_WORDPRESS_API_URL ||
+        "https://pactlatrobedev.wpenginepowered.com/graphql",
+    }),
+    cache: new InMemoryCache(),
+  });
+
+  const { data } = await client.query({ query: RESOURCES_QUERY });
+
+  const resources =
+    data?.resources?.nodes.map((res: any) => {
+      const resType = res.resourcesTypes?.nodes?.[0]?.slug;
+      const linkType = resType === "external-link" ? "external" : "internal";
+
+      return {
+        id: res.id,
+        title: res.title || "Untitled",
+        image:
+          res.featuredImage?.node?.sourceUrl ||
+          "/assets/images/card-imgs/resources-card-img.png",
+        category: res.categories?.nodes?.[0]?.name || "General",
+        description: res.excerpt || "",
+        link: `/resources/${res.slug}`, // ✅ Next.js internal link
+        linkType,
+      };
+    }) || [];
+
+  return {
+    props: { resources },
+    revalidate: 60,
+  };
 }

@@ -1,6 +1,8 @@
 import React from "react";
 
-type ResourcesCardProps = {
+export type ResourcesCardProps = {
+  id?: string;
+  title: string;
   image: string;
   category: string;
   description: string;
@@ -9,6 +11,7 @@ type ResourcesCardProps = {
 };
 
 export default function ResourcesCard({
+  title,
   image,
   category,
   description,
@@ -18,11 +21,13 @@ export default function ResourcesCard({
   const isExternal = linkType === "external";
 
   return (
-    <div
+    <a
+      href={link}
+      {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className={[
         "group flex flex-col items-start w-full",
         "p-3 pb-4 gap-5",
-        "rounded-[12px] border border-brand-2 bg-[rgba(0, 0, 0, 0.00);]",
+        "rounded-[12px] border border-brand-2 bg-[rgba(0,0,0,0.00)]",
         "shadow-[0_0_40px_0_rgba(171,190,194,0.30)]",
         "transition-all duration-300 ease-out",
         "hover:shadow-[inset_0_0_40px_rgba(171,190,194,0.40)] hover:-translate-y-1",
@@ -30,11 +35,7 @@ export default function ResourcesCard({
     >
       {/* Image */}
       <div className="flex h w-full justify-center items-center rounded-lg overflow-hidden">
-        <img
-          src={image}
-          alt={category}
-          className="h-full w-full object-cover"
-        />
+        <img src={image} alt={title} className="h-full w-full object-cover" />
       </div>
 
       {/* Content */}
@@ -42,44 +43,46 @@ export default function ResourcesCard({
         <p className="text-[10px] leading-2.5 uppercase text-gray-400 tracking-wide">
           {category}
         </p>
-        <p className="text-base text-brand-3 line-clamp-3">{description}</p>
+
+        {/* Title */}
+        <p className="text-base text-brand-3 line-clamp-3">{title}</p>
+
+        {/* Description */}
+        <p
+          className="text-sm text-gray-600 line-clamp-3"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
       </div>
-      {/* Link Button */}
-      <a
-        href={link}
-        {...(isExternal
-          ? { target: "_blank", rel: "noopener noreferrer" }
-          : {})}
+
+      {/* CTA Button */}
+      <div
         className={[
-          "flex items-center gap-1 rounded-full border border-brand-3",
+          "flex items-center gap-1 rounded-full border border-brand-3 mt-2",
           "px-[14px] py-2 text-sm font-semibold leading-5",
           "transition-all duration-300 ease-out",
-          "text-black bg-[rgba(0, 0, 0, 0.00);]",
+          "text-black bg-[rgba(0,0,0,0.00)]",
           "group-hover:border-brand-2 group-hover:bg-brand-3 group-hover:text-white",
         ].join(" ")}
       >
         Read more
         {isExternal ? (
+          // External link icon (uses currentColor now!)
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"
             height="19"
             viewBox="0 0 18 19"
-            fill="none"
+            fill="currentColor"
             className="transition-colors duration-300"
           >
             <path
               fillRule="evenodd"
               clipRule="evenodd"
-              d="M13.5737 4.28281H11.2636C10.9635 4.28281 10.7203 4.03958 10.7203 3.73955C10.7203 3.43951 10.9635 3.19629 11.2636 3.19629H14.8853C15.1853 3.19629 15.4286 3.43951 15.4286 3.73955V7.36128C15.4286 7.66131 15.1853 7.90454 14.8853 7.90454C14.5853 7.90454 14.342 7.66131 14.342 7.36128V5.05109L8.02598 11.3672C7.81382 11.5793 7.46985 11.5793 7.25769 11.3672C7.04554 11.155 7.04554 10.811 7.25769 10.5989L13.5737 4.28281Z"
-              fill="currentColor"
-            />
-            <path
-              d="M8.36616 4.4639C8.55615 4.46121 8.73286 4.56109 8.82863 4.72519C8.92441 4.88928 8.92441 5.09224 8.82863 5.25633C8.73286 5.42043 8.55615 5.52024 8.36616 5.51755C7.05192 5.51755 6.0734 5.52109 5.3844 5.59884C4.69541 5.67659 4.33965 5.82128 4.13326 6.02788C3.92688 6.23449 3.78258 6.59024 3.70524 7.27902C3.6279 7.9678 3.62499 8.94579 3.62499 10.2587C3.62499 11.5712 3.62954 12.5489 3.70833 13.2373C3.78712 13.9258 3.93254 14.2822 4.14047 14.4895C4.34839 14.6968 4.70466 14.8408 5.39266 14.9186C6.08065 14.9963 7.05706 14.9998 8.36615 14.9998C9.67508 14.9998 10.6518 14.9959 11.3396 14.9175C12.0275 14.8391 12.3836 14.6944 12.5918 14.4864C12.8 14.2784 12.9452 13.9223 13.024 13.2342C13.1028 12.5462 13.1073 11.569 13.1073 10.2587C13.1046 10.0687 13.2044 9.892 13.3685 9.79622C13.5326 9.70045 13.7356 9.70045 13.8997 9.79622C14.0638 9.892 14.1636 10.0687 14.1609 10.2587C14.1609 11.57 14.161 12.5623 14.0703 13.3536C13.9797 14.1449 13.7908 14.7778 13.3367 15.2314C12.8826 15.6849 12.2489 15.8738 11.458 15.9639C10.6671 16.054 9.67593 16.0534 8.36616 16.0534C7.05655 16.0534 6.06513 16.0553 5.27435 15.966C4.48358 15.8766 3.851 15.6886 3.39659 15.2355C2.94218 14.7823 2.75153 14.1494 2.66093 13.3577C2.57032 12.566 2.57141 11.5722 2.57141 10.2587C2.57141 8.94545 2.57002 7.95197 2.65887 7.16067C2.74769 6.36932 2.93396 5.73679 3.38732 5.28291C3.84068 4.82904 4.47442 4.6407 5.26608 4.55136C6.0578 4.46201 7.05139 4.4639 8.36616 4.4639Z"
-              fill="currentColor"
+              d="M13.5738 4.53281H11.2636C10.9636 4.53281 10.7203 4.28958 10.7203 3.98955C10.7203 3.68951 10.9636 3.44629 11.2636 3.44629H14.8853C15.1854 3.44629 15.4286 3.68951 15.4286 3.98955V7.61128C15.4286 7.91131 15.1854 8.15454 14.8853 8.15454C14.5853 8.15454 14.3421 7.91131 14.3421 7.61128V5.30109L8.02601 11.6172C7.81385 11.8293 7.46988 11.8293 7.25772 11.6172C7.04557 11.405 7.04557 11.061 7.25772 10.8489L13.5738 4.53281ZM8.36619 4.7139C8.55618 4.71121 8.73289 4.81109 8.82866 4.97519C8.92444 5.13928 8.92444 5.34224 8.82866 5.50633C8.73289 5.67043 8.55618 5.77024 8.36619 5.76755C7.05195 5.76755 6.07343 5.77109 5.38443 5.84884C4.69544 5.92659 4.33968 6.07128 4.13329 6.27788C3.92691 6.48449 3.78261 6.84024 3.70527 7.52902C3.62793 8.2178 3.62502 9.19579 3.62502 10.5087C3.62502 11.8212 3.62957 12.7989 3.70836 13.4873C3.78715 14.1758 3.93257 14.5322 4.1405 14.7395C4.34842 14.9468 4.70469 15.0908 5.39269 15.1686C6.08068 15.2463 7.05709 15.2498 8.36618 15.2498C9.67511 15.2498 10.6518 15.2459 11.3397 15.1675C12.0276 15.0891 12.3836 14.9444 12.5919 14.7364C12.8001 14.5284 12.9452 14.1723 13.024 13.4842C13.1028 12.7962 13.1073 11.819 13.1073 10.5087C13.1046 10.3187 13.2045 10.142 13.3686 10.0462C13.5327 9.95045 13.7356 9.95045 13.8997 10.0462C14.0638 10.142 14.1636 10.3187 14.1609 10.5087C14.1609 11.82 14.161 12.8123 14.0704 13.6036C13.9798 14.3949 13.7909 15.0278 13.3368 15.4814C12.8827 15.9349 12.2489 16.1238 11.458 16.2139C10.6671 16.304 9.67596 16.3034 8.36619 16.3034C7.05658 16.3034 6.06516 16.3053 5.27438 16.216C4.48361 16.1266 3.85103 15.9386 3.39662 15.4855C2.94221 15.0323 2.75156 14.3994 2.66096 13.6077C2.57035 12.816 2.57144 11.8222 2.57144 10.5087C2.57144 9.19545 2.57005 8.20197 2.6589 7.41067C2.74772 6.61932 2.93399 5.98679 3.38735 5.53291C3.84071 5.07904 4.47445 4.8907 5.26611 4.80136C6.05783 4.71201 7.05142 4.7139 8.36619 4.7139Z"
             />
           </svg>
         ) : (
+          // Internal link icon
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"
@@ -104,7 +107,7 @@ export default function ResourcesCard({
             />
           </svg>
         )}
-      </a>
-    </div>
+      </div>
+    </a>
   );
 }
