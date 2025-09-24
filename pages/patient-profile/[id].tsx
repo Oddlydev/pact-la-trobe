@@ -20,11 +20,11 @@ type Report = {
 
 export default function PatientProfilePage() {
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = router.query; // <- URL param (PT200013)
 
   const [patient, setPatient] = useState<any>(null);
 
-  // Dummy reports (replace with API later if you have reports table)
+  // Dummy reports (replace with API later)
   const reports: Report[] = [
     {
       id: 1,
@@ -68,7 +68,7 @@ export default function PatientProfilePage() {
     }
   }, [id]);
 
-  // Removed "Loading..." text — page just stays blank until patient loads
+  // Wait until patient is loaded
   if (!patient) return null;
 
   return (
@@ -85,8 +85,9 @@ export default function PatientProfilePage() {
                 Access personal information, history, and care status
               </p>
             </div>
+            {/* ✅ Button goes with patient.id (already PT200013) */}
             <Link
-              href="/assessment-form"
+              href={`/assessment-form/${patient.id}`}
               className="shrink-0"
               aria-label="Create new assessment"
             >
@@ -100,7 +101,7 @@ export default function PatientProfilePage() {
 
           {/* Patient Banner */}
           <PatientBanner
-            patientId={patient.id}
+            patientId={patient.id} // shows PT200013
             name={patient.name}
             age={patient.age || "N/A"}
             dob={patient.dob || "-"}
