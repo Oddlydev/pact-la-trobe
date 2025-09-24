@@ -26,7 +26,7 @@ export default function RadioButtonInline({
   const groupName = name ?? `rbi-${autoName}`;
   const [value, setValue] = useState<string>(defaultValue);
 
-  // Keep internal selection in sync if defaultValue changes after mount
+  // Sync defaultValue with internal state
   useEffect(() => {
     setValue(defaultValue);
   }, [defaultValue]);
@@ -35,9 +35,13 @@ export default function RadioButtonInline({
     <fieldset className={["max-w-2xl", className].join(" ")}>
       <div className="space-y-2 sm:flex sm:items-center sm:space-y-0 sm:space-x-2 gap-2">
         {options.map((opt) => (
-          <div key={opt.id} className="flex items-center">
+          <label
+            key={opt.id}
+            htmlFor={`rbi-${groupName}-${opt.id}`}
+            className="flex items-center cursor-pointer select-none"
+          >
             <input
-              id={`rbi-${opt.id}`}
+              id={`rbi-${groupName}-${opt.id}`}
               type="radio"
               name={groupName}
               value={opt.id}
@@ -55,13 +59,10 @@ export default function RadioButtonInline({
                          disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 
                          forced-colors:appearance-auto forced-colors:before:hidden"
             />
-            <label
-              htmlFor={`rbi-${opt.id}`}
-              className="ml-1 block text-base font-normal leading-6 tracking-normal text-gray-600"
-            >
+            <span className="ml-1 block text-base font-normal leading-6 tracking-normal text-gray-600">
               {opt.label}
-            </label>
-          </div>
+            </span>
+          </label>
         ))}
       </div>
     </fieldset>

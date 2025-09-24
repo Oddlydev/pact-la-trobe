@@ -6,6 +6,18 @@ import SummaryCards from "@/src/components/Cards/SummaryCards";
 import PatientBanner from "@/src/components/Banner/PatientBanner";
 import RadioButtonInline from "@/src/components/RadioButtons/RadioButtonInline";
 
+import {
+  s1Items,
+  s2Items,
+  s3Groups,
+  s4Items,
+  s5Items,
+  s6Items,
+  s6Options,
+  s7Items,
+  type Question,
+} from "@/src/data/assessmentQuestions";
+
 /* ------------------------
    Helpers
 -------------------------*/
@@ -59,20 +71,26 @@ function S2Question({
         ]}
         defaultValue={value ?? "no"}
         className="shrink-0"
+        onChange={(val) => onChange(val as Answer)}
       />
     </div>
   );
 }
 
 function DropdownQuestion({
+  id,
   label,
   options,
+  value,
+  onChange,
 }: {
+  id: string;
   label: string;
   options: string[];
+  value: string | undefined;
+  onChange: (v: string) => void;
 }) {
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<string | null>(null);
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -95,8 +113,8 @@ function DropdownQuestion({
           onClick={() => setOpen((v) => !v)}
           className="inline-flex w-full justify-between items-center rounded-md bg-white pl-4 pr-2.5 py-2.5 text-sm font-medium leading-5 text-gray-600 shadow-sm border border-gray-300"
         >
-          <span className={selected ? "text-gray-800" : "text-gray-400"}>
-            {selected ?? "Select Option"}
+          <span className={value ? "text-gray-800" : "text-gray-400"}>
+            {value ?? "Select Option"}
           </span>
           <svg
             viewBox="0 0 20 20"
@@ -119,7 +137,7 @@ function DropdownQuestion({
                   <button
                     type="button"
                     onClick={() => {
-                      setSelected(o);
+                      onChange(o);
                       setOpen(false);
                     }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100"
@@ -200,95 +218,46 @@ export default function AssessmentFormPage() {
   const [s2Answers, setS2Answers] = React.useState<Record<string, V>>({});
   const [s3Answers, setS3Answers] = React.useState<Record<string, V>>({});
   const [s4Answers, setS4Answers] = React.useState<Record<string, V>>({});
+  const [s5Answers, setS5Answers] = React.useState<Record<string, string>>({});
+  const [s6Answers, setS6Answers] = React.useState<Record<string, string>>({});
   const [s7Answers, setS7Answers] = React.useState<Record<string, V>>({});
 
-  const s1Items = [
-    {
-      id: "q1",
-      label:
-        "Would you be surprised if this patient were to die within the next 6 months?",
-    },
-    { id: "q2", label: "≥1 recent unplanned hospital admission" },
-    {
-      id: "q3",
-      label:
-        "Deteriorating performance status (bed/chair-bound most of the day)",
-    },
-    { id: "q4", label: "Increased dependence in ADLs" },
-    { id: "q5", label: "Cognitive or physical decline despite treatment" },
-    { id: "q6", label: "Karnofsky Performance Status (≤50)" },
-  ];
+  function handleSubmit() {
+    const payload = {
+      patientId: "PT700012",
+      answers: {
+        ...s1Answers,
+        ...s2Answers,
+        ...s3Answers,
+        ...s4Answers,
+        ...s5Answers,
+        ...s6Answers,
+        ...s7Answers,
+      },
+      notes: (document.getElementById("comment") as HTMLTextAreaElement)?.value,
+    };
 
-  const s2Items = [
-    { id: "s1", label: "Persistent pain" },
-    { id: "s2", label: "Weight loss >10% or BMI <18" },
-    { id: "s3", label: "Swallowing difficulties or reduced oral intake" },
-    { id: "s4", label: "Increasing fatigue or social withdrawal" },
-    { id: "s5", label: "Frequent infections (UTI, pneumonia, etc.)" },
-    { id: "s6", label: "Recurrent falls or pressure injury risk" },
-    { id: "s7", label: "Emotional/spiritual distress" },
-  ];
-
-  const s3Items = [
-    { id: "c1", label: "Cancer: Palliative-only treatment" },
-    { id: "c2", label: "Cancer: Functional decline" },
-    {
-      id: "d1",
-      label: "Dementia/Frailty: Non-verbal or no social interaction",
-    },
-    { id: "d2", label: "Dementia/Frailty: Double incontinence" },
-    { id: "d3", label: "Dementia/Frailty: Aspiration/febrile episodes" },
-    {
-      id: "d4",
-      label: "Dementia/Frailty: Agitation/distress needing high care support",
-    },
-    { id: "n1", label: "Neurological: Progressive deterioration" },
-    { id: "n2", label: "Neurological: Speech/swallowing decline" },
-    { id: "n3", label: "Neurological: Respiratory complications" },
-    { id: "h1", label: "Heart: NYHA Class IV / chest pain at rest" },
-    { id: "h2", label: "Heart: Frequent HF admissions" },
-    { id: "r1", label: "Respiratory: Breathlessness at rest" },
-    { id: "r2", label: "Respiratory: Home oxygen use" },
-    { id: "re1", label: "Renal: CKD stage 4–5" },
-    { id: "re2", label: "Renal: Dialysis discontinued" },
-    { id: "l1", label: "Liver: Decompensated cirrhosis" },
-  ];
-
-  const s3Groups = (() => {
-    const strip = (x: { id: string; label: string }) => ({
-      ...x,
-      label: x.label.includes(":") ? x.label.split(":")[1].trim() : x.label,
-    });
-    return [
-      { title: "Cancer", items: s3Items.filter((x) => x.id.startsWith("c")).map(strip) },
-      { title: "Dementia/Frailty", items: s3Items.filter((x) => x.id.startsWith("d")).map(strip) },
-      { title: "Neurological (e.g., MND, MS)", items: s3Items.filter((x) => x.id.startsWith("n")).map(strip) },
-      { title: "Heart/Vascular", items: s3Items.filter((x) => x.id.startsWith("h")).map(strip) },
-      { title: "Respiratory", items: s3Items.filter((x) => x.id.startsWith("r")).map(strip) },
-      { title: "Renal", items: s3Items.filter((x) => x.id.startsWith("re")).map(strip) },
-      { title: "Liver", items: s3Items.filter((x) => x.id.startsWith("l")).map(strip) },
-    ];
-  })();
-
-  const s4Items = [
-    { id: "p1", label: "Patient/family preference for comfort care" },
-    { id: "p2", label: "No ACP or unclear goals of care" },
-    { id: "p3", label: "Family conflict / no substitute decision-maker" },
-    { id: "p4", label: "Admitted for end-of-life care" },
-    { id: "p5", label: "Spiritual, cultural and personal beliefs provided" },
-    { id: "p6", label: "Adequate support from family" },
-  ];
-
-  const s7Items = [
-    { id: "d1", label: "Document findings in EHR" },
-    { id: "d2", label: "Update ACP/goals of care" },
-    { id: "d3", label: "Family informed and involved" },
-    { id: "d4", label: "Assign nurse/clinician for follow-up" },
-  ];
+    fetch("/api/assessments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          alert("Assessment saved!");
+        } else {
+          alert("Error: " + data.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Submit error", err);
+      });
+  }
 
   return (
     <Layout>
-      <main className="mx-auto space-y-6 mx-aut0 px-4 pb-4 pt-5 w-full rounded-xl border border-white bg-[rgba(0,0,0,0.00)] p-4">
+      <main className="mx-auto space-y-6 px-4 pb-4 pt-5 w-full rounded-xl border border-white bg-[rgba(0,0,0,0.00)]">
         {/* Header */}
         <header className="flex items-center justify-between mb-10">
           <div>
@@ -304,6 +273,7 @@ export default function AssessmentFormPage() {
               variant="dark"
               iconType="submit"
               label="Submit Form"
+              onClick={handleSubmit}
             />
             <PrimaryButton variant="light" iconType="cancel" label="Cancel" />
           </div>
@@ -331,15 +301,12 @@ export default function AssessmentFormPage() {
               title="Patient Identification & Functional Decline"
               borderColor="border-l-green-600"
             >
-              <ol className="">
+              <ol>
                 {s1Items.map((q, idx) => (
-                  <li
-                    key={q.id}
-                    className="flex items-start py-2 text-gray-600 font-medium leading-6"
-                  >
+                  <li key={q.id} className="py-2">
                     <S2Question
                       id={q.id}
-                      label={`${idx + 1}.\u00A0${q.label}`}
+                      label={`${idx + 1}. ${q.label}`}
                       value={s1Answers[q.id]}
                       onChange={(v) =>
                         setS1Answers((p) => ({ ...p, [q.id]: v }))
@@ -356,15 +323,12 @@ export default function AssessmentFormPage() {
               title="Symptom Burden & Unmet Needs"
               borderColor="border-l-amber-400"
             >
-              <ol className="">
+              <ol>
                 {s2Items.map((q, idx) => (
-                  <li
-                    key={q.id}
-                    className="flex items-start py-2 text-gray-600 font-medium leading-6"
-                  >
+                  <li key={q.id} className="py-2">
                     <S2Question
                       id={q.id}
-                      label={`${idx + 1}.\u00A0${q.label}`}
+                      label={`${idx + 1}. ${q.label}`}
                       value={s2Answers[q.id]}
                       onChange={(v) =>
                         setS2Answers((p) => ({ ...p, [q.id]: v }))
@@ -385,15 +349,12 @@ export default function AssessmentFormPage() {
                 {s3Groups.map((g) => (
                   <div key={g.title}>
                     <div className="text-gray-700 font-semibold">{g.title}</div>
-                    <ol className="">
+                    <ol>
                       {g.items.map((q, idx) => (
-                        <li
-                          key={q.id}
-                          className="flex items-start py-2 text-gray-600 font-medium leading-6"
-                        >
+                        <li key={q.id} className="py-2">
                           <S2Question
                             id={q.id}
-                            label={`${idx + 1}.\u00A0${q.label}`}
+                            label={`${idx + 1}. ${q.label}`}
                             value={s3Answers[q.id]}
                             onChange={(v) =>
                               setS3Answers((p) => ({ ...p, [q.id]: v }))
@@ -413,15 +374,12 @@ export default function AssessmentFormPage() {
               title="Psychosocial & Advance Care Planning"
               borderColor="border-l-orange-500"
             >
-              <ol className="">
+              <ol>
                 {s4Items.map((q, idx) => (
-                  <li
-                    key={q.id}
-                    className="flex items-start py-2 text-gray-600 font-medium leading-6"
-                  >
+                  <li key={q.id} className="py-2">
                     <S2Question
                       id={q.id}
-                      label={`${idx + 1}.\u00A0${q.label}`}
+                      label={`${idx + 1}. ${q.label}`}
                       value={s4Answers[q.id]}
                       onChange={(v) =>
                         setS4Answers((p) => ({ ...p, [q.id]: v }))
@@ -439,42 +397,24 @@ export default function AssessmentFormPage() {
               borderColor="border-l-gray-500"
             >
               <div className="q-list">
-                <DropdownQuestion
-                  label="Are there identified cultural, religious or spiritual needs influencing care delivery?"
-                  options={[
-                    "No concerns",
-                    "Mild concerns",
-                    "Significant distress or requests affecting care",
-                  ]}
-                />
-                <DropdownQuestion
-                  label="Is the person’s cultural background recorded and informing care?"
-                  options={["Yes", "No", "Unclear"]}
-                />
-                <DropdownQuestion
-                  label="Is an informal caregiver (e.g. family, friend) involved in day-to-day or emotional support?"
-                  options={["Yes", "No", "Sometimes"]}
-                />
-                <DropdownQuestion
-                  label="Has the carer expressed difficulty, fatigue, or emotional strain related to caregiving?"
-                  options={["No", "Some fatigue", "Significant strain"]}
-                />
-                <DropdownQuestion
-                  label="Is there a current ACP or documented goals of care?"
-                  options={["Yes", "No", "Unclear"]}
-                />
-                <DropdownQuestion
-                  label="Is current care consistent with documented or verbalised preferences?"
-                  options={["Yes", "No", "Unclear"]}
-                />
-                <DropdownQuestion
-                  label="Does the person have limited or no social contact?"
-                  options={["Yes", "No"]}
-                />
-                <DropdownQuestion
-                  label="Are there any social or financial barriers affecting care access?"
-                  options={["None", "Some barriers", "Significant barriers"]}
-                />
+                {s5Items.map((q) => (
+                  <DropdownQuestion
+                    key={q.id}
+                    id={q.id}
+                    label={q.label}
+                    options={[
+                      "Yes",
+                      "No",
+                      "Unclear",
+                      "Sometimes",
+                      "None",
+                      "Mild concerns",
+                      "Significant strain",
+                    ]}
+                    value={s5Answers[q.id]}
+                    onChange={(v) => setS5Answers((p) => ({ ...p, [q.id]: v }))}
+                  />
+                ))}
               </div>
             </SectionBlock>
 
@@ -484,28 +424,22 @@ export default function AssessmentFormPage() {
               title="Clinical Action & Referrals"
               borderColor="border-l-gray-500"
             >
-              <ol className="">
-                {[
-                  "Medication review",
-                  "Anticipatory prescribing",
-                  "Mobility/oral care/pain relief support",
-                  "Multidisciplinary case conference",
-                  "Referral to Palliative Care team",
-                  "Allied health referrals",
-                ].map((label, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-start gap-1 py-2 text-gray-600 font-medium leading-6"
-                  >
-                    <p className="flex-1 text-base text-gray-700">{`${idx + 1}.\u00A0${label}`}</p>
+              <ol>
+                {s6Items.map((q, idx) => (
+                  <li key={q.id} className="py-2 flex items-start gap-2">
+                    <p className="flex-1 text-base text-gray-700">
+                      {idx + 1}. {q.label}
+                    </p>
                     <RadioButtonInline
-                      name={`sec6-${idx}`}
-                      options={[
-                        { id: "immediate", label: "Immediate" },
-                        { id: "1week", label: "Within 1 week" },
-                        { id: "monitoring", label: "Ongoing Monitoring" },
-                      ]}
+                      name={q.id}
+                      options={s6Options}
                       defaultValue="monitoring"
+                      onChange={(val) =>
+                        setS6Answers((p) => ({
+                          ...p,
+                          [q.id]: val,
+                        }))
+                      }
                     />
                   </li>
                 ))}
@@ -518,15 +452,12 @@ export default function AssessmentFormPage() {
               title="Documentation & Communication"
               borderColor="border-l-gray-500"
             >
-              <ol className="">
+              <ol>
                 {s7Items.map((q, idx) => (
-                  <li
-                    key={q.id}
-                    className="flex items-start py-2 text-gray-600 font-medium leading-6"
-                  >
+                  <li key={q.id} className="py-2">
                     <S2Question
                       id={q.id}
-                      label={`${idx + 1}.\u00A0${q.label}`}
+                      label={`${idx + 1}. ${q.label}`}
                       value={s7Answers[q.id]}
                       onChange={(v) =>
                         setS7Answers((p) => ({ ...p, [q.id]: v }))
@@ -537,7 +468,7 @@ export default function AssessmentFormPage() {
               </ol>
             </SectionBlock>
 
-            {/* Section 8 - timeline continues, no card */}
+            {/* Section 8 */}
             <SectionBlock
               sectionNumber={8}
               title="Comments or Notes"
