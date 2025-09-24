@@ -28,6 +28,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
   itemsPerPage: number;
   totalItems: number;
+  label?: string; // NEW prop
 }
 
 export default function Pagination({
@@ -36,13 +37,14 @@ export default function Pagination({
   onPageChange,
   itemsPerPage,
   totalItems,
+  label = "items", // default fallback
 }: PaginationProps) {
   const start = (currentPage - 1) * itemsPerPage + 1;
   const end = Math.min(currentPage * itemsPerPage, totalItems);
 
   return (
     <div className="flex items-center justify-between border-t border-gray-200 pt-3 text-gray-600 text-sm leading-5">
-      <span>{`Showing ${start} to ${end} of ${totalItems} resources, patients`}</span>
+      <span>{`Showing ${start} to ${end} of ${totalItems} ${label}`}</span>
 
       <div className="inline-flex rounded-md shadow-sm">
         {/* Prev */}

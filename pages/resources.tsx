@@ -79,6 +79,7 @@ export default function ResourcesPage({ resources }: { resources: any[] }) {
                 onPageChange={setCurrentPage}
                 itemsPerPage={pageSize}
                 totalItems={totalItems}
+                label="resources"
               />
             </div>
           )}

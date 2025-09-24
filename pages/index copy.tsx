@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Sidebar from "@/src/components/Navigation/Sidebar";
 import StatisticsCard from "@/src/components/Cards/StatisticsCard";
 import Chip from "@/src/components/Chips/Chips";
@@ -9,40 +9,199 @@ import Topbar from "@/src/components/Navigation/Topbar";
 import PatientGrid from "@/src/components/Tables/PatientGrid";
 import PatientTable from "@/src/components/Tables/PatientTable";
 import SegmentedControls from "@/src/components/SegmentedControls/SegmentedControls";
+import { RiskLevel } from "@/src/components/Cards/PatientCard";
 
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<"card" | "table">("card");
-  const [patients, setPatients] = useState<any[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState("All Patients");
 
-  // 🔹 Fetch patients from API
-  useEffect(() => {
-    fetch("/api/patient-overview")
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.ok) setPatients(res.data);
-      });
-  }, []);
+  // 🔹 Track selected chip
+  const [selectedChip, setSelectedChip] = useState("All Patients");
 
-  // ==========================================================
-  //  Filtering
-  // ==========================================================
-  const filteredPatients =
-    selectedFilter === "All Patients"
-      ? patients
-      : patients.filter((p) => {
-          if (selectedFilter === "Critical") return p.riskLevel === "critical";
-          if (selectedFilter === "High Risk") return p.riskLevel === "high";
-          if (selectedFilter === "Moderate Risk")
-            return p.riskLevel === "moderate";
-          if (selectedFilter === "Low Risk") return p.riskLevel === "low";
-          return true;
-        });
+  // 🔹 Unique patient dataset
+  const patients = [
+    {
+      name: "Olivia Whitmore",
+      age: 75,
+      gender: "F",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 18,
+      riskLevel: "moderate" as RiskLevel,
+    },
+    {
+      name: "Annabelle Sophia Catherine Alexandra Whitmore-Sutherland",
+      age: 68,
+      gender: "M",
+      risks: [
+        "Has risk for recurrent falls",
+        "Caregiver is unable to continue care",
+      ],
+      score: 10,
+      riskLevel: "low" as RiskLevel,
+    },
+    {
+      name: "Charlotte Wentworth",
+      age: 91,
+      gender: "F",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 41,
+      riskLevel: "critical" as RiskLevel,
+    },
+    {
+      name: "Lakshitha Karunathilaka",
+      age: 81,
+      gender: "M",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 23,
+      riskLevel: "high" as RiskLevel,
+    },
+    {
+      name: "Sophia Johnson",
+      age: 59,
+      gender: "F",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 15,
+      riskLevel: "moderate" as RiskLevel,
+    },
+    {
+      name: "Ethan Rodriguez",
+      age: 72,
+      gender: "M",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 34,
+      riskLevel: "high" as RiskLevel,
+    },
+    {
+      name: "Amelia Chen",
+      age: 64,
+      gender: "F",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 22,
+      riskLevel: "moderate" as RiskLevel,
+    },
+    {
+      name: "James Thompson",
+      age: 88,
+      gender: "M",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 45,
+      riskLevel: "critical" as RiskLevel,
+    },
+    {
+      name: "Isabella Garcia",
+      age: 70,
+      gender: "F",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 28,
+      riskLevel: "moderate" as RiskLevel,
+    },
+    {
+      name: "Noah Patel",
+      age: 66,
+      gender: "M",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 19,
+      riskLevel: "low" as RiskLevel,
+    },
+    {
+      name: "Sophia Johnson",
+      age: 59,
+      gender: "F",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 15,
+      riskLevel: "high" as RiskLevel,
+    },
+    {
+      name: "Ethan Rodriguez",
+      age: 72,
+      gender: "M",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 34,
+      riskLevel: "critical" as RiskLevel,
+    },
+    {
+      name: "Amelia Chen",
+      age: 64,
+      gender: "F",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 22,
+      riskLevel: "moderate" as RiskLevel,
+    },
+    {
+      name: "James Thompson",
+      age: 88,
+      gender: "M",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 45,
+      riskLevel: "critical" as RiskLevel,
+    },
+    {
+      name: "Isabella Garcia",
+      age: 70,
+      gender: "F",
+      risks: [
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 28,
+      riskLevel: "moderate" as RiskLevel,
+    },
+    {
+      name: "Noah Patel",
+      age: 66,
+      gender: "M",
+      risks: [
+        "High fall risk",
+        "Caregiver is unable to continue care",
+        "Has risk for recurrent falls",
+      ],
+      score: 19,
+      riskLevel: "low" as RiskLevel,
+    },
+  ];
 
   const patientsPerPage = 12;
-  const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
-  const displayedPatients = filteredPatients.slice(
+  const totalPages = Math.ceil(patients.length / patientsPerPage);
+  const displayedPatients = patients.slice(
     (currentPage - 1) * patientsPerPage,
     currentPage * patientsPerPage
   );
@@ -74,16 +233,16 @@ export default function HomePage() {
         color: "bg-green-600 text-black",
       },
     ];
-
+    const [selectedIndex, setSelectedIndex] = useState(0);
     return (
       <div className="inline-flex items-center gap-2 rounded-lg bg-gray-200 p-1.5">
-        {items.map((item) => (
+        {items.map((item, idx) => (
           <Chip
             key={item.label}
             label={item.label}
             count={item.count}
-            selected={selectedFilter === item.label}
-            onSelectedChange={() => setSelectedFilter(item.label)}
+            selected={idx === selectedIndex}
+            onSelectedChange={() => setSelectedIndex(idx)}
             badgeClassName={item.color}
           />
         ))}
@@ -177,26 +336,25 @@ export default function HomePage() {
 
                 {viewMode === "table" && (
                   <PatientTable
-                    patients={displayedPatients.map((p) => ({
-                      id: p.id,
+                    patients={patients.map((p, i) => ({
+                      id: `PT1344${i + 1}`,
                       name: p.name,
                       age: p.age,
-                      gender: p.gender as "M" | "F" | "NA",
+                      gender: p.gender as "M" | "F",
                       status: p.riskLevel,
                       lastUpdated: "03-MAY-2025 16:33",
                     }))}
                   />
                 )}
 
-                {/* Pagination */}
+                {/* Pagination always visible */}
                 <div className="mt-4">
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    totalItems={filteredPatients.length}
+                    totalItems={patients.length}
                     itemsPerPage={patientsPerPage}
                     onPageChange={setCurrentPage}
-                    label="patients"
                   />
                 </div>
               </section>
