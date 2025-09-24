@@ -1,3 +1,4 @@
+// lib/mysql.ts
 import mysql from "mysql2/promise";
 
 let pool: mysql.Pool | null = null;
@@ -18,8 +19,7 @@ export function getPool() {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    // Ensure dates come back as strings (YYYY-MM-DD)
-    dateStrings: true,
+    dateStrings: true, // return dates as strings
   });
 
   return pool;

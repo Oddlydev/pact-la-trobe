@@ -1,3 +1,4 @@
+// pages/api/patient/[id].ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getPool } from "@/lib/mysql";
 
@@ -30,11 +31,12 @@ export default async function handler(
       return res.status(400).json({ ok: false, error: "Missing id" });
     }
 
+    // LEFT JOIN so patient shows even if no overview exists
     const [rows] = await pool.query<any[]>(
-      `SELECT p.id, p.patientId, p.firstName, p.lastName, p.dob, p.gender,
+      `SELECT p.patientId, p.firstName, p.lastName, p.dob, p.gender,
               o.pcfScore, o.riskLevel, o.caregiver_unable, o.recurrent_falls
        FROM patients p
-       JOIN patient_overview o ON p.patientId = o.patientId
+       LEFT JOIN patient_overview o ON p.patientId = o.patientId
        WHERE p.patientId = ?`,
       [id]
     );
@@ -47,13 +49,12 @@ export default async function handler(
     return res.status(200).json({
       ok: true,
       data: {
-        id: r.id, // internal DB ID
-        patientId: r.patientId, // external public ID like PT200013 ✅
+        id: r.patientId,
         name: `${r.firstName || ""} ${r.lastName || ""}`.trim(),
         gender: mapGender(r.gender),
         age: calculateAge(r.dob),
-        score: r.pcfScore,
-        riskLevel: (r.riskLevel || "").toLowerCase(),
+        score: r.pcfScore || 0,
+        riskLevel: (r.riskLevel || "low").toLowerCase(),
         risks: [
           r.caregiver_unable ? "Caregiver is unable to continue care" : null,
           r.recurrent_falls ? "Has risk for recurrent falls" : null,
@@ -62,7 +63,7 @@ export default async function handler(
       },
     });
   } catch (err: any) {
-    console.error("/api/patient-profile/[id] error", err);
+    console.error("/api/patient/[id] error", err);
     res.status(500).json({ ok: false, error: "Internal Server Error" });
   }
 }

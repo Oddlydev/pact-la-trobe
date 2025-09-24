@@ -1,9 +1,10 @@
+import Link from "next/link";
 import React from "react";
-import BannerRiskIndicator from "../Indicators/BannerRiskIndicator";
 
 export type RiskLevel = "low" | "moderate" | "high" | "critical";
 
 export type PatientCardProps = {
+  id: string; // 🔹 added patient ID
   name: string;
   age: number;
   gender: string;
@@ -157,6 +158,7 @@ const CaregiverIcon = () => (
 );
 
 export default function PatientCard({
+  id,
   name,
   age,
   gender,
@@ -168,75 +170,76 @@ export default function PatientCard({
   const styles = riskStyles[riskLevel];
 
   return (
-    <div
-      className={[
-        "w-full rounded-lg p-4 text-white transition-all duration-300",
-        "border-l-[3px] bg-[rgba(0,0,0,0.00)] font-dmsans",
-        styles.border,
-        styles.shadow,
-        "hover:shadow-[0_0_6px_-1px_rgba(0,0,0,0.25)]",
-        className,
-      ].join(" ")}
-    >
-      {/* Badge + Score */}
-      <div className="flex items-start justify-between">
-        {/* Indicator + Name */}
-        <div className="flex flex-col gap-5">
-          <span
-            className={[
-              "px-2 py-1.5 text-xs font-semibold rounded-md uppercase w-fit",
-              styles.badge,
-            ].join(" ")}
-          >
-            {styles.label}
-          </span>
-          <h3 className="text-base font-semibold text-black leading-6 font-dmsans">
-            {name}
-          </h3>
-        </div>
-        {/* Score */}
-        <div className="flex flex-col items-end gap-1 shrink-0">
-          <div className="flex flex-col items-end leading-none">
+    <Link href={`/patient-profile/${id}`}>
+      <div
+        className={[
+          "w-full rounded-lg p-4 text-white transition-all duration-300",
+          "border-l-[3px] bg-[rgba(0,0,0,0.00)] font-dmsans",
+          styles.border,
+          styles.shadow,
+          "hover:shadow-[0_0_6px_-1px_rgba(0,0,0,0.25)] cursor-pointer",
+          className,
+        ].join(" ")}
+      >
+        {/* Badge + Score */}
+        <div className="flex items-start justify-between">
+          <div className="flex flex-col gap-5">
             <span
-              className={["text-2xl font-bold leading-none", styles.score].join(
-                " "
-              )}
+              className={[
+                "px-2 py-1.5 text-xs font-semibold rounded-md uppercase w-fit",
+                styles.badge,
+              ].join(" ")}
             >
-              {score}
+              {styles.label}
             </span>
-            <span className="text-xs text-gray-400 leading-none">/53</span>
+            <h3 className="text-base font-semibold text-black leading-6 font-dmsans">
+              {name}
+            </h3>
           </div>
-          <span
-            className={[
-              "text-[8px] font-normal whitespace-nowrap",
-              styles.scoreLabel,
-            ].join(" ")}
-          >
-            PCAT Score
-          </span>
+          <div className="flex flex-col items-end gap-1 shrink-0">
+            <div className="flex flex-col items-end leading-none">
+              <span
+                className={[
+                  "text-2xl font-bold leading-none",
+                  styles.score,
+                ].join(" ")}
+              >
+                {score}
+              </span>
+              <span className="text-xs text-gray-400 leading-none">/53</span>
+            </div>
+            <span
+              className={[
+                "text-[8px] font-normal whitespace-nowrap",
+                styles.scoreLabel,
+              ].join(" ")}
+            >
+              PCAT Score
+            </span>
+          </div>
         </div>
+
+        {/* Age / Gender */}
+        <p className="text-sm text-gray-500 font-normal font-dmsans">
+          Age: {age} • {gender}
+        </p>
+
+        {/* Risk list */}
+        <ul className="mt-3 space-y-1 text-sm font-normal text-gray-500">
+          {risks.map((r, i) => (
+            <li key={i} className="flex items-center gap-2">
+              {r === "Caregiver is unable to continue care" ? (
+                <CaregiverIcon />
+              ) : r === "Has risk for recurrent falls" ? (
+                <RiskIcon />
+              ) : (
+                <HeartIcon />
+              )}
+              <span>{r}</span>
+            </li>
+          ))}
+        </ul>
       </div>
-
-      {/* Age / Gender */}
-      <p className="text-sm text-gray-500 font-normal font-dmsans">
-        Age: {age} • {gender}
-      </p>
-
-      {/* Risk list */}
-      <ul className="mt-3 space-y-1 text-sm font-normal text-gray-500">
-        {risks.map((r, i) => (
-          <li key={i} className="flex items-center gap-2">
-            {r === "Caregiver is unable to continue care" ? (
-              <CaregiverIcon />
-            ) : r === "Has risk for recurrent falls" ? (
-              <RiskIcon />
-            ) : (
-              <HeartIcon /> // fallback
-            )}
-            <span>{r}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    </Link>
   );
 }
