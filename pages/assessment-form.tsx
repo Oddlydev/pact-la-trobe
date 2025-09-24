@@ -157,37 +157,72 @@ function DropdownQuestion({
 /* ------------------------
    SectionBlock reusable
 -------------------------*/
+type SectionStatus = "empty" | "inProgress" | "complete";
+
 function SectionBlock({
   sectionNumber,
   title,
   children,
   borderColor,
   noCard = false,
+  status = "empty",
 }: {
   sectionNumber: number;
   title: string;
   children: React.ReactNode;
   borderColor: string;
   noCard?: boolean;
+  status?: SectionStatus;
 }) {
+  function renderIcon() {
+    if (status === "empty") {
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="30"
+          height="30"
+          viewBox="0 0 30 30"
+          fill="none"
+        >
+          <circle cx="15" cy="15" r="14" stroke="#4B5563" strokeWidth="2" />
+        </svg>
+      );
+    }
+    if (status === "inProgress") {
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="30"
+          height="30"
+          viewBox="0 0 30 30"
+          fill="none"
+        >
+          <circle cx="15" cy="15" r="14" stroke="#4B5563" stroke-width="2" />
+          <circle cx="15" cy="15" r="9.5" fill="#4B5563" stroke="#4B5563" />
+        </svg>
+      );
+    }
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        fill="none"
+      >
+        <circle cx="15" cy="15" r="14" stroke="#4B5563" strokeWidth="2" />
+        <path
+          d="M23 10.913L21.0129 9L12.5226 17.1708L8.9871 13.7702L7 15.6832L12.5226 21L23 10.913Z"
+          fill="#4B5563"
+        />
+      </svg>
+    );
+  }
+
   return (
     <div className="relative flex gap-4">
       <div className="relative flex flex-col items-center">
-        <div className="z-10">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
-            viewBox="0 0 30 30"
-            fill="none"
-          >
-            <circle cx="15" cy="15" r="14" stroke="#4B5563" strokeWidth="2" />
-            <path
-              d="M23 10.913L21.0129 9L12.5226 17.1708L8.9871 13.7702L7 15.6832L12.5226 21L23 10.913Z"
-              fill="#4B5563"
-            />
-          </svg>
-        </div>
+        <div className="z-10">{renderIcon()}</div>
         <div className="absolute top-8 bottom-0 w-[2px] bg-gray-600"></div>
       </div>
 
@@ -255,6 +290,16 @@ export default function AssessmentFormPage() {
       });
   }
 
+  function getSectionStatus<T extends string>(
+    answers: Record<string, T | undefined>,
+    totalQuestions: number
+  ): SectionStatus {
+    const answeredCount = Object.values(answers).filter(Boolean).length;
+    if (answeredCount === 0) return "empty";
+    if (answeredCount < totalQuestions) return "inProgress";
+    return "complete";
+  }
+
   return (
     <Layout>
       <main className="mx-auto space-y-6 px-4 pb-4 pt-5 w-full rounded-xl border border-white bg-[rgba(0,0,0,0.00)]">
@@ -300,6 +345,7 @@ export default function AssessmentFormPage() {
               sectionNumber={1}
               title="Patient Identification & Functional Decline"
               borderColor="border-l-green-600"
+              status={getSectionStatus(s1Answers, s1Items.length)}
             >
               <ol>
                 {s1Items.map((q, idx) => (
@@ -322,6 +368,7 @@ export default function AssessmentFormPage() {
               sectionNumber={2}
               title="Symptom Burden & Unmet Needs"
               borderColor="border-l-amber-400"
+              status={getSectionStatus(s2Answers, s2Items.length)}
             >
               <ol>
                 {s2Items.map((q, idx) => (
@@ -344,6 +391,7 @@ export default function AssessmentFormPage() {
               sectionNumber={3}
               title="Condition-Specific Indicators"
               borderColor="border-l-red-600"
+              status={getSectionStatus(s3Answers, s3Groups.length)}
             >
               <div className="space-y-3">
                 {s3Groups.map((g) => (
@@ -373,6 +421,7 @@ export default function AssessmentFormPage() {
               sectionNumber={4}
               title="Psychosocial & Advance Care Planning"
               borderColor="border-l-orange-500"
+              status={getSectionStatus(s4Answers, s4Items.length)}
             >
               <ol>
                 {s4Items.map((q, idx) => (
@@ -395,6 +444,7 @@ export default function AssessmentFormPage() {
               sectionNumber={5}
               title="Holistic, Social and Cultural Needs"
               borderColor="border-l-gray-500"
+              status={getSectionStatus(s5Answers, s5Items.length)}
             >
               <div className="q-list">
                 {s5Items.map((q) => (
@@ -423,6 +473,7 @@ export default function AssessmentFormPage() {
               sectionNumber={6}
               title="Clinical Action & Referrals"
               borderColor="border-l-gray-500"
+              status={getSectionStatus(s6Answers, s6Items.length)}
             >
               <ol>
                 {s6Items.map((q, idx) => (
@@ -451,6 +502,7 @@ export default function AssessmentFormPage() {
               sectionNumber={7}
               title="Documentation & Communication"
               borderColor="border-l-gray-500"
+              status={getSectionStatus(s7Answers, s7Items.length)}
             >
               <ol>
                 {s7Items.map((q, idx) => (
