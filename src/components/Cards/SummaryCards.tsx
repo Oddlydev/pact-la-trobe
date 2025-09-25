@@ -136,7 +136,7 @@ export default function SummaryCards() {
           <div className="flex justify-between gap-1">
             {/* Left: Step + Title */}
             <div className="flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 aspect-square rounded-full bg-black text-white text-[11px]">
+              <span className="flex items-center justify-center w-5 h-5 aspect-square rounded-full bg-black text-white text-xs">
                 {c.step}
               </span>
               <h3 className="text-sm leading-5 font-semibold text-black font-dmsans">

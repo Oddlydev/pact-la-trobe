@@ -73,7 +73,7 @@ export default function VerifyPhoneModal({
                 value={code}
                 onChange={handleChange}
                 maxLength={6}
-                className="text-sm text-gray-700 font-medium leading-5 text-center placeholder:text-center!"
+                className="text-sm text-gray-700 font-medium leading-5 text-center placeholder:text-center"
               />
               <p className="mt-2 text-center text-xs text-gray-500 leading-4">
                 Resend code in 60s

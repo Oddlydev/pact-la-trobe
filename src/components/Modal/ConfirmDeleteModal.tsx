@@ -62,7 +62,7 @@ export default function ConfirmDeleteModal({
                 </label>
                 <input
                   type="text"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none"
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                 />

@@ -189,11 +189,11 @@ export default function Sidebar() {
 
             {/* Date + Time row */}
             <div className="flex justify-between items-start self-stretch mt-1">
-              <div className="text-white text-[14px] leading-5 font-normal font-dmsans">
+              <div className="text-white text-sm leading-5 font-normal font-dmsans">
                 2025 DEC 23
               </div>
               <div
-                className="text-white text-[14px] leading-5 font-normal font-dmsans"
+                className="text-white text-sm leading-5 font-normal font-dmsans"
                 style={{ fontFeatureSettings: "'dlig' on" }}
               >
                 14:57
