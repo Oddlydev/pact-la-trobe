@@ -11,7 +11,7 @@ type FilterDropdownProps = {
   onChange: (key: string, checked: boolean) => void;
   onClear: () => void;
   onClose: () => void;
-  anchorRef: React.RefObject<HTMLElement>; // ref to the button
+  anchorRef: React.RefObject<Element | null>;
 };
 
 const POPUP_WIDTH = 224; // Tailwind w-56
