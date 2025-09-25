@@ -43,8 +43,8 @@ export default function Pagination({
   const end = Math.min(currentPage * itemsPerPage, totalItems);
 
   return (
-    <div className="flex items-center justify-between border-t border-gray-200 pt-3 text-gray-600 text-sm leading-5">
-      <span>{`Showing ${start} to ${end} of ${totalItems} ${label}`}</span>
+    <div className="flex items-center justify-between border-t border-gray-200 pt-3 ">
+      <span className="text-gray-600 text-sm leading-5 font-normal">{`Showing ${start} to ${end} of ${totalItems} ${label}`}</span>
 
       <div className="inline-flex rounded-md shadow-sm">
         {/* Prev */}

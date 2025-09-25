@@ -19,6 +19,7 @@ export default function StatisticsCard({
         "flex flex-col items-start",
         "rounded-lg border-3 border-gray-300 bg-[rgba(0,0,0,0.00)]",
         "shadow-[inset_0_0_50px_0_rgba(171,190,194,0.25)]",
+        "bg-[rgba(0,0,0,0.00)]",
         "p-3.5",
         "transition-all duration-300",
         "hover:shadow-sm hover:shadow-black/10 hover:border-gray-300",

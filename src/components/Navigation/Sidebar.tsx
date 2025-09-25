@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
-  const [active, setActive] = useState("Home");
+  const router = useRouter();
 
   const menuItems = [
     {
       label: "Home",
+      path: "/",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -34,6 +37,7 @@ export default function Sidebar() {
     },
     {
       label: "Patients Management",
+      path: "/patient-management",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -75,6 +79,7 @@ export default function Sidebar() {
     },
     {
       label: "Resources",
+      path: "/resources",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -113,49 +118,41 @@ export default function Sidebar() {
     <aside
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
-      className={`flex flex-col bg-black text-white h-screen transition-all duration-200 ease-in-out pt-6 px-2.5 h-full
-        ${expanded ? "w-60" : "w-16"} `}
+      className={`flex flex-col bg-black text-white h-screen transition-all duration-200 ease-in-out pt-6 px-2.5 ${
+        expanded ? "w-60" : "w-16"
+      }`}
     >
-      {/* Top section */}
+      {/* Logo / Header */}
       <div className="flex items-center justify-center">
         {!expanded ? (
-          <img
-            src="/assets/images/Sidebar-logo.svg"
-            alt="Logo"
-            className="transition-all duration-200"
-          />
+          <img src="/assets/images/Sidebar-logo.svg" alt="Logo" />
         ) : (
           <div className="flex flex-col text-left gap-1.5">
-            <span className="text-sm font-semibold font-inter text-white">
-              La Trobe
-            </span>
-            <span className="text-sm font-semibold font-inter text-[#E02D2D]">
+            <span className="text-sm font-semibold">La Trobe</span>
+            <span className="text-sm font-semibold text-[#E02D2D]">
               Age Care Center
             </span>
           </div>
         )}
       </div>
 
-      {/* Menu */}
+      {/* Menu Items */}
       <nav className="flex flex-col flex-1 gap-1.5 mt-10">
         {menuItems.map((item) => (
-          <button
-            key={item.label}
-            onClick={() => setActive(item.label)}
-            className={`flex items-center gap-3 rounded-md px-3 py-2.5 transition-all duration-200 w-full
-              ${expanded ? "justify-start text-left" : "justify-center"}
-              ${
-                active === item.label
+          <Link key={item.label} href={item.path}>
+            <div
+              className={`flex items-center gap-3 rounded-md px-3 py-2.5 cursor-pointer transition-all ${
+                expanded ? "justify-start" : "justify-center"
+              } ${
+                router.pathname === item.path
                   ? "bg-gray-800"
                   : "bg-gray-900 hover:bg-gray-900 hover:ring-2 hover:ring-blue-950"
-              }
-            `}
-          >
-            <span className="shrink-0">{item.icon}</span>
-            {expanded && (
-              <span className="text-sm whitespace-nowrap">{item.label}</span>
-            )}
-          </button>
+              }`}
+            >
+              <span className="shrink-0">{item.icon}</span>
+              {expanded && <span className="text-sm">{item.label}</span>}
+            </div>
+          </Link>
         ))}
       </nav>
 
@@ -210,39 +207,28 @@ export default function Sidebar() {
           className={`${expanded ? "w-full" : "flex justify-center w-full"}`}
         >
           <button
-            onClick={() => setActive("Logout")}
-            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-md transition-all duration-200 text-base font-medium font-dmsans tracking-normal leading-6
-              ${expanded ? "justify-start w-full" : "justify-center"}
-              ${
-                active === "Logout"
-                  ? "bg-gray-900"
-                  : "bg-gray-900 hover:bg-gray-900 hover:ring-2 hover:ring-blue-950"
-              }`}
+            onClick={() => alert("Logging out...")} // <-- replace with real logout
+            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-md transition-all duration-200 ${
+              expanded ? "justify-start w-full" : "justify-center"
+            } bg-gray-900 hover:bg-gray-900 hover:ring-2 hover:ring-blue-950`}
           >
-            <div className={`${expanded ? "" : "rounded-full"}`}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M18.5 4.40041C16.752 2.9039 14.4815 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C14.4815 22 16.752 21.0961 18.5 19.5996"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M18 8C18 8 22 10.946 22 12C22 13.0541 18 16 18 16M21.5 12H9"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+            >
+              <path
+                d="M18.5 4.4C16.752 2.904 14.482 2 12 2 6.477 2 2 6.477 2 12s4.477 10 10 10c2.482 0 4.752-.904 6.5-2.4"
+                stroke="white"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M18 8s4 2.946 4 4-4 4-4 4M21.5 12H9"
+                stroke="white"
+                strokeWidth="1.5"
+              />
+            </svg>
             {expanded && <span className="text-sm">Logout</span>}
           </button>
         </div>

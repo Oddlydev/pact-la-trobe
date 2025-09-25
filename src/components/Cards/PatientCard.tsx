@@ -173,7 +173,7 @@ export default function PatientCard({
     <Link href={`/patient-profile/${id}`}>
       <div
         className={[
-          "w-full rounded-lg p-4 text-white transition-all duration-300",
+          "w-full h-full rounded-lg p-4 text-white transition-all duration-300",
           "border-l-[3px] bg-[rgba(0,0,0,0.00)] font-dmsans",
           styles.border,
           styles.shadow,
@@ -220,14 +220,19 @@ export default function PatientCard({
         </div>
 
         {/* Age / Gender */}
-        <p className="text-sm text-gray-500 font-normal font-dmsans">
-          Age: {age} • {gender}
+        <p className="text-sm text-gray-500 font-medium font-dmsans flex">
+          <div className="text-sm text-gray-500 font-medium font-dmsans">
+            Age: {age}
+          </div>{" "}
+          <div className="ml-2 text-sm text-gray-500 font-medium font-dmsans">
+            • {gender}
+          </div>
         </p>
 
         {/* Risk list */}
         <ul className="mt-3 space-y-1 text-sm font-normal text-gray-500">
           {risks.map((r, i) => (
-            <li key={i} className="flex items-center gap-2">
+            <li key={i} className="flex items-center gap-1">
               {r === "Caregiver is unable to continue care" ? (
                 <CaregiverIcon />
               ) : r === "Has risk for recurrent falls" ? (
@@ -235,7 +240,9 @@ export default function PatientCard({
               ) : (
                 <HeartIcon />
               )}
-              <span>{r}</span>
+              <span className="text-sm font-normal leading-5 text-gray-500">
+                {r}
+              </span>
             </li>
           ))}
         </ul>

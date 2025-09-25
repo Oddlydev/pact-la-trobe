@@ -126,7 +126,7 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
             </p>
           </div>
 
-          <div className="w-full max-w-md flex items-center gap-2 relative">
+          <div className="w-full max-w-xl flex items-center gap-2 relative">
             <SearchBar
               placeholder="Search Patient by name or ID"
               value={search}
@@ -166,6 +166,7 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
             totalItems={filtered.length}
             itemsPerPage={itemsPerPage}
             onPageChange={setCurrentPage}
+            label="patients"
           />
         </div>
       </main>

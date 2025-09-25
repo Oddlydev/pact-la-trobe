@@ -124,7 +124,7 @@ export default function PatientTable({ patients }: Props) {
       <table className="min-w-full table-fixed text-left text-sm">
         <thead className="border-b border-slate-200">
           <tr>
-            <th className="w-32 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-32 pr-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
               Patient ID
             </th>
             <th className="w-64 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
@@ -156,7 +156,7 @@ export default function PatientTable({ patients }: Props) {
         <tbody className="divide-y divide-gray-200">
           {patients.map((p, idx) => (
             <tr key={p.id || idx}>
-              <td className="px-4 py-3.5 font-dmsans text-sm text-gray-600 flex items-start">
+              <td className="pr-4 py-3.5 font-dmsans text-sm text-gray-600 flex items-start">
                 {p.id}
               </td>
               <td className="px-4 py-3.5 font-dmsans text-sm text-gray-600">
