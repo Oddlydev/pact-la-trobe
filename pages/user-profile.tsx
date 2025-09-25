@@ -70,7 +70,7 @@ export default function ProfilePage() {
 
       <Layout>
         <div>
-          <div className="border border-white rounded-xl bg-[rgba(0,0,0,0.00)] p-6 mb-6">
+          <div className="border border-white rounded-xl bg-[rgba(0,0,0,0.00)] py-5 px-4 mb-6">
             <h1 className="mb-1 text-3xl font-black leading-9 tracking-tighter text-gray-800">
               Account Information
             </h1>
@@ -90,7 +90,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Phone Number Row */}
-              <div className="mb-4 flex items-end gap-3">
+              <div className="mb-4 flex items-end gap-5">
                 <div className="flex-1">
                   <label
                     htmlFor="phone-number"
@@ -156,26 +156,25 @@ export default function ProfilePage() {
                           <path
                             d="M3.33325 9.33301L5.66659 11.6663L12.6666 4.33301"
                             stroke="white"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
                           />
-                        </svg>{" "}
+                        </svg>
                         Save
                       </div>
                     </button>
                     <button
                       onClick={() => setEditingField(null)}
-                      className="rounded-full border border-black p-2.5"
+                      className="flex items-center justify-center rounded-full border border-black h-9 w-10"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
                         viewBox="0 0 16 16"
+                        className="h-4 w-4"
                         fill="none"
                       >
                         <path
-                          d="M12 4L4.00054 11.9995M11.9995 12L4 4.00057"
+                          d="M12 4L4 12M12 12L4 4"
                           stroke="black"
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -221,7 +220,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Security Notice */}
-          <div className="rounded-xl border border-white background: rgba(0, 0, 0, 0.00) p-4 ">
+          <div className="rounded-xl border border-white background: rgba(0, 0, 0, 0.00) py-5 px-4 ">
             <div className="flex items-start gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -239,10 +238,10 @@ export default function ProfilePage() {
                 />
               </svg>{" "}
               <div className="flex flex-col">
-                <span className="text-gray-700 text-xs font-semibold leading-4">
+                <span className="text-gray-700 text-xs font-semibold leading-4 font-dmsans mb-1">
                   Security Notice:
                 </span>
-                <span className="text-gray-500 text-xs leading-4 font-normal">
+                <span className="text-gray-500 text-xs leading-4 font-normal font-dmsans">
                   Changes to your phone number require SMS verification.
                   Password changes will log you out of all other devices for
                   security.

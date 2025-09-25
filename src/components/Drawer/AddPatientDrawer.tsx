@@ -34,11 +34,9 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
         body: JSON.stringify(payload),
       });
       const data = await resp.json();
-      if (!resp.ok || !data?.ok) throw new Error(data?.error || "Failed to save");
-      // Notify any listeners to refresh
-      try {
-        window.dispatchEvent(new Event("patients:reload"));
-      } catch {}
+      if (!resp.ok || !data?.ok)
+        throw new Error(data?.error || "Failed to save");
+      window.dispatchEvent(new Event("patients:reload"));
       onClose();
       form.reset();
     } catch (err) {
@@ -57,12 +55,24 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
       />
 
       {/* Drawer */}
-      <div className="absolute right-0 top-0 h-full w-full max-w-md transform transition-transform duration-500 ease-in-out bg-white shadow-xl">
-        <form className="flex h-full flex-col divide-y divide-gray-300" onSubmit={handleSubmit}>
+      <div
+        className="
+          absolute right-0 top-2.5 bottom-2.5 
+          w-full max-w-md 
+          transform transition-transform duration-500 ease-in-out 
+          bg-white shadow-xl 
+          rounded-lg
+          mr-2.5
+        "
+      >
+        <form
+          className="flex h-full flex-col divide-y divide-gray-300 rounded-lg overflow-hidden"
+          onSubmit={handleSubmit}
+        >
           {/* Header */}
-          <div className="bg-gray-900 p-6 flex items-start justify-between">
+          <div className="bg-gray-900 p-6 flex items-start justify-between rounded-t-lg">
             <div>
-              <h2 className="text-base font-semibold text-white">
+              <h2 className="text-base font-semibold text-white leading-7 mb-1">
                 Add New Patient
               </h2>
               <p className="text-gray-300 text-sm font-normal leading-5">
@@ -72,7 +82,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="text-indigo-200 hover:text-white"
+              className="text-gray-200 hover:text-white"
             >
               ✕
             </button>
@@ -135,7 +145,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 px-6 py-4">
+          <div className="flex justify-end gap-3 px-6 py-4 rounded-b-lg bg-gray-50">
             <FormButton variant="light" label="Cancel" onClick={onClose} />
             <FormButton variant="dark" label="Save" type="submit" />
           </div>

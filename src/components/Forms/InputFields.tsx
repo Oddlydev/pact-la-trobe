@@ -164,7 +164,7 @@ export default function InputField({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-gray-700 font-dmsans"
+          className="block text-sm font-medium text-gray-700 font-dmsans text-left"
         >
           {label}
         </label>

@@ -14,8 +14,7 @@ type Props = {
   className?: string;
   onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
 };
-
-// Person icon (fallback)
+// Person icon
 const PersonIcon = ({ className = "h-5 w-5" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -23,27 +22,28 @@ const PersonIcon = ({ className = "h-5 w-5" }) => (
     height="20"
     viewBox="0 0 20 20"
     fill="none"
+    className={className}
   >
     <path
       d="M12.5 6.66667C12.5 4.36548 10.6345 2.5 8.33329 2.5C6.03211 2.5 4.16663 4.36548 4.16663 6.66667C4.16663 8.96783 6.03211 10.8333 8.33329 10.8333C10.6345 10.8333 12.5 8.96783 12.5 6.66667Z"
-      stroke="white"
-      stroke-width="1.25"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M14.5833 17.5V11.6666M11.6666 14.5833H17.5"
-      stroke="white"
-      stroke-width="1.25"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M2.5 16.6667C2.5 13.445 5.11168 10.8334 8.33333 10.8334C9.57267 10.8334 10.7218 11.2199 11.6667 11.879"
-      stroke="white"
-      stroke-width="1.25"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -209,18 +209,13 @@ export default function ActionButton({
 
   const base =
     type === "icon"
-      ? [
-          "inline-flex items-center justify-center rounded-full h-10 w-10 border transition-all duration-150 select-none",
-        ]
-      : [
-          "inline-flex items-center gap-1 text-sm font-medium rounded-full leading-none p-2.5 border transition-all duration-150 select-none",
-        ];
+      ? "inline-flex items-center justify-center rounded-full h-10 w-10 border transition-all duration-150 select-none"
+      : "inline-flex items-center gap-1 text-sm font-medium rounded-full leading-none p-2.5 border transition-all duration-150 select-none";
 
   let look = "";
   let textColor = "";
 
   if (variant === "dark") {
-    // Default: bg-black, icon white
     textColor = "text-white";
     if (forced) {
       if (isHover) {
@@ -234,17 +229,12 @@ export default function ActionButton({
         look = "border border-gray-300 bg-black text-white";
       }
     } else {
-      look = [
-        "border border-gray-300 bg-black text-white", // default
-        "hover:border-black hover:bg-white hover:text-black", // hover
-        "focus:border-2 focus:border-gray-300 focus:bg-black focus:text-white", // focus
-        "active:border active:border-gray-300 active:bg-black active:text-white", // active
-      ].join(" ");
+      look =
+        "border border-gray-300 bg-black text-white hover:border-black hover:bg-white hover:text-black focus:border-2 focus:border-gray-300 active:border active:border-gray-300";
     }
   }
 
   if (variant === "light") {
-    // Default: black icon, on hover: white icon
     textColor = "text-black hover:text-white";
     if (forced) {
       if (isHover) {
@@ -257,12 +247,8 @@ export default function ActionButton({
         look = "border border-brand-3 text-black";
       }
     } else {
-      look = [
-        "border border-brand-3 bg-[rgba(0, 0, 0, 0.00);] text-black", // default
-        "hover:border-gray-300 hover:bg-black hover:text-white", // hover
-        "focus:border-2 focus:border-brand-3", // focus
-        "active:border active:border-brand-3", // active
-      ].join(" ");
+      look =
+        "border border-brand-3 bg-[rgba(0,0,0,0.00)] text-black hover:border-gray-300 hover:bg-black hover:text-white focus:border-2 focus:border-brand-3 active:border active:border-brand-3";
     }
   }
 
@@ -271,9 +257,10 @@ export default function ActionButton({
       type="button"
       aria-label={ariaLabel}
       onClick={onClick}
-      className={[...base, look, textColor, className].join(" ")}
+      className={[base, look, textColor, className].join(" ")}
     >
       {iconType === "edit" ? (
+        // Edit icon always black
         <EditIcon className="h-5 w-5" />
       ) : iconType === "export" ? (
         <ExportIcon className="h-5 w-5" />
