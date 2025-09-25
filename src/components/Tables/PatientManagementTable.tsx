@@ -1,29 +1,23 @@
-import React from "react";
+import React, { useMemo, useState, useRef } from "react";
 import ActionButton from "@/src/components/Buttons/ActionButtons";
-import FormButton from "@/src/components/Buttons/FormButtons";
+import FilterDropdown from "@/src/components/Filters/FilterDropdown";
 
-// Patient type
-type Patient = {
+// ----------------- Types -----------------
+export type Patient = {
   id: string;
   name: string;
   address: string;
   phone: string;
-  gender: "M" | "F";
+  gender: "M" | "F" | "NA";
 };
 
 type Props = {
   patients: Patient[];
   onEdit: (p: Patient) => void;
   onDelete: (p: Patient) => void;
-  onGenderFilterClick?: () => void;
-  genderMenuOpen?: boolean;
-  genderFilters?: { M: boolean; F: boolean; NA: boolean };
-  onGenderFilterChange?: (key: "M" | "F" | "NA", checked: boolean) => void;
-  onGenderFilterClear?: () => void;
-  onGenderFilterClose?: () => void;
 };
 
-// Small header icon
+// ----------------- Icons -----------------
 const HeaderIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -31,25 +25,25 @@ const HeaderIcon = () => (
     height="12"
     viewBox="0 0 12 12"
     fill="none"
+    aria-hidden
   >
-    <g clip-path="url(#clip0_356_4995)">
+    <g clipPath="url(#clip0)">
       <path
         d="M6.00003 1.5C7.37738 1.5 8.72762 1.61602 10.0415 1.83883C10.308 1.88401 10.5 2.11677 10.5 2.38701V2.90901C10.5 3.20738 10.3815 3.49353 10.1705 3.7045L7.4545 6.4205C7.24353 6.63147 7.125 6.91762 7.125 7.21599V8.67971C7.125 9.10583 6.88425 9.49538 6.50312 9.68594L4.875 10.5V7.21599C4.875 6.91762 4.75647 6.63147 4.5455 6.4205L1.8295 3.7045C1.61853 3.49353 1.5 3.20738 1.5 2.90901V2.38702C1.5 2.11679 1.69204 1.88403 1.95847 1.83884C3.2724 1.61603 4.62266 1.5 6.00003 1.5Z"
         stroke="#0F172A"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </g>
     <defs>
-      <clipPath id="clip0_356_4995">
+      <clipPath id="clip0">
         <rect width="12" height="12" fill="white" />
       </clipPath>
     </defs>
   </svg>
 );
 
-// Delete icon
 const DeleteIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -57,6 +51,7 @@ const DeleteIcon = () => (
     height="28"
     viewBox="0 0 28 28"
     fill="none"
+    aria-hidden
   >
     <path
       d="M22.75 6.417 22.027 18.113c-.185 2.988-.277 4.482-1.026 5.556-.37.531-.847.98-1.4 1.317-1.118.681-2.615.681-5.609.681s-4.497 0-5.616-.683a4.3 4.3 0 0 1-1.4-1.318c-.749-1.076-.84-2.572-1.021-5.564L5.25 6.417"
@@ -79,122 +74,161 @@ const DeleteIcon = () => (
   </svg>
 );
 
+// ----------------- Table -----------------
 export default function PatientManagementTable({
   patients,
   onEdit,
   onDelete,
-  onGenderFilterClick,
-  genderMenuOpen,
-  genderFilters,
-  onGenderFilterChange,
-  onGenderFilterClear,
-  onGenderFilterClose,
 }: Props) {
+  // Active filter state
+  const [activeFilter, setActiveFilter] = useState<"gender" | "region" | null>(
+    null
+  );
+
+  // Gender filters
+  const [genderFilters, setGenderFilters] = useState<Record<string, boolean>>({
+    M: false,
+    F: false,
+    NA: false,
+  });
+  const genderBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Example: Region filter (extendable)
+  // const [regionFilters, setRegionFilters] = useState<Record<string, boolean>>({
+  //   north: false,
+  //   south: false,
+  //   east: false,
+  //   west: false,
+  // });
+  // const regionBtnRef = useRef<HTMLButtonElement>(null);
+
+  // --- Handlers (Gender) ---
+  const handleGenderFilterChange = (key: string, checked: boolean) => {
+    setGenderFilters((prev) => ({ ...prev, [key]: checked }));
+  };
+
+  const handleGenderFilterClear = () => {
+    setGenderFilters({ M: false, F: false, NA: false });
+  };
+
+  // --- Filtering logic ---
+  const filteredPatients = useMemo(() => {
+    const activeGender = Object.keys(genderFilters).filter(
+      (k) => genderFilters[k]
+    );
+
+    return patients.filter((p) => {
+      const passGender =
+        activeGender.length === 0 ? true : activeGender.includes(p.gender);
+
+      // Example: extend with region filter
+      // const activeRegion = Object.keys(regionFilters).filter((k) => regionFilters[k]);
+      // const passRegion = activeRegion.length === 0 ? true : activeRegion.some((r) => p.address.toLowerCase().includes(r));
+
+      return passGender; // && passRegion
+    });
+  }, [patients, genderFilters]);
+
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto relative">
       <table className="w-full table-fixed text-left text-sm">
         <thead className="border-b border-slate-200">
           <tr>
-            <th className="w-28 pr-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-28 pr-4 py-3.5 text-base font-semibold text-black font-dmsans">
               Patient ID
             </th>
-            <th className="w-64 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-64 px-4 py-3.5 text-base font-semibold text-black font-dmsans">
               Patient Name
             </th>
-            <th className="w-64 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-64 px-4 py-3.5 text-base font-semibold text-black font-dmsans">
               Address
             </th>
-            <th className="w-36 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-36 px-4 py-3.5 text-base font-semibold text-black font-dmsans">
               Contact No.
             </th>
-            <th
-              className="w-24 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center relative"
-              data-gender-filter
-            >
+
+            {/* Gender column header with dropdown */}
+            <th className="w-24 px-4 py-3.5 text-base font-semibold text-black font-dmsans text-center">
               <button
+                ref={genderBtnRef}
                 type="button"
-                onClick={onGenderFilterClick}
+                onClick={() =>
+                  setActiveFilter(activeFilter === "gender" ? null : "gender")
+                }
                 className="flex items-center justify-center gap-1 w-full hover:text-gray-700"
                 aria-label="Open gender filter"
-                data-gender-filter
               >
                 Gender <HeaderIcon />
               </button>
-              {genderMenuOpen && (
-                <div
-                  className="absolute right-0 top-full mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-3 z-20"
-                  data-gender-filter
-                >
-                  <p className="px-1 pb-2 text-xs font-medium text-gray-500 text-left">
-                    Filter by gender
-                  </p>
-                  {(
-                    [
-                      { key: "M", label: "Men" },
-                      { key: "F", label: "Women" },
-                      { key: "NA", label: "Not Prefer" },
-                    ] as const
-                  ).map((opt) => (
-                    <label
-                      key={opt.key}
-                      className="flex items-center gap-2 py-1 text-sm text-gray-700"
-                    >
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300"
-                        checked={Boolean(
-                          genderFilters && (genderFilters as any)[opt.key]
-                        )}
-                        onChange={(e) =>
-                          onGenderFilterChange?.(opt.key, e.target.checked)
-                        }
-                        data-gender-filter
-                      />
-                      <span>{opt.label}</span>
-                    </label>
-                  ))}
-                  <div className="mt-3 flex gap-2 justify-end">
-                    <FormButton
-                      variant="light"
-                      label="Clear"
-                      onClick={onGenderFilterClear}
-                      className="!px-3 !py-1.5 !text-xs"
-                    />
-                    <FormButton
-                      variant="dark"
-                      label="Close"
-                      onClick={onGenderFilterClose}
-                      className="!px-3 !py-1.5 !text-xs"
-                    />
-                  </div>
-                </div>
-              )}
+              <FilterDropdown
+                title="Gender"
+                open={activeFilter === "gender"}
+                options={[
+                  { key: "M", label: "Men" },
+                  { key: "F", label: "Women" },
+                  { key: "NA", label: "Not Prefer" },
+                ]}
+                selected={genderFilters}
+                onChange={handleGenderFilterChange}
+                onClear={handleGenderFilterClear}
+                onClose={() => setActiveFilter(null)}
+                anchorRef={genderBtnRef}
+              />
             </th>
-            <th className="w-20 py-3.5 pr-0 pl-0 text-base font-semibold text-black leading-6 font-dmsans text-left">
+
+            {/* Example: another filter (Address Region) */}
+            {/* <th className="w-28 px-4 py-3.5 text-base font-semibold text-black font-dmsans text-center">
+              <button
+                ref={regionBtnRef}
+                type="button"
+                onClick={() => setActiveFilter(activeFilter === "region" ? null : "region")}
+                className="flex items-center justify-center gap-1 w-full hover:text-gray-700"
+                aria-label="Open address filter"
+              >
+                Address <HeaderIcon />
+              </button>
+              <FilterDropdown
+                title="Address"
+                open={activeFilter === "region"}
+                options={[
+                  { key: "north", label: "North" },
+                  { key: "south", label: "South" },
+                  { key: "east", label: "East" },
+                  { key: "west", label: "West" },
+                ]}
+                selected={regionFilters}
+                onChange={(k, v) => setRegionFilters((p) => ({ ...p, [k]: v }))}
+                onClear={() => setRegionFilters({ north: false, south: false, east: false, west: false })}
+                onClose={() => setActiveFilter(null)}
+                anchorRef={regionBtnRef}
+              />
+            </th> */}
+
+            <th className="w-20 py-3.5 pr-0 pl-0 text-base font-semibold text-black font-dmsans">
               Actions
             </th>
           </tr>
         </thead>
 
         <tbody className="divide-y divide-gray-200">
-          {patients.map((p) => (
+          {filteredPatients.map((p) => (
             <tr key={p.id} className="hover:bg-gray-50 align-top">
-              <td className="pr-4 py-3.5 text-sm text-gray-600 font-normal whitespace-nowrap">
+              <td className="pr-4 py-3.5 text-sm text-gray-600 whitespace-nowrap">
                 {p.id}
               </td>
-              <td className="px-4 py-3.5 text-sm text-gray-600 font-normal whitespace-normal break-words">
+              <td className="px-4 py-3.5 text-sm text-gray-600 break-words">
                 {p.name}
               </td>
-              <td className="px-4 py-3.5 text-sm text-gray-600 font-normal whitespace-normal break-words">
+              <td className="px-4 py-3.5 text-sm text-gray-600 break-words">
                 {p.address}
               </td>
-              <td className="px-4 py-3.5 text-sm text-gray-600 font-normal whitespace-normal break-words">
+              <td className="px-4 py-3.5 text-sm text-gray-600 break-words">
                 {p.phone}
               </td>
-              <td className="pr-2 pl-2 py-3.5 text-center text-sm text-gray-600 font-normal whitespace-nowrap">
+              <td className="pr-2 pl-2 py-3.5 text-center text-sm text-gray-600 whitespace-nowrap">
                 {p.gender}
               </td>
-              <td className="w-20 py-3.5 pr-0 pl-0 whitespace-nowrap flex">
+              <td className="w-20 py-3.5 pr-0 pl-0 whitespace-nowrap">
                 <div className="flex items-center justify-end gap-1.5">
                   <ActionButton
                     variant="dark"
@@ -206,6 +240,8 @@ export default function PatientManagementTable({
                   <button
                     onClick={() => onDelete(p)}
                     className="flex items-center justify-center"
+                    aria-label="Delete Patient"
+                    title="Delete"
                   >
                     <DeleteIcon />
                   </button>
@@ -213,6 +249,16 @@ export default function PatientManagementTable({
               </td>
             </tr>
           ))}
+          {filteredPatients.length === 0 && (
+            <tr>
+              <td
+                colSpan={6}
+                className="px-4 py-8 text-center text-sm text-gray-500"
+              >
+                No patients match the current filters.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

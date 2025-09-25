@@ -43,6 +43,40 @@ export default function PatientProfilePage() {
       notes:
         "Suspendisse laoreet justo a ligula ornare, in pulvinar nibh placerat.",
     },
+    {
+      id: 1,
+      date: "03-MAY-2025 16:33",
+      score: 24,
+      risk: "critical",
+      provider: "Alexander William James Christopher Thompson–Broderick",
+      notes: "Integer fringilla urna ut purus elementum, vitae aliquam quam",
+    },
+    {
+      id: 2,
+      date: "03-MAY-2025 16:33",
+      score: 53,
+      risk: "low",
+      provider: "Pathirannehelage Don Nimal Sirisena Bandara Pathirannehelage",
+      notes:
+        "Suspendisse laoreet justo a ligula ornare, in pulvinar nibh placerat.",
+    },
+    {
+      id: 1,
+      date: "03-MAY-2025 16:33",
+      score: 24,
+      risk: "critical",
+      provider: "Alexander William James Christopher Thompson–Broderick",
+      notes: "Integer fringilla urna ut purus elementum, vitae aliquam quam",
+    },
+    {
+      id: 2,
+      date: "03-MAY-2025 16:33",
+      score: 53,
+      risk: "low",
+      provider: "Pathirannehelage Don Nimal Sirisena Bandara Pathirannehelage",
+      notes:
+        "Suspendisse laoreet justo a ligula ornare, in pulvinar nibh placerat.",
+    },
   ];
 
   const [currentPage, setCurrentPage] = useState(1);

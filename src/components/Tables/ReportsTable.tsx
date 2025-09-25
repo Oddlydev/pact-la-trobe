@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useMemo, useRef } from "react";
 import DotTableRiskIndicator from "@/src/components/Indicators/DotTableRiskIndicator";
 import ActionButton from "@/src/components/Buttons/ActionButtons";
+import FilterDropdown from "@/src/components/Filters/FilterDropdown";
 
 const HeaderIcon = () => (
   <svg
@@ -32,40 +33,142 @@ const HeaderIcon = () => (
   </svg>
 );
 
-// Report type
 type Report = {
   id: number;
-  date: string;
+  date: string; // "03-MAY-2025 16:33"
   score: number;
   risk: "critical" | "low" | "moderate";
   provider: string;
   notes: string;
 };
 
-type Props = {
-  reports: Report[];
-};
+type Props = { reports: Report[] };
 
 export default function ReportsTable({ reports }: Props) {
+  // Only one filter open at a time
+  const [activeFilter, setActiveFilter] = useState<"date" | "status" | null>(
+    null
+  );
+
+  const [dateFilters, setDateFilters] = useState({
+    today: false,
+    week: false,
+    month: false,
+  });
+  const [statusFilters, setStatusFilters] = useState({
+    critical: false,
+    low: false,
+    moderate: false,
+  });
+
+  // Anchor buttons for positioning
+  const dateBtnRef = useRef<HTMLButtonElement>(null);
+  const statusBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Apply filters
+  const filteredReports = useMemo(() => {
+    return reports.filter((r) => {
+      const actStatus = Object.keys(statusFilters).filter(
+        (k) => (statusFilters as any)[k]
+      );
+      const actDate = Object.keys(dateFilters).filter(
+        (k) => (dateFilters as any)[k]
+      );
+
+      const statusPass = actStatus.length === 0 || actStatus.includes(r.risk);
+
+      let datePass = true;
+      if (actDate.length > 0) {
+        const d = new Date(r.date);
+        const now = new Date();
+        if (dateFilters.today)
+          datePass = d.toDateString() === now.toDateString();
+        if (dateFilters.week) {
+          const weekAgo = new Date();
+          weekAgo.setDate(now.getDate() - 7);
+          datePass = d >= weekAgo;
+        }
+        if (dateFilters.month) {
+          const monthAgo = new Date();
+          monthAgo.setMonth(now.getMonth() - 1);
+          datePass = d >= monthAgo;
+        }
+      }
+      return statusPass && datePass;
+    });
+  }, [reports, dateFilters, statusFilters]);
+
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto relative">
       <table className="w-full text-left text-sm">
-        {/* Table Header */}
         <thead className="border-b border-slate-200">
           <tr>
+            {/* Report Date (KEEPING ALL YOUR CLASSES) */}
             <th className="w-[160px] pr-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
-              <div className="flex items-center gap-1 justify-between">
+              <button
+                ref={dateBtnRef}
+                onClick={() =>
+                  setActiveFilter(activeFilter === "date" ? null : "date")
+                }
+                className="flex items-center gap-1 justify-between hover:text-gray-700 w-full"
+              >
                 Report Date <HeaderIcon />
-              </div>
+              </button>
+              <FilterDropdown
+                title="Report Date"
+                open={activeFilter === "date"}
+                options={[
+                  { key: "today", label: "Today" },
+                  { key: "week", label: "This Week" },
+                  { key: "month", label: "This Month" },
+                ]}
+                selected={dateFilters}
+                onChange={(k, v) => setDateFilters((p) => ({ ...p, [k]: v }))}
+                onClear={() =>
+                  setDateFilters({ today: false, week: false, month: false })
+                }
+                onClose={() => setActiveFilter(null)}
+                anchorRef={dateBtnRef}
+              />
             </th>
+
             <th className="w-[80px] px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center">
               Score
             </th>
+
+            {/* Patient Status (KEEPING ALL YOUR CLASSES) */}
             <th className="w-[200px] px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
-              <div className="flex items-center gap-1 justify-between">
+              <button
+                ref={statusBtnRef}
+                onClick={() =>
+                  setActiveFilter(activeFilter === "status" ? null : "status")
+                }
+                className="flex items-center gap-1 justify-between hover:text-gray-700 w-full"
+              >
                 Patient Status <HeaderIcon />
-              </div>
+              </button>
+              <FilterDropdown
+                title="Patient Status"
+                open={activeFilter === "status"}
+                options={[
+                  { key: "critical", label: "Critical" },
+                  { key: "moderate", label: "Moderate" },
+                  { key: "low", label: "Low Risk" },
+                ]}
+                selected={statusFilters}
+                onChange={(k, v) => setStatusFilters((p) => ({ ...p, [k]: v }))}
+                onClear={() =>
+                  setStatusFilters({
+                    critical: false,
+                    low: false,
+                    moderate: false,
+                  })
+                }
+                onClose={() => setActiveFilter(null)}
+                anchorRef={statusBtnRef}
+              />
             </th>
+
             <th className="w-[300px] px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
               Created By
             </th>
@@ -78,9 +181,8 @@ export default function ReportsTable({ reports }: Props) {
           </tr>
         </thead>
 
-        {/* Table Body */}
         <tbody className="divide-y divide-gray-200">
-          {reports.map((r) => (
+          {filteredReports.map((r) => (
             <tr key={r.id} className="hover:bg-gray-50">
               <td className="w-[160px] pr-4 py-3.5 text-sm text-gray-600">
                 {r.date}
@@ -119,6 +221,14 @@ export default function ReportsTable({ reports }: Props) {
               </td>
             </tr>
           ))}
+
+          {filteredReports.length === 0 && (
+            <tr>
+              <td colSpan={6} className="py-6 text-center text-gray-500">
+                No reports match the selected filters.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

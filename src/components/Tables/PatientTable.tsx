@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useMemo, useRef } from "react";
 import DotTableRiskIndicator from "@/src/components/Indicators/DotTableRiskIndicator";
 import ActionButton from "@/src/components/Buttons/ActionButtons";
+import FilterDropdown from "@/src/components/Filters/FilterDropdown";
 
 export type RiskLevel = "critical" | "high" | "moderate" | "low";
 
@@ -13,9 +14,7 @@ export type Patient = {
   lastUpdated: string; // "03-MAY-2025 16:33"
 };
 
-type Props = {
-  patients: Patient[];
-};
+type Props = { patients: Patient[] };
 
 // ===============================
 //   Extra Action Icons
@@ -119,66 +118,199 @@ const HeaderIcon = () => (
 //   Patient Table
 // ===============================
 export default function PatientTable({ patients }: Props) {
+  // Single active filter
+  const [activeFilter, setActiveFilter] = useState<
+    "gender" | "status" | "date" | null
+  >(null);
+
+  const [genderFilters, setGenderFilters] = useState({ M: false, F: false });
+  const [statusFilters, setStatusFilters] = useState({
+    critical: false,
+    high: false,
+    moderate: false,
+    low: false,
+  });
+  const [dateFilters, setDateFilters] = useState({
+    today: false,
+    week: false,
+    month: false,
+  });
+
+  // Button refs
+  const genderBtnRef = useRef<HTMLButtonElement>(null);
+  const statusBtnRef = useRef<HTMLButtonElement>(null);
+  const dateBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Filtering logic
+  const filteredPatients = useMemo(() => {
+    return patients.filter((p) => {
+      const activeGender = Object.keys(genderFilters).filter(
+        (k) => (genderFilters as any)[k]
+      );
+      const activeStatus = Object.keys(statusFilters).filter(
+        (k) => (statusFilters as any)[k]
+      );
+      const activeDate = Object.keys(dateFilters).filter(
+        (k) => (dateFilters as any)[k]
+      );
+
+      const genderPass =
+        activeGender.length === 0 || activeGender.includes(p.gender);
+      const statusPass =
+        activeStatus.length === 0 || activeStatus.includes(p.status);
+
+      let datePass = true;
+      if (activeDate.length > 0) {
+        const updatedDate = new Date(p.lastUpdated);
+        const now = new Date();
+        if (dateFilters.today) {
+          datePass = updatedDate.toDateString() === now.toDateString();
+        }
+        if (dateFilters.week) {
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(now.getDate() - 7);
+          datePass = updatedDate >= oneWeekAgo;
+        }
+        if (dateFilters.month) {
+          const oneMonthAgo = new Date();
+          oneMonthAgo.setMonth(now.getMonth() - 1);
+          datePass = updatedDate >= oneMonthAgo;
+        }
+      }
+
+      return genderPass && statusPass && datePass;
+    });
+  }, [patients, genderFilters, statusFilters, dateFilters]);
+
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto relative">
       <table className="min-w-full table-fixed text-left text-sm">
         <thead className="border-b border-slate-200">
           <tr>
-            <th className="w-32 pr-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-32 pr-4 py-3.5 text-base font-semibold text-black font-dmsans">
               Patient ID
             </th>
-            <th className="w-64 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
+            <th className="w-64 px-4 py-3.5 text-base font-semibold text-black font-dmsans">
               Patient Name
             </th>
-            <th className="w-16 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center">
+            <th className="w-16 px-4 py-3.5 text-base font-semibold text-black font-dmsans text-center">
               Age
             </th>
-            <th className="w-24 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center">
-              <div className="flex items-center justify-center gap-1">
+
+            {/* Gender Filter */}
+            <th className="w-24 px-4 py-3.5 text-base font-semibold text-black font-dmsans text-center">
+              <button
+                ref={genderBtnRef}
+                onClick={() =>
+                  setActiveFilter(activeFilter === "gender" ? null : "gender")
+                }
+                className="flex items-center justify-center gap-1 w-full hover:text-gray-700"
+              >
                 Gender <HeaderIcon />
-              </div>
+              </button>
+              <FilterDropdown
+                title="Gender"
+                open={activeFilter === "gender"}
+                options={[
+                  { key: "M", label: "Male" },
+                  { key: "F", label: "Female" },
+                ]}
+                selected={genderFilters}
+                onChange={(k, v) => setGenderFilters((p) => ({ ...p, [k]: v }))}
+                onClear={() => setGenderFilters({ M: false, F: false })}
+                onClose={() => setActiveFilter(null)}
+                anchorRef={genderBtnRef}
+              />
             </th>
-            <th className="w-32 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-center">
-              <div className="flex items-center justify-center gap-1.5">
+
+            {/* Status Filter */}
+            <th className="w-32 px-4 py-3.5 text-base font-semibold text-black font-dmsans text-center">
+              <button
+                ref={statusBtnRef}
+                onClick={() =>
+                  setActiveFilter(activeFilter === "status" ? null : "status")
+                }
+                className="flex items-center justify-center gap-1 w-full hover:text-gray-700"
+              >
                 Patient Status <HeaderIcon />
-              </div>
+              </button>
+              <FilterDropdown
+                title="Status"
+                open={activeFilter === "status"}
+                options={[
+                  { key: "critical", label: "Critical" },
+                  { key: "high", label: "High Risk" },
+                  { key: "moderate", label: "Moderate" },
+                  { key: "low", label: "Low" },
+                ]}
+                selected={statusFilters}
+                onChange={(k, v) => setStatusFilters((p) => ({ ...p, [k]: v }))}
+                onClear={() =>
+                  setStatusFilters({
+                    critical: false,
+                    high: false,
+                    moderate: false,
+                    low: false,
+                  })
+                }
+                onClose={() => setActiveFilter(null)}
+                anchorRef={statusBtnRef}
+              />
             </th>
-            <th className="w-48 px-4 py-3.5 text-base font-semibold text-black leading-6 font-dmsans">
-              <div className="flex items-center gap-1.5">
+
+            {/* Date Filter */}
+            <th className="w-48 px-4 py-3.5 text-base font-semibold text-black font-dmsans">
+              <button
+                ref={dateBtnRef}
+                onClick={() =>
+                  setActiveFilter(activeFilter === "date" ? null : "date")
+                }
+                className="flex items-center gap-1 w-full hover:text-gray-700"
+              >
                 Last Updated Date <HeaderIcon />
-              </div>
+              </button>
+              <FilterDropdown
+                title="Date"
+                open={activeFilter === "date"}
+                options={[
+                  { key: "today", label: "Today" },
+                  { key: "week", label: "This Week" },
+                  { key: "month", label: "This Month" },
+                ]}
+                selected={dateFilters}
+                onChange={(k, v) => setDateFilters((p) => ({ ...p, [k]: v }))}
+                onClear={() =>
+                  setDateFilters({ today: false, week: false, month: false })
+                }
+                onClose={() => setActiveFilter(null)}
+                anchorRef={dateBtnRef}
+              />
             </th>
-            <th className="w-56 py-3.5 text-base font-semibold text-black leading-6 font-dmsans text-left">
+
+            <th className="w-56 py-3.5 text-base font-semibold text-black font-dmsans">
               Actions
             </th>
           </tr>
         </thead>
+
         <tbody className="divide-y divide-gray-200">
-          {patients.map((p, idx) => (
+          {filteredPatients.map((p, idx) => (
             <tr key={p.id || idx}>
-              <td className="pr-4 py-3.5 font-dmsans text-sm text-gray-600 flex items-start">
-                {p.id}
-              </td>
-              <td className="px-4 py-3.5 font-dmsans text-sm text-gray-600">
-                {p.name}
-              </td>
-              <td className="px-4 py-3.5 text-center font-dmsans text-sm text-gray-600">
+              <td className="pr-4 py-3.5 text-sm text-gray-600">{p.id}</td>
+              <td className="px-4 py-3.5 text-sm text-gray-600">{p.name}</td>
+              <td className="px-4 py-3.5 text-center text-sm text-gray-600">
                 {p.age}
               </td>
-              <td className="px-4 py-3.5 text-center font-dmsans text-sm text-gray-600">
+              <td className="px-4 py-3.5 text-center text-sm text-gray-600">
                 {p.gender}
               </td>
               <td className="px-4 py-3.5 text-center">
                 <DotTableRiskIndicator variant={p.status} />
               </td>
-              <td className="px-4 py-3.5 font-dmsans text-sm text-gray-600">
+              <td className="px-4 py-3.5 text-sm text-gray-600">
                 <div className="flex flex-col">
-                  <span className="text-gray-600 text-sm leading-5 font-normal">
-                    {p.lastUpdated.split(" ")[0]}
-                  </span>
-                  <span className=" text-gray-600 text-sm leading-5 font-normal">
-                    {p.lastUpdated.split(" ")[1]}
-                  </span>
+                  <span>{p.lastUpdated.split(" ")[0]}</span>
+                  <span>{p.lastUpdated.split(" ")[1]}</span>
                 </div>
               </td>
               <td className="py-3.5">
@@ -199,6 +331,13 @@ export default function PatientTable({ patients }: Props) {
               </td>
             </tr>
           ))}
+          {filteredPatients.length === 0 && (
+            <tr>
+              <td colSpan={7} className="py-6 text-center text-gray-500">
+                No patients match the selected filters.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
