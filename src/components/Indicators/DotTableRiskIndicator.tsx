@@ -10,35 +10,31 @@ type Props = {
 
 const styles: Record<
   Variant,
-  { border: string; text: string; dot: string; defaultLabel: string }
+  { bg: string; text: string; defaultLabel: string }
 > = {
   critical: {
-    border: "border-red-600",
-    text: "text-gray-900",
-    dot: "#B91C1C",
-    defaultLabel: "CRITICAL",
+    bg: "bg-red-600",
+    text: "text-gray-50",
+    defaultLabel: "CRITICAL/PRIORITY",
   },
   high: {
-    border: "border-orange-500",
+    bg: "bg-orange-500",
     text: "text-gray-900",
-    dot: "#F97316",
     defaultLabel: "HIGH RISK",
   },
   moderate: {
-    border: "border-amber-400",
+    bg: "bg-amber-400",
     text: "text-gray-900",
-    dot: "#FBBF24",
-    defaultLabel: "MOD. RISK",
+    defaultLabel: "MODERATE RISK",
   },
   low: {
-    border: "border-green-600",
+    bg: "bg-green-600",
     text: "text-gray-900",
-    dot: "#16A34A",
     defaultLabel: "LOW RISK",
   },
 };
 
-export default function DotTableRiskIndicator({
+export default function OverallSeverityIndicator({
   variant,
   label,
   className = "",
@@ -48,26 +44,13 @@ export default function DotTableRiskIndicator({
   return (
     <div
       className={[
-        "w-full rounded-sm px-2 py-2.5 gap-x-2.5 flex justify-center items-center border",
-        cfg.border,
+        "w-32 mx-auto rounded-sm px-2 py-2.5 text-xs text-center font-semibold uppercase tracking-normal font-dmsans",
+        cfg.bg,
         cfg.text,
         className,
       ].join(" ")}
     >
-      <div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="10"
-          height="10"
-          viewBox="0 0 10 10"
-          fill="none"
-        >
-          <circle cx="5" cy="5" r="5" fill={cfg.dot} />
-        </svg>
-      </div>
-      <span className=" text-xs text-center font-semibold font-dmsans uppercase tracking-normal">
-        {label || cfg.defaultLabel}
-      </span>
+      {label || cfg.defaultLabel}
     </div>
   );
 }
