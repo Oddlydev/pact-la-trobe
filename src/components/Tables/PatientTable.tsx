@@ -309,8 +309,12 @@ export default function PatientTable({ patients }: Props) {
               </td>
               <td className="px-4 py-3.5 text-sm text-gray-600">
                 <div className="flex flex-col">
-                  <span>{p.lastUpdated.split(" ")[0]}</span>
-                  <span>{p.lastUpdated.split(" ")[1]}</span>
+                  <span className="text-sm text-gray-600 font-normal leading-5 uppercase">
+                    {p.lastUpdated.split(" ")[0]}
+                  </span>
+                  <span className="text-sm text-gray-600 font-normal leading-5">
+                    {p.lastUpdated.split(" ")[1]}
+                  </span>
                 </div>
               </td>
               <td className="py-3.5">
