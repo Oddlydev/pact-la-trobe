@@ -31,10 +31,20 @@ export default async function handler(
     }
 
     const [rows] = await pool.query<any[]>(
-      `SELECT p.id, p.patientId, p.firstName, p.lastName, p.dob, p.gender,
-              o.pcfScore, o.riskLevel, o.caregiver_unable, o.recurrent_falls
+      `SELECT p.id,
+              p.patientId,
+              p.firstName,
+              p.lastName,
+              p.address,
+              p.phone,
+              p.dob,
+              p.gender,
+              o.pcfScore,
+              o.riskLevel,
+              o.caregiver_unable,
+              o.recurrent_falls
        FROM patients p
-       JOIN patient_overview o ON p.patientId = o.patientId
+       LEFT JOIN patient_overview o ON p.patientId = o.patientId
        WHERE p.patientId = ?`,
       [id]
     );
@@ -48,21 +58,27 @@ export default async function handler(
       ok: true,
       data: {
         id: r.id, // internal DB ID
-        patientId: r.patientId, // external public ID like PT200013 ✅
-        name: `${r.firstName || ""} ${r.lastName || ""}`.trim(),
+        patientId: r.patientId,
+        firstName: r.firstName || "",
+        lastName: r.lastName || "",
+        address: r.address || "",
+        phone: r.phone || "",
         gender: mapGender(r.gender),
+        dob: r.dob,
+        // extras used by other pages
+        name: `${r.firstName || ""} ${r.lastName || ""}`.trim(),
         age: calculateAge(r.dob),
-        score: r.pcfScore,
+        score: r.pcfScore ?? null,
         riskLevel: (r.riskLevel || "").toLowerCase(),
         risks: [
           r.caregiver_unable ? "Caregiver is unable to continue care" : null,
           r.recurrent_falls ? "Has risk for recurrent falls" : null,
         ].filter(Boolean),
-        dob: r.dob,
       },
     });
   } catch (err: any) {
-    console.error("/api/patient-profile/[id] error", err);
+    console.error("/api/patients/[id] error", err);
     res.status(500).json({ ok: false, error: "Internal Server Error" });
   }
 }
+
