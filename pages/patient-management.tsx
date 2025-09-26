@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { GetServerSideProps } from "next";
 import type { RowDataPacket } from "mysql2";
-import { getPool, type DbPatientRow } from "@/lib/mysql";
+import { getPool } from "@/lib/mysql";
 import Layout from "@/src/components/Layout";
 import EditPatientDrawer from "@/src/components/Drawer/EditPatientDrawer";
 import ConfirmDeleteModal from "@/src/components/Modal/ConfirmDeleteModal";
@@ -9,6 +9,15 @@ import SearchBar from "@/src/components/Forms/SearchBar";
 import Pagination from "@/src/components/Pagination/Pagination";
 import PatientManagementTable from "@/src/components/Tables/PatientManagementTable";
 
+type DbPatientRow = {
+  patientId: string;
+  firstName: string | null;
+  lastName: string | null;
+  address: string | null;
+  phone: string | null;
+  gender: string | null;
+  deleteReason?: string | null;
+};
 type Patient = {
   id: string;
   name: string;
@@ -33,7 +42,6 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
-  
 
   const itemsPerPage = 10;
 
@@ -178,6 +186,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
     const [rows] = await pool.query<(DbPatientRow & RowDataPacket)[]>(
       `SELECT * FROM patients WHERE (deleteReason IS NULL OR deleteReason = '') ORDER BY id DESC`
     );
+
     const initialPatients: Patient[] = rows.map((r) => {
       const g = String(r.gender || "")
         .trim()
@@ -191,8 +200,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
           g === "FEMALE" || g === "F"
             ? "F"
             : g === "MALE" || g === "M"
-            ? "M"
-            : "NA",
+              ? "M"
+              : "NA",
       } as Patient;
     });
     return { props: { initialPatients } };
