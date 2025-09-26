@@ -16,13 +16,33 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [initial, setInitial] = useState<any>(null);
 
+  const [formData, setFormData] = useState({
+    phone: "",
+    country: "AU",
+  });
+
   useEffect(() => {
     const fetchPatient = async () => {
       if (!open || !patientId) return;
       try {
         const resp = await fetch(`/api/patients/${patientId}`);
         const json = await resp.json();
-        if (resp.ok && json?.ok) setInitial(json.data);
+        if (resp.ok && json?.ok) {
+          setInitial(json.data);
+
+          // try splitting phone into country + number
+          if (json.data.phone) {
+            const parts = json.data.phone.split(" ");
+            if (parts.length > 1) {
+              setFormData({
+                country: parts[0],
+                phone: parts.slice(1).join(" "),
+              });
+            } else {
+              setFormData({ country: "AU", phone: json.data.phone });
+            }
+          }
+        }
       } catch {}
     };
     fetchPatient();
@@ -30,19 +50,29 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
 
   if (!open && !confirmOpen) return null;
 
+  const handleChange = (name: string, value: any) => {
+    let safeValue = value;
+    if (value && typeof value === "object" && "target" in value) {
+      safeValue = (value as any).target.value;
+    }
+    setFormData((prev) => ({ ...prev, [name]: safeValue }));
+  };
+
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     if (!patientId) return;
     const form = e.currentTarget;
     const fd = new FormData(form);
+
     const payload = {
       firstName: String(fd.get("firstName") || "").trim(),
       lastName: String(fd.get("lastName") || "").trim(),
       address: String(fd.get("address") || "").trim(),
-      phone: String(fd.get("phone") || "").trim(),
+      phone: `${formData.country} ${formData.phone}`.trim(),
       dob: String(fd.get("dob") || "") || null,
       gender: String(fd.get("gender") || "") || null,
     };
+
     try {
       const resp = await fetch(`/api/patients/${patientId}`, {
         method: "PUT",
@@ -115,6 +145,7 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                     </span>
                   </p>
                 </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <InputField
                     label="First name"
@@ -140,19 +171,52 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                   defaultValue={initial?.address}
                 />
 
-                <InputField
-                  label="Phone"
-                  name="phone"
-                  type="tel"
-                  placeholder="+61 3 9876 5432"
-                  validate={(val) =>
-                    val && !/^\+?\d[\d\s-]+$/.test(val)
-                      ? "Invalid phone number"
-                      : undefined
-                  }
-                  showErrorOn="blur"
-                  defaultValue={initial?.phone}
-                />
+                {/* Phone field with country selector */}
+                <div>
+                  <label
+                    htmlFor="phone"
+                    className="block text-sm font-medium text-gray-700 leading-5"
+                  >
+                    Phone Number
+                  </label>
+                  <div className="mt-1 flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-1 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-gray-300">
+                    <div className="grid shrink-0 grid-cols-1 focus-within:relative">
+                      <select
+                        id="country"
+                        name="country"
+                        value={formData.country}
+                        onChange={(e) => handleChange("country", e)}
+                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-1 focus:-outline-offset-1 focus:outline-gray-300 sm:text-sm/6"
+                      >
+                        <option value="AU">AU</option>
+                        <option value="US">US</option>
+                        <option value="CA">CA</option>
+                        <option value="EU">EU</option>
+                      </select>
+                      <svg
+                        viewBox="0 0 16 16"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      id="phone"
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={(e) => handleChange("phone", e)}
+                      placeholder="123-456-7890"
+                      className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-500 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+                    />
+                  </div>
+                </div>
 
                 <DatePickerField
                   label="Date of Birth"

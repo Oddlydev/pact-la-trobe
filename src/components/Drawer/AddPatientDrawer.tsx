@@ -1,9 +1,29 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import { gql, useMutation } from "@apollo/client";
+import client from "@/lib/apolloClient";
 import InputField from "@/src/components/Forms/InputFields";
 import TextAreaField from "@/src/components/Forms/TextArea";
 import DatePickerField from "@/src/components/Forms/DatePicker";
 import RadioButtonInline from "@/src/components/RadioButtons/RadioButtonInline";
 import FormButton from "@/src/components/Buttons/FormButtons";
+
+// GraphQL mutation for wp_patients
+const CREATE_PATIENT = gql`
+  mutation CreatePatient($input: CreatePatientInput!) {
+    createPatient(input: $input) {
+      patient {
+        id
+        firstName
+        lastName
+        address
+        phone
+        dob
+        gender
+      }
+    }
+  }
+`;
 
 type Props = {
   open: boolean;
@@ -11,37 +31,59 @@ type Props = {
 };
 
 export default function AddPatientDrawer({ open, onClose }: Props) {
+  // State for form fields
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    address: "",
+    phone: "",
+    country: "AU", // default country
+    dob: "",
+    gender: "male",
+  });
+
+  // GraphQL mutation hook
+  const [createPatient, { loading, error }] = useMutation(CREATE_PATIENT, {
+    client,
+  });
+
   if (!open) return null;
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+  const handleChange = (name: string, value: any) => {
+    let safeValue = value;
+
+    if (value && typeof value === "object" && "target" in value) {
+      safeValue = (value as any).target.value;
+    }
+    if (typeof safeValue === "object" && safeValue !== null) {
+      safeValue = String(safeValue);
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: safeValue }));
+  };
+
+  // Submit form
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    const fd = new FormData(form);
-
-    const payload = {
-      firstName: String(fd.get("firstName") || "").trim(),
-      lastName: String(fd.get("lastName") || "").trim(),
-      address: String(fd.get("address") || "").trim(),
-      phone: String(fd.get("phone") || "").trim(),
-      dob: String(fd.get("dob") || "") || null,
-      gender: String(fd.get("gender") || "") || null,
-    };
-
     try {
-      const resp = await fetch("/api/patients", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+      console.log("Submitting formData:", formData);
+
+      await createPatient({
+        variables: {
+          input: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            address: formData.address,
+            phone: `${formData.country} ${formData.phone}`, // combine country + phone
+            dob: formData.dob,
+            gender: formData.gender,
+          },
+        },
       });
-      const data = await resp.json();
-      if (!resp.ok || !data?.ok)
-        throw new Error(data?.error || "Failed to save");
-      window.dispatchEvent(new Event("patients:reload"));
+
       onClose();
-      form.reset();
     } catch (err) {
-      console.error("Add patient failed", err);
-      alert("Failed to save patient. Please try again.");
+      console.error("Error creating patient", err);
     }
   };
 
@@ -55,24 +97,15 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
       />
 
       {/* Drawer */}
-      <div
-        className="
-          absolute right-0 top-2.5 bottom-2.5 
-          w-full max-w-md 
-          transform transition-transform duration-500 ease-in-out 
-          bg-white shadow-xl 
-          rounded-lg
-          mr-2.5
-        "
-      >
+      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
         <form
-          className="flex h-full flex-col divide-y divide-gray-300 rounded-lg overflow-hidden"
+          className="flex h-full flex-col divide-y divide-gray-300"
           onSubmit={handleSubmit}
         >
           {/* Header */}
-          <div className="bg-gray-900 p-6 flex items-start justify-between rounded-t-lg">
+          <div className="bg-gray-900 p-6 flex items-start justify-between">
             <div>
-              <h2 className="text-base font-semibold text-white leading-7 mb-1">
+              <h2 className="text-base font-semibold text-white">
                 Add New Patient
               </h2>
               <p className="text-gray-300 text-sm font-normal leading-5">
@@ -82,7 +115,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-200 hover:text-white"
+              className="text-indigo-200 hover:text-white"
             >
               ✕
             </button>
@@ -95,13 +128,13 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                 label="First name"
                 name="firstName"
                 placeholder="Enter first name"
-                required
+                onChange={(e: any) => handleChange("firstName", e)}
               />
               <InputField
                 label="Last name"
                 name="lastName"
                 placeholder="Enter last name"
-                required
+                onChange={(e: any) => handleChange("lastName", e)}
               />
             </div>
 
@@ -110,22 +143,61 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
               name="address"
               rows={2}
               placeholder="Enter address"
+              onChange={(e: any) => handleChange("address", e)}
             />
 
-            <InputField
-              label="Phone"
-              name="phone"
-              type="tel"
-              placeholder="+61 3 9876 5432"
-              validate={(val) =>
-                val && !/^\+?\d[\d\s-]+$/.test(val)
-                  ? "Invalid phone number"
-                  : undefined
-              }
-              showErrorOn="blur"
-            />
+            {/* Phone field with country selector */}
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-700 leading-5"
+              >
+                Phone Number
+              </label>
+              <div className="mt-1 flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-1 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-gray-300">
+                <div className="grid shrink-0 grid-cols-1 focus-within:relative">
+                  <select
+                    id="country"
+                    name="country"
+                    value={formData.country}
+                    onChange={(e) => handleChange("country", e)}
+                    className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-500 focus:outline-1 focus:-outline-offset-2 focus:outline-gray-300 sm:text-sm/6"
+                  >
+                    <option value="AU">AU</option>
+                    <option value="US">US</option>
+                    <option value="CA">CA</option>
+                    <option value="EU">EU</option>
+                  </select>
+                  <svg
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    aria-hidden="true"
+                    className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  id="phone"
+                  type="text"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={(e) => handleChange("phone", e)}
+                  placeholder="123-456-7890"
+                  className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-normal text-gray-500 placeholder:text-gray-500 placeholder:font-normal focus:outline-none sm:text-sm/6"
+                />
+              </div>
+            </div>
 
-            <DatePickerField label="Date of Birth" name="dob" required />
+            <DatePickerField
+              label="Date of Birth"
+              name="dob"
+              onChange={(val: any) => handleChange("dob", val)}
+            />
 
             <div>
               <label className="block text-sm font-medium text-slate-700 font-dmsans mb-2">
@@ -139,16 +211,24 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                   { id: "na", label: "Prefer not to answer" },
                 ]}
                 defaultValue="male"
-                required
+                onChange={(val: string) => handleChange("gender", val)}
               />
             </div>
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 px-6 py-4 rounded-b-lg bg-gray-50">
+          <div className="flex justify-end gap-3 px-6 py-4">
             <FormButton variant="light" label="Cancel" onClick={onClose} />
-            <FormButton variant="dark" label="Save" type="submit" />
+            <FormButton
+              variant="dark"
+              type="submit"
+              label={loading ? "Saving..." : "Save"}
+            />
           </div>
+
+          {error && (
+            <p className="text-red-500 px-6 py-2">Error: {error.message}</p>
+          )}
         </form>
       </div>
     </div>

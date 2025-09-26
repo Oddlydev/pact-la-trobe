@@ -213,16 +213,16 @@ export default function PatientManagementTable({
         <tbody className="divide-y divide-gray-200">
           {filteredPatients.map((p) => (
             <tr key={p.id} className="hover:bg-gray-50 align-top">
-              <td className="pr-4 py-3.5 text-sm text-gray-600 whitespace-nowrap">
+              <td className="pr-4 py-3.5 text-sm font-normal leading-5 text-gray-600 whitespace-nowrap">
                 {p.id}
               </td>
-              <td className="px-4 py-3.5 text-sm text-gray-600 break-words">
+              <td className="px-4 py-3.5 text-sm font-normal leading-5 text-gray-600 break-words">
                 {p.name}
               </td>
-              <td className="px-4 py-3.5 text-sm text-gray-600 break-words">
+              <td className="px-4 py-3.5 text-sm font-normal leading-5 text-gray-600 break-words">
                 {p.address}
               </td>
-              <td className="px-4 py-3.5 text-sm text-gray-600 break-words">
+              <td className="px-4 py-3.5 text-sm font-normal leading-5 text-gray-600 break-words">
                 {p.phone}
               </td>
               <td className="pr-2 pl-2 py-3.5 text-center text-sm text-gray-600 whitespace-nowrap">

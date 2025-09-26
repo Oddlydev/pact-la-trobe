@@ -21,23 +21,23 @@ export default function DatePickerField({
   className = "",
   value,
   defaultValue,
-  placeholder,
+  placeholder = "dd-mm-yyyy",
   ...rest
 }: DatePickerFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [focused, setFocused] = useState(false);
 
   const handleIconClick = () => {
-    inputRef.current?.showPicker?.(); // chromium
+    inputRef.current?.showPicker?.(); // chromium browsers
     inputRef.current?.focus(); // fallback
   };
 
   const base = useMemo(() => {
     return [
       "block w-full rounded-md bg-white px-3 py-2",
-      "text-base placeholder:text-gray-500 placeholder:text-sm placeholder:font-normal",
-      "outline-1 -outline-offset-1",
-      "font-dmsans text-gray-900",
+      "text-gray-500 placeholder:text-gray-400",
+      "outline-1 -outline-offset-1, font-normal",
+      "font-dmsans",
       focused
         ? "outline-blue-500 focus:outline-blue-500"
         : "outline-gray-300 focus:outline-blue-500",
