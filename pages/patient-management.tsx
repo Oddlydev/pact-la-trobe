@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { GetServerSideProps } from "next";
+import type { RowDataPacket } from "mysql2";
 import { getPool, type DbPatientRow } from "@/lib/mysql";
 import Layout from "@/src/components/Layout";
 import EditPatientDrawer from "@/src/components/Drawer/EditPatientDrawer";
@@ -13,7 +14,7 @@ type Patient = {
   name: string;
   address: string;
   phone: string;
-  gender: "M" | "F";
+  gender: "M" | "F" | "NA";
 };
 
 type PageProps = {
@@ -32,12 +33,7 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
-  const [genderMenuOpen, setGenderMenuOpen] = useState(false);
-  const [genderFilters, setGenderFilters] = useState<{
-    M: boolean;
-    F: boolean;
-    NA: boolean;
-  }>({ M: false, F: false, NA: false });
+  
 
   const itemsPerPage = 10;
 
@@ -46,15 +42,8 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
     const q = search.toLowerCase();
     const textMatch =
       p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
-    const anyGender = genderFilters.M || genderFilters.F || genderFilters.NA;
-    const genderMatch = !anyGender
-      ? true
-      : (p.gender as any) === "M"
-        ? genderFilters.M
-        : (p.gender as any) === "F"
-          ? genderFilters.F
-          : genderFilters.NA;
-    return textMatch && genderMatch;
+    // Table handles gender filtering internally; keep page filter to search only
+    return textMatch;
   });
 
   // Paginate
@@ -99,18 +88,7 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
     return () => window.removeEventListener("patients:reload", handler);
   }, []);
 
-  // Close gender menu on outside click
-  React.useEffect(() => {
-    if (!genderMenuOpen) return;
-    const handler = (e: MouseEvent) => {
-      const t = e.target as HTMLElement;
-      if (!t.closest("[data-gender-filter]")) {
-        setGenderMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [genderMenuOpen]);
+  // Gender filter UI is managed inside the table component.
 
   return (
     <Layout>
@@ -146,16 +124,6 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
             setPatientToDelete(p);
             setDeleteOpen(true);
           }}
-          onGenderFilterClick={() => setGenderMenuOpen((v) => !v)}
-          genderMenuOpen={genderMenuOpen}
-          genderFilters={genderFilters}
-          onGenderFilterChange={(key, checked) =>
-            setGenderFilters((prev) => ({ ...prev, [key]: checked }))
-          }
-          onGenderFilterClear={() =>
-            setGenderFilters({ M: false, F: false, NA: false })
-          }
-          onGenderFilterClose={() => setGenderMenuOpen(false)}
         />
 
         {/* Pagination */}
@@ -207,7 +175,7 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   try {
     const pool = getPool();
-    const [rows] = await pool.query<DbPatientRow[]>(
+    const [rows] = await pool.query<(DbPatientRow & RowDataPacket)[]>(
       `SELECT * FROM patients WHERE (deleteReason IS NULL OR deleteReason = '') ORDER BY id DESC`
     );
     const initialPatients: Patient[] = rows.map((r) => {
@@ -219,7 +187,12 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
         name: `${r.firstName || ""} ${r.lastName || ""}`.trim(),
         address: r.address || "",
         phone: r.phone || "",
-        gender: g === "FEMALE" || g === "F" ? "F" : "M",
+        gender:
+          g === "FEMALE" || g === "F"
+            ? "F"
+            : g === "MALE" || g === "M"
+            ? "M"
+            : "NA",
       } as Patient;
     });
     return { props: { initialPatients } };
