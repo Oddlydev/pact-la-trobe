@@ -259,13 +259,34 @@ export default function AssessmentFormPage() {
       label: x.label.includes(":") ? x.label.split(":")[1].trim() : x.label,
     });
     return [
-      { title: "Cancer", items: s3Items.filter((x) => x.id.startsWith("c")).map(strip) },
-      { title: "Dementia/Frailty", items: s3Items.filter((x) => x.id.startsWith("d")).map(strip) },
-      { title: "Neurological (e.g., MND, MS)", items: s3Items.filter((x) => x.id.startsWith("n")).map(strip) },
-      { title: "Heart/Vascular", items: s3Items.filter((x) => x.id.startsWith("h")).map(strip) },
-      { title: "Respiratory", items: s3Items.filter((x) => x.id.startsWith("r")).map(strip) },
-      { title: "Renal", items: s3Items.filter((x) => x.id.startsWith("re")).map(strip) },
-      { title: "Liver", items: s3Items.filter((x) => x.id.startsWith("l")).map(strip) },
+      {
+        title: "Cancer",
+        items: s3Items.filter((x) => x.id.startsWith("c")).map(strip),
+      },
+      {
+        title: "Dementia/Frailty",
+        items: s3Items.filter((x) => x.id.startsWith("d")).map(strip),
+      },
+      {
+        title: "Neurological (e.g., MND, MS)",
+        items: s3Items.filter((x) => x.id.startsWith("n")).map(strip),
+      },
+      {
+        title: "Heart/Vascular",
+        items: s3Items.filter((x) => x.id.startsWith("h")).map(strip),
+      },
+      {
+        title: "Respiratory",
+        items: s3Items.filter((x) => x.id.startsWith("r")).map(strip),
+      },
+      {
+        title: "Renal",
+        items: s3Items.filter((x) => x.id.startsWith("re")).map(strip),
+      },
+      {
+        title: "Liver",
+        items: s3Items.filter((x) => x.id.startsWith("l")).map(strip),
+      },
     ];
   })();
 
@@ -368,7 +389,7 @@ export default function AssessmentFormPage() {
           dob="1936 FEB 21"
           gender="Man"
           location="Western General Hospital"
-          risk="CRITICAL/PRIORITY"
+          // risk="CRITICAL/PRIORITY"
           latestReportAt="2025 MAY 8 | 10:19"
           latestReportBy="Louisa Durrell"
         />
@@ -438,12 +459,17 @@ export default function AssessmentFormPage() {
                     <div className="text-gray-700 font-semibold">{g.title}</div>
                     <ol>
                       {g.items.map((q, idx) => (
-                        <li key={q.id} className="flex items-start py-2 text-gray-600 font-medium leading-6">
+                        <li
+                          key={q.id}
+                          className="flex items-start py-2 text-gray-600 font-medium leading-6"
+                        >
                           <S2Question
                             id={q.id}
                             label={`${idx + 1}.\u00A0${q.label}`}
                             value={s3Answers[q.id]}
-                            onChange={(v) => setS3Answers((p) => ({ ...p, [q.id]: v }))}
+                            onChange={(v) =>
+                              setS3Answers((p) => ({ ...p, [q.id]: v }))
+                            }
                           />
                         </li>
                       ))}
@@ -627,9 +653,9 @@ export default function AssessmentFormPage() {
           {/* Right column */}
           <aside className="w-80 space-y-2 p-2 bg-gray-200 rounded-2xl h-full">
             <div className="only-first-cards">
-              <OverallSeverityCards limit={1} />
+              <OverallSeverityCards limit={1} score={0} total={0} />
             </div>
-            <SummaryCards />
+            <SummaryCards sectionScores={{}} totals={{}} />
           </aside>
         </div>
       </main>
