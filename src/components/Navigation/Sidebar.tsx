@@ -165,26 +165,28 @@ export default function Sidebar() {
               <div className="text-2xl font-medium font-dmsans text-white">
                 Thomson Robert
               </div>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-              >
-                <path
-                  d="M14.6666 8C14.6666 11.6819 11.6819 14.6666 8 14.6666C4.3181 14.6666 1.33331 11.6819 1.33331 8C1.33331 4.3181 4.3181 1.33331 8 1.33331C11.6819 1.33331 14.6666 4.3181 14.6666 8Z"
-                  stroke="white"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M10 9.33333V8C10 7.0572 10 6.58579 9.70713 6.29289C9.4142 6 8.9428 6 8 6H6.66667M9.33333 6.66667L6 10"
-                  stroke="white"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <a href="/user-profile">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                >
+                  <path
+                    d="M14.6666 8C14.6666 11.6819 11.6819 14.6666 8 14.6666C4.3181 14.6666 1.33331 11.6819 1.33331 8C1.33331 4.3181 4.3181 1.33331 8 1.33331C11.6819 1.33331 14.6666 4.3181 14.6666 8Z"
+                    stroke="white"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M10 9.33333V8C10 7.0572 10 6.58579 9.70713 6.29289C9.4142 6 8.9428 6 8 6H6.66667M9.33333 6.66667L6 10"
+                    stroke="white"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
             </div>
 
             {/* Date + Time row */}
