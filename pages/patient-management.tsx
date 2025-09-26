@@ -70,10 +70,10 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
               phone: r.phone || "",
               gender:
                 g === "FEMALE" || g === "F"
-                  ? ("F" as const)
+                  ? "F"
                   : g === "MALE" || g === "M"
-                    ? ("M" as const)
-                    : ("NA" as any),
+                  ? "M"
+                  : "NA",
             };
           });
           setPatients(mapped);
