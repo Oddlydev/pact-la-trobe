@@ -1,6 +1,7 @@
 // pages/api/patient-overview.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getPool } from "@/lib/mysql";
+import { RowDataPacket } from "mysql2";
 
 type ApiPatientOverview = {
   id: string;
@@ -11,6 +12,19 @@ type ApiPatientOverview = {
   riskLevel: string;
   risks: string[];
 };
+
+// Row type for DB results
+interface DbPatientRow extends RowDataPacket {
+  patientId: string;
+  firstName: string | null;
+  lastName: string | null;
+  dob: string | null;
+  gender: string | null;
+  pcfScore: number;
+  riskLevel: string | null;
+  caregiver_unable: number | null;
+  recurrent_falls: number | null;
+}
 
 function mapGender(g: string | null): "M" | "F" | "NA" {
   const gender = (g || "").toUpperCase();
@@ -37,7 +51,7 @@ export default async function handler(
 
   try {
     if (req.method === "GET") {
-      const [rows] = await pool.query<any[]>(
+      const [rows] = await pool.query<DbPatientRow[]>(
         `SELECT 
           p.patientId,
           p.firstName,
@@ -64,7 +78,7 @@ export default async function handler(
         risks: [
           r.caregiver_unable ? "Caregiver is unable to continue care" : null,
           r.recurrent_falls ? "Has risk for recurrent falls" : null,
-        ].filter(Boolean) as string[],
+        ].filter((x): x is string => x !== null), // safe filter
       }));
 
       return res.status(200).json({ ok: true, data });
