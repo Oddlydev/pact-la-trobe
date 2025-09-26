@@ -36,10 +36,10 @@ function EditIcon() {
 
 export default function ProfilePage() {
   const [editingField, setEditingField] = useState<"phone" | null>(null);
-  const [phone, setPhone] = useState("+61 7 3344 2211");
+  const [phone, setPhone] = useState("7 3344 2211"); // only number part
+  const [country, setCountry] = useState("+61"); // dialing code
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
-  // success / error messages
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -47,17 +47,15 @@ export default function ProfilePage() {
 
   const handleSave = (field: "phone") => {
     if (field === "phone") {
-      // validation example
       if (phone.trim() === "") {
         setMessage({ type: "error", text: "Phone number cannot be empty." });
       } else {
         setMessage({
           type: "success",
-          text: "Phone number updated successfully!",
+          text: `Phone number updated successfully to ${country} ${phone}!`,
         });
         setEditingField(null);
       }
-      // auto-clear message after 3s
       setTimeout(() => setMessage(null), 3000);
     }
   };
@@ -89,7 +87,6 @@ export default function ProfilePage() {
               Manage your contact information and security settings
             </p>
 
-            {/* feedback message */}
             {message && (
               <div
                 className={`mb-4 rounded-md p-3 text-sm ${
@@ -123,32 +120,20 @@ export default function ProfilePage() {
                     Phone Number
                   </label>
                   <div className="mt-1">
-                    <div className="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-indigo-600">
-                      <div className="grid shrink-0 grid-cols-1 focus-within:relative">
-                        <select
-                          id="country"
-                          name="country"
-                          autoComplete="country"
-                          aria-label="Country"
-                          className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                        >
-                          <option>US</option>
-                          <option>CA</option>
-                          <option>EU</option>
-                        </select>
-                        <svg
-                          viewBox="0 0 16 16"
-                          fill="currentColor"
-                          aria-hidden="true"
-                          className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
-                          />
-                        </svg>
-                      </div>
+                    <div className="flex rounded-md bg-white border border-gray-300">
+                      <select
+                        id="country"
+                        name="country"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        className="w-16 rounded-l-md border-0 bg-transparent py-1.5 pl-3 text-base text-gray-900 focus:outline-none focus:ring-0 sm:text-sm"
+                      >
+                        <option value="+61">+61</option>
+                        <option value="+1">+1</option>
+                        <option value="+44">+44</option>
+                        <option value="+91">+91</option>
+                        <option value="+81">+81</option>
+                      </select>
                       <input
                         id="phone-number"
                         type="text"
@@ -157,7 +142,7 @@ export default function ProfilePage() {
                         onChange={(e) => setPhone(e.target.value)}
                         readOnly={editingField !== "phone"}
                         placeholder="123-456-7890"
-                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+                        className="block flex-1 border-0 bg-transparent py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm"
                       />
                     </div>
                   </div>
@@ -276,7 +261,6 @@ export default function ProfilePage() {
         </div>
       </Layout>
 
-      {/* Change Password Modal */}
       <ChangePasswordModal
         open={showPasswordModal}
         onClose={() => setShowPasswordModal(false)}

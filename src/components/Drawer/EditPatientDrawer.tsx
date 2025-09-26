@@ -18,7 +18,7 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
 
   const [formData, setFormData] = useState({
     phone: "",
-    country: "AU",
+    country: "+61", // default to AU dialing code
   });
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
         if (resp.ok && json?.ok) {
           setInitial(json.data);
 
-          // try splitting phone into country + number
+          // try splitting phone into country code + number
           if (json.data.phone) {
             const parts = json.data.phone.split(" ");
             if (parts.length > 1) {
@@ -39,7 +39,7 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                 phone: parts.slice(1).join(" "),
               });
             } else {
-              setFormData({ country: "AU", phone: json.data.phone });
+              setFormData({ country: "+61", phone: json.data.phone });
             }
           }
         }
@@ -171,7 +171,7 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                   defaultValue={initial?.address}
                 />
 
-                {/* Phone field with country selector */}
+                {/* Phone field with dialing code selector */}
                 <div>
                   <label
                     htmlFor="phone"
@@ -179,33 +179,20 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                   >
                     Phone Number
                   </label>
-                  <div className="mt-1 flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-1 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-gray-300">
-                    <div className="grid shrink-0 grid-cols-1 focus-within:relative">
-                      <select
-                        id="country"
-                        name="country"
-                        value={formData.country}
-                        onChange={(e) => handleChange("country", e)}
-                        className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-1 focus:-outline-offset-1 focus:outline-gray-300 sm:text-sm/6"
-                      >
-                        <option value="AU">AU</option>
-                        <option value="US">US</option>
-                        <option value="CA">CA</option>
-                        <option value="EU">EU</option>
-                      </select>
-                      <svg
-                        viewBox="0 0 16 16"
-                        fill="currentColor"
-                        aria-hidden="true"
-                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
-                        />
-                      </svg>
-                    </div>
+                  <div className="mt-1 flex rounded-md bg-white border border-gray-300">
+                    <select
+                      id="country"
+                      name="country"
+                      value={formData.country}
+                      onChange={(e) => handleChange("country", e)}
+                      className="w-16 rounded-l-md border-0 bg-transparent py-1.5 pl-3 text-base text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
+                    >
+                      <option value="+61">+61</option> {/* AU */}
+                      <option value="+1">+1</option> {/* US/CA */}
+                      <option value="+44">+44</option> {/* UK */}
+                      <option value="+91">+91</option> {/* India */}
+                      <option value="+81">+81</option> {/* Japan */}
+                    </select>
                     <input
                       id="phone"
                       type="text"
@@ -213,7 +200,7 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                       value={formData.phone}
                       onChange={(e) => handleChange("phone", e)}
                       placeholder="123-456-7890"
-                      className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-500 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
+                      className="block flex-1 border-0 bg-transparent py-1.5 pl-2 pr-3 text-base text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
                     />
                   </div>
                 </div>

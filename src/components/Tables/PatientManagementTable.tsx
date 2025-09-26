@@ -80,54 +80,30 @@ export default function PatientManagementTable({
   onEdit,
   onDelete,
 }: Props) {
-  // Active filter state
+  // Which dropdown is open
   const [activeFilter, setActiveFilter] = useState<"gender" | "region" | null>(
     null
   );
 
-  // Gender filters
-  const [genderFilters, setGenderFilters] = useState<Record<string, boolean>>({
-    M: false,
-    F: false,
-    NA: false,
-  });
+  // APPLIED gender filters (used by the table). These change ONLY when clicking "Filter".
+  const [appliedGender, setAppliedGender] = useState<
+    Record<"M" | "F" | "NA", boolean>
+  >({ M: false, F: false, NA: false });
+
+  // Provide the applied values to the dropdown so it can seed its temp state
   const genderBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Example: Region filter (extendable)
-  // const [regionFilters, setRegionFilters] = useState<Record<string, boolean>>({
-  //   north: false,
-  //   south: false,
-  //   east: false,
-  //   west: false,
-  // });
-  // const regionBtnRef = useRef<HTMLButtonElement>(null);
-
-  // --- Handlers (Gender) ---
-  const handleGenderFilterChange = (key: string, checked: boolean) => {
-    setGenderFilters((prev) => ({ ...prev, [key]: checked }));
-  };
-
-  const handleGenderFilterClear = () => {
-    setGenderFilters({ M: false, F: false, NA: false });
-  };
-
-  // --- Filtering logic ---
+  // --- Filtering logic using APPLIED filters ---
   const filteredPatients = useMemo(() => {
-    const activeGender = Object.keys(genderFilters).filter(
-      (k) => genderFilters[k]
-    );
+    const activeKeys = (
+      Object.keys(appliedGender) as Array<"M" | "F" | "NA">
+    ).filter((k) => appliedGender[k]);
 
     return patients.filter((p) => {
-      const passGender =
-        activeGender.length === 0 ? true : activeGender.includes(p.gender);
-
-      // Example: extend with region filter
-      // const activeRegion = Object.keys(regionFilters).filter((k) => regionFilters[k]);
-      // const passRegion = activeRegion.length === 0 ? true : activeRegion.some((r) => p.address.toLowerCase().includes(r));
-
-      return passGender; // && passRegion
+      if (activeKeys.length === 0) return true; // no filters selected
+      return activeKeys.includes(p.gender);
     });
-  }, [patients, genderFilters]);
+  }, [patients, appliedGender]);
 
   return (
     <div className="overflow-x-auto relative">
@@ -160,6 +136,7 @@ export default function PatientManagementTable({
               >
                 Gender <HeaderIcon />
               </button>
+
               <FilterDropdown
                 title="Gender"
                 open={activeFilter === "gender"}
@@ -168,41 +145,24 @@ export default function PatientManagementTable({
                   { key: "F", label: "Women" },
                   { key: "NA", label: "Not Prefer" },
                 ]}
-                selected={genderFilters}
-                onChange={handleGenderFilterChange}
-                onClear={handleGenderFilterClear}
+                selected={appliedGender} // seed temp with applied
+                onApply={(sel) => {
+                  // apply only when clicking Filter
+                  // coerce keys to our exact union
+                  const next: Record<"M" | "F" | "NA", boolean> = {
+                    M: !!(sel as any).M,
+                    F: !!(sel as any).F,
+                    NA: !!(sel as any).NA,
+                  };
+                  setAppliedGender(next);
+                }}
+                onClear={() =>
+                  setAppliedGender({ M: false, F: false, NA: false })
+                }
                 onClose={() => setActiveFilter(null)}
                 anchorRef={genderBtnRef}
               />
             </th>
-
-            {/* Example: another filter (Address Region) */}
-            {/* <th className="w-28 px-4 py-3.5 text-base font-semibold text-black font-dmsans text-center">
-              <button
-                ref={regionBtnRef}
-                type="button"
-                onClick={() => setActiveFilter(activeFilter === "region" ? null : "region")}
-                className="flex items-center justify-center gap-1 w-full hover:text-gray-700"
-                aria-label="Open address filter"
-              >
-                Address <HeaderIcon />
-              </button>
-              <FilterDropdown
-                title="Address"
-                open={activeFilter === "region"}
-                options={[
-                  { key: "north", label: "North" },
-                  { key: "south", label: "South" },
-                  { key: "east", label: "East" },
-                  { key: "west", label: "West" },
-                ]}
-                selected={regionFilters}
-                onChange={(k, v) => setRegionFilters((p) => ({ ...p, [k]: v }))}
-                onClear={() => setRegionFilters({ north: false, south: false, east: false, west: false })}
-                onClose={() => setActiveFilter(null)}
-                anchorRef={regionBtnRef}
-              />
-            </th> */}
 
             <th className="w-20 py-3.5 pr-0 pl-0 text-base font-semibold text-black font-dmsans">
               Actions
@@ -229,7 +189,7 @@ export default function PatientManagementTable({
                 {p.gender}
               </td>
               <td className="w-20 py-3.5 pr-0 pl-0 whitespace-nowrap">
-                <div className="flex items-center justify-end gap-1.5">
+                <div className="flex items-center justify-end gap-2">
                   <ActionButton
                     variant="dark"
                     type="text"
@@ -249,6 +209,7 @@ export default function PatientManagementTable({
               </td>
             </tr>
           ))}
+
           {filteredPatients.length === 0 && (
             <tr>
               <td

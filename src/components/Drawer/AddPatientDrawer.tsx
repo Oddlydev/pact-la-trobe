@@ -8,7 +8,6 @@ import DatePickerField from "@/src/components/Forms/DatePicker";
 import RadioButtonInline from "@/src/components/RadioButtons/RadioButtonInline";
 import FormButton from "@/src/components/Buttons/FormButtons";
 
-// GraphQL mutation for wp_patients
 const CREATE_PATIENT = gql`
   mutation CreatePatient($input: CreatePatientInput!) {
     createPatient(input: $input) {
@@ -31,18 +30,16 @@ type Props = {
 };
 
 export default function AddPatientDrawer({ open, onClose }: Props) {
-  // State for form fields
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     address: "",
     phone: "",
-    country: "AU", // default country
+    countryCode: "+61", // default dialing code
     dob: "",
     gender: "male",
   });
 
-  // GraphQL mutation hook
   const [createPatient, { loading, error }] = useMutation(CREATE_PATIENT, {
     client,
   });
@@ -51,36 +48,30 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
 
   const handleChange = (name: string, value: any) => {
     let safeValue = value;
-
     if (value && typeof value === "object" && "target" in value) {
       safeValue = (value as any).target.value;
     }
     if (typeof safeValue === "object" && safeValue !== null) {
       safeValue = String(safeValue);
     }
-
     setFormData((prev) => ({ ...prev, [name]: safeValue }));
   };
 
-  // Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log("Submitting formData:", formData);
-
       await createPatient({
         variables: {
           input: {
             firstName: formData.firstName,
             lastName: formData.lastName,
             address: formData.address,
-            phone: `${formData.country} ${formData.phone}`, // combine country + phone
+            phone: `${formData.countryCode} ${formData.phone}`, // combine code + number
             dob: formData.dob,
             gender: formData.gender,
           },
         },
       });
-
       onClose();
     } catch (err) {
       console.error("Error creating patient", err);
@@ -146,7 +137,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
               onChange={(e: any) => handleChange("address", e)}
             />
 
-            {/* Phone field with country selector */}
+            {/* Phone field with dialing code selector */}
             <div>
               <label
                 htmlFor="phone"
@@ -154,33 +145,20 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
               >
                 Phone Number
               </label>
-              <div className="mt-1 flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-1 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-gray-300">
-                <div className="grid shrink-0 grid-cols-1 focus-within:relative">
-                  <select
-                    id="country"
-                    name="country"
-                    value={formData.country}
-                    onChange={(e) => handleChange("country", e)}
-                    className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-500 focus:outline-1 focus:-outline-offset-2 focus:outline-gray-300 sm:text-sm/6"
-                  >
-                    <option value="AU">AU</option>
-                    <option value="US">US</option>
-                    <option value="CA">CA</option>
-                    <option value="EU">EU</option>
-                  </select>
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
-                    />
-                  </svg>
-                </div>
+              <div className="mt-1 flex rounded-md bg-white border border-gray-300">
+                <select
+                  id="countryCode"
+                  name="countryCode"
+                  value={formData.countryCode}
+                  onChange={(e) => handleChange("countryCode", e)}
+                  className="w-16 rounded-l-md border-0 bg-transparent py-1.5 pl-3 text-base text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
+                >
+                  <option value="+61">+61</option> {/* Australia */}
+                  <option value="+1">+1</option> {/* US/Canada */}
+                  <option value="+44">+44</option> {/* UK */}
+                  <option value="+91">+91</option> {/* India */}
+                  <option value="+81">+81</option> {/* Japan */}
+                </select>
                 <input
                   id="phone"
                   type="text"
@@ -188,7 +166,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                   value={formData.phone}
                   onChange={(e) => handleChange("phone", e)}
                   placeholder="123-456-7890"
-                  className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-normal text-gray-500 placeholder:text-gray-500 placeholder:font-normal focus:outline-none sm:text-sm/6"
+                  className="block flex-1 border-0 bg-transparent py-1.5 pl-2 pr-3 text-base text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
                 />
               </div>
             </div>

@@ -80,8 +80,8 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
                 g === "FEMALE" || g === "F"
                   ? "F"
                   : g === "MALE" || g === "M"
-                  ? "M"
-                  : "NA",
+                    ? "M"
+                    : "NA",
             };
           });
           setPatients(mapped);
