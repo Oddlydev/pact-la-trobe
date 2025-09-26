@@ -1,7 +1,6 @@
 import Head from "next/head";
 import { useState } from "react";
 import Layout from "@/src/components/Layout";
-import VerifyPhoneModal from "@/src/components/Modal/VerifyPhoneModal";
 import ChangePasswordModal from "@/src/components/Modal/ChangePasswordModal";
 
 function EditIcon() {
@@ -38,19 +37,29 @@ function EditIcon() {
 export default function ProfilePage() {
   const [editingField, setEditingField] = useState<"phone" | null>(null);
   const [phone, setPhone] = useState("+61 7 3344 2211");
-  const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+  // success / error messages
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const handleSave = (field: "phone") => {
     if (field === "phone") {
-      setShowVerifyModal(true);
+      // validation example
+      if (phone.trim() === "") {
+        setMessage({ type: "error", text: "Phone number cannot be empty." });
+      } else {
+        setMessage({
+          type: "success",
+          text: "Phone number updated successfully!",
+        });
+        setEditingField(null);
+      }
+      // auto-clear message after 3s
+      setTimeout(() => setMessage(null), 3000);
     }
-  };
-
-  const handleVerify = (code: string) => {
-    console.log("Verification code entered:", code);
-    setShowVerifyModal(false);
-    setEditingField(null);
   };
 
   const handlePasswordUpdate = (
@@ -60,6 +69,8 @@ export default function ProfilePage() {
   ) => {
     console.log("Password change request:", { current, newPass, confirm });
     setShowPasswordModal(false);
+    setMessage({ type: "success", text: "Password updated successfully!" });
+    setTimeout(() => setMessage(null), 3000);
   };
 
   return (
@@ -77,6 +88,19 @@ export default function ProfilePage() {
             <p className="mb-9 text-gray-500 text-base leading-6 tracking-normal">
               Manage your contact information and security settings
             </p>
+
+            {/* feedback message */}
+            {message && (
+              <div
+                className={`mb-4 rounded-md p-3 text-sm ${
+                  message.type === "success"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                }`}
+              >
+                {message.text}
+              </div>
+            )}
 
             <div>
               {/* User ID */}
@@ -156,8 +180,8 @@ export default function ProfilePage() {
                           <path
                             d="M3.33325 9.33301L5.66659 11.6663L12.6666 4.33301"
                             stroke="white"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                         </svg>
                         Save
@@ -220,7 +244,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Security Notice */}
-          <div className="rounded-xl border border-white background: rgba(0, 0, 0, 0.00) py-5 px-4 ">
+          <div className="rounded-xl border border-white py-5 px-4 background: rgba(0, 0, 0, 0.00)">
             <div className="flex items-start gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -236,7 +260,7 @@ export default function ProfilePage() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-              </svg>{" "}
+              </svg>
               <div className="flex flex-col">
                 <span className="text-gray-700 text-xs font-semibold leading-4 font-dmsans mb-1">
                   Security Notice:
@@ -251,14 +275,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </Layout>
-
-      {/* Verify Phone Modal */}
-      <VerifyPhoneModal
-        phone={phone}
-        open={showVerifyModal}
-        onClose={() => setShowVerifyModal(false)}
-        onVerify={handleVerify}
-      />
 
       {/* Change Password Modal */}
       <ChangePasswordModal
