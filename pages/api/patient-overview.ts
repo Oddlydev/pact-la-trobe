@@ -64,7 +64,7 @@ export default async function handler(
         risks: [
           r.caregiver_unable ? "Caregiver is unable to continue care" : null,
           r.recurrent_falls ? "Has risk for recurrent falls" : null,
-        ].filter(Boolean),
+        ].filter(Boolean) as string[],
       }));
 
       return res.status(200).json({ ok: true, data });
