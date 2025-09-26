@@ -1,5 +1,19 @@
+// pages/api/patients.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getPool, type DbPatientRow } from "@/lib/mysql";
+import { getPool } from "@/lib/mysql";
+import { RowDataPacket } from "mysql2";
+
+// Shape of rows coming back from the DB
+interface DbPatientRow extends RowDataPacket {
+  patientId: string;
+  firstName: string | null;
+  lastName: string | null;
+  address: string;
+  phone: string;
+  dob: string | null;
+  gender: string | null;
+  createdAt: Date;
+}
 
 type ApiPatient = {
   id: string; // Patient ID like PT123456
@@ -12,7 +26,13 @@ type ApiPatient = {
 
 function toApiPatient(row: DbPatientRow): ApiPatient {
   const gender = (row.gender || "").toUpperCase();
-  const mapped = gender === "MALE" || gender === "M" ? "M" : gender === "FEMALE" || gender === "F" ? "F" : "NA";
+  const mapped =
+    gender === "MALE" || gender === "M"
+      ? "M"
+      : gender === "FEMALE" || gender === "F"
+        ? "F"
+        : "NA";
+
   return {
     id: row.patientId,
     name: `${row.firstName || ""} ${row.lastName || ""}`.trim(),
@@ -29,7 +49,10 @@ function generatePatientId() {
   return `PT${n}`;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const pool = getPool();
 
   try {
@@ -39,15 +62,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
          WHERE (deleteReason IS NULL OR deleteReason = '')
          ORDER BY id DESC`
       );
+
       const data = rows.map(toApiPatient);
       return res.status(200).json({ ok: true, data });
     }
 
     if (req.method === "POST") {
-      const { firstName, lastName, address, phone, dob, gender } = req.body || {};
+      const { firstName, lastName, address, phone, dob, gender } =
+        req.body || {};
 
       if (!firstName || !lastName || !dob || !gender) {
-        return res.status(400).json({ ok: false, error: "Missing required fields: firstName, lastName, dob, gender" });
+        return res.status(400).json({
+          ok: false,
+          error:
+            "Missing required fields: firstName, lastName, dob, gender",
+        });
       }
 
       const patientId = generatePatientId();
@@ -75,6 +104,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   } catch (err: any) {
     console.error("/api/patients error", err);
-    return res.status(500).json({ ok: false, error: err?.message || "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ ok: false, error: err?.message || "Internal Server Error" });
   }
 }
