@@ -305,6 +305,43 @@ export default function AssessmentFormPage() {
     if (answeredCount < totalQuestions) return "inProgress";
     return "complete";
   }
+  // ------------------------
+  // Scoring Helpers
+  // ------------------------
+  function scoreYesNo(answers: Record<string, string | undefined>) {
+    return Object.values(answers).filter((v) => v === "yes").length;
+  }
+
+  function scoreDropdown(answers: Record<string, string | undefined>) {
+    return Object.values(answers).filter((v) => v === "Yes").length;
+  }
+
+  function scoreReferrals(answers: Record<string, string | undefined>) {
+    return Object.values(answers).filter((v) => v === "immediate").length;
+  }
+
+  const sectionScores = {
+    s1: scoreYesNo(s1Answers),
+    s2: scoreYesNo(s2Answers),
+    s3: scoreYesNo(s3Answers),
+    s4: scoreYesNo(s4Answers),
+    s5: scoreDropdown(s5Answers),
+    s6: scoreReferrals(s6Answers),
+    s7: scoreYesNo(s7Answers),
+  };
+
+  const totals = {
+    s1: s1Items.length,
+    s2: s2Items.length,
+    s3: s3Groups.reduce((sum, g) => sum + g.items.length, 0),
+    s4: s4Items.length,
+    s5: s5Items.length,
+    s6: s6Items.length,
+    s7: s7Items.length,
+  };
+
+  const overallScore = Object.values(sectionScores).reduce((a, b) => a + b, 0);
+  const overallTotal = Object.values(totals).reduce((a, b) => a + b, 0);
 
   return (
     <Layout>
@@ -553,11 +590,16 @@ export default function AssessmentFormPage() {
               </div>
             </SectionBlock>
           </div>
+          {/* Right column */}
           <aside className="w-80 space-y-2 p-2 bg-gray-200 rounded-2xl h-full">
             <div className="only-first-cards">
-              <OverallSeverityCards limit={1} />
+              <OverallSeverityCards
+                score={overallScore}
+                total={overallTotal}
+                limit={1}
+              />
             </div>
-            <SummaryCards />
+            <SummaryCards sectionScores={sectionScores} totals={totals} />
           </aside>
         </div>
       </main>

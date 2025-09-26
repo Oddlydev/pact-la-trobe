@@ -194,6 +194,8 @@ export default function PatientProfilePage() {
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
+              itemsPerPage={0}
+              totalItems={0}
             />
           </div>
         </div>
