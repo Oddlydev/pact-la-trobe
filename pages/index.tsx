@@ -142,7 +142,7 @@ export default function HomePage() {
             {/* Patient Overview */}
             <section className="rounded-xl border border-white bg-[rgba(0,0,0,0.00)] p-4">
               {/* View toggle */}
-              <section className="flex justify-end pb-4">
+              <section className="flex justify-end pb-8">
                 <SegmentedControls
                   value={viewMode === "card" ? "grid" : "list"}
                   onChange={(val) =>
@@ -155,7 +155,9 @@ export default function HomePage() {
               <section>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-lg font-semibold">Patient Overview</h2>
+                    <h2 className="text-2xl font-bold leading-8 text-gray-800">
+                      Patient Overview
+                    </h2>
                     <p className="mt-0.5 text-sm text-gray-500">
                       Select a patient to proceed
                     </p>
@@ -189,7 +191,7 @@ export default function HomePage() {
                 )}
 
                 {/* Pagination */}
-                <div className="mt-4">
+                <div>
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

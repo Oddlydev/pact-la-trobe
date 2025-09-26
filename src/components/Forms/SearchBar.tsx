@@ -13,7 +13,7 @@ type SearchBarProps = {
 export default function SearchBar({
   value,
   onChange,
-  placeholder = "Search  Patient by name or ID",
+  placeholder = "Search Patient by name or ID",
   onSubmit,
   disabled,
   className = "",
@@ -65,7 +65,7 @@ export default function SearchBar({
       <label htmlFor={inputId} className="sr-only">
         Search
       </label>
-      <div className="flex items-center gap-2 rounded-full bg-brand-2 px-4 py-3 ring-1 ring-zinc-200 focus-within:ring-2 focus-within:ring-blue-500">
+      <div className="text-zinc-400 text-sm font-normal leading-5 flex items-center gap-2 rounded-full bg-brand-2 px-4 py-3 ring-1 ring-zinc-200 focus-within:ring-2 focus-within:ring-blue-500">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -98,7 +98,7 @@ export default function SearchBar({
           onFocus={handleFocus}
           placeholder={placeholder}
           disabled={disabled}
-          className={`caret-black block min-w-0 grow  text-sm text-zinc-600 placeholder:text-zinc-400 placeholder:font-dmsans focus:outline-none focus:placeholder-transparent ${inputClassName}`}
+          className={`caret-black block min-w-0 grow text-sm text-zinc-600 placeholder:text-zinc-400 placeholder:font-dmsans focus:outline-none focus:placeholder-transparent ${inputClassName}`}
         />
         {val && !disabled ? (
           <svg

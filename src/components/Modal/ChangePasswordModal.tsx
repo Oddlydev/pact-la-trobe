@@ -62,7 +62,7 @@ export default function ChangePasswordModal({
                   type={showCurrent ? "text" : "password"}
                   value={current}
                   onChange={(e) => setCurrent(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-lg outline-none shadow-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm leading-5 outline-none shadow-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   type="button"
@@ -125,7 +125,7 @@ export default function ChangePasswordModal({
                   type={showNew ? "text" : "password"}
                   value={newPass}
                   onChange={(e) => setNewPass(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-lg outline-none shadow-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm leading-5 outline-none shadow-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   type="button"
@@ -188,7 +188,7 @@ export default function ChangePasswordModal({
                   type={showConfirm ? "text" : "password"}
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-lg outline-none shadow-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm leading-5 outline-none shadow-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   type="button"
@@ -244,7 +244,7 @@ export default function ChangePasswordModal({
         </div>
 
         {/* Actions */}
-        <div className="mt-6 flex justify-end gap-4">
+        <div className="mt-4 flex justify-end gap-4">
           <FormButton variant="light" label="Cancel" onClick={onClose} />
           <FormButton
             variant="dark"
