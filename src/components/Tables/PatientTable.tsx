@@ -9,7 +9,7 @@ export type Patient = {
   id: string;
   name: string;
   age: number;
-  gender: "M" | "F";
+  gender: "M" | "F" | "NA";
   status: RiskLevel;
   lastUpdated: string; // "03-MAY-2025 16:33"
 };
