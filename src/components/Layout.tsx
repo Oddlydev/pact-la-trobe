@@ -6,9 +6,10 @@ import Topbar from "@/src/components/Navigation/Topbar";
 
 type Props = {
   children: React.ReactNode;
+  title?: string;
 };
 
-export default function Layout({ children }: Props) {
+export default function Layout({ children, title }: Props) {
   const pathname = usePathname();
   const isLoginPage = pathname === "/login";
 

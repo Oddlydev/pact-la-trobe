@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { getNextStaticProps } from "@faustwp/core";
-import { GetStaticPropsContext } from "next";
+import { FaustPage } from "@faustwp/core";
+import type { GetStaticPropsContext } from "next";
 import Layout from "../src/components/Layout";
 import EntryHeader from "../components/EntryHeader";
 
@@ -21,7 +21,14 @@ interface FrontPageProps {
   loading?: boolean;
 }
 
-export default function FrontPage(props: FrontPageProps) {
+interface PageQueryData {
+  page?: {
+    title?: string;
+    content?: string;
+  };
+}
+
+const FrontPage: FaustPage<PageQueryData, FrontPageProps> = (props) => {
   if (props.loading) {
     return <>Loading...</>;
   }
@@ -33,7 +40,7 @@ export default function FrontPage(props: FrontPageProps) {
     data,
     loading = true,
     error,
-  } = useQuery(PAGE_QUERY, {
+  } = useQuery<PageQueryData>(PAGE_QUERY, {
     variables: {
       databaseId: databaseId,
       asPreview: asPreview,
@@ -59,25 +66,20 @@ export default function FrontPage(props: FrontPageProps) {
     <Layout title={title}>
       <main className="max-w-6xl mx-auto px-4">
         <EntryHeader title={title} />
-        <div dangerouslySetInnerHTML={{ __html: content }} />
+        <div dangerouslySetInnerHTML={{ __html: content ?? "" }} />
       </main>
     </Layout>
   );
-}
+};
 
-export async function getStaticProps(ctx: GetStaticPropsContext) {
-  return getNextStaticProps(ctx, {
-    Page: FrontPage,
-    revalidate: 60,
-  });
-}
+FrontPage.query = PAGE_QUERY;
+FrontPage.variables = ((
+  arg: GetStaticPropsContext | null,
+  ctx?: { asPreview?: boolean }
+) => ({
+  databaseId: 1,
+  asPreview:
+    ctx?.asPreview ?? Boolean(arg && "preview" in arg ? arg.preview : false),
+})) as typeof FrontPage.variables;
 
-FrontPage.queries = [
-  {
-    query: PAGE_QUERY,
-    variables: (ctx: GetStaticPropsContext) => ({
-      databaseId: 1, // Assuming the front page has an ID of 1
-      asPreview: ctx?.preview,
-    }),
-  },
-];
+export default FrontPage;

@@ -1,6 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { getNextStaticProps } from "@faustwp/core";
-import { GetStaticPropsContext } from "next"; // Import GetStaticPropsContext
+import { FaustPage } from "@faustwp/core";
 import Layout from "../src/components/Layout";
 import EntryHeader from "../components/EntryHeader";
 
@@ -21,7 +20,14 @@ interface SinglePageProps {
   loading?: boolean;
 }
 
-export default function SinglePage(props: SinglePageProps) {
+interface PageQueryData {
+  page?: {
+    title?: string;
+    content?: string;
+  };
+}
+
+const SinglePage: FaustPage<PageQueryData, SinglePageProps> = (props) => {
   if (props.loading) {
     return <>Loading...</>;
   }
@@ -33,19 +39,22 @@ export default function SinglePage(props: SinglePageProps) {
     data,
     loading = true,
     error,
-  } = useQuery(PAGE_QUERY, {
+  } = useQuery<PageQueryData>(PAGE_QUERY, {
     variables: {
-      databaseId: databaseId,
-      asPreview: asPreview,
+      databaseId,
+      asPreview,
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-first",
   });
 
-  if (loading && !data)
+  if (loading && !data) {
     return (
-      <div className="max-w-6xl mx-auto px-4 flex justify-center py-20">Loading...</div>
+      <div className="max-w-6xl mx-auto px-4 flex justify-center py-20">
+        Loading...
+      </div>
     );
+  }
 
   if (error) return <p>Error! {error.message}</p>;
 
@@ -53,25 +62,25 @@ export default function SinglePage(props: SinglePageProps) {
     return <p>No pages have been published</p>;
   }
 
-  const { title, content } = data?.page || {};
+  const { title, content } = data.page;
 
   return (
     <Layout title={title}>
       <main className="max-w-6xl mx-auto px-4">
         <EntryHeader title={title} />
-        <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: content }} />
+        <div
+          className="prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: content ?? "" }}
+        />
       </main>
     </Layout>
   );
-}
+};
 
+SinglePage.query = PAGE_QUERY;
+SinglePage.variables = ((seedNode: { databaseId?: number | string } | null, ctx?: { asPreview?: boolean }) => ({
+  databaseId: seedNode?.databaseId,
+  asPreview: ctx?.asPreview ?? false,
+})) as typeof SinglePage.variables;
 
-SinglePage.queries = [
-  {
-    query: PAGE_QUERY,
-    variables: ({ databaseId }: { databaseId: string }, ctx: GetStaticPropsContext) => ({ // Add types for databaseId and ctx
-      databaseId,
-      asPreview: ctx?.preview,
-    }),
-  },
-];
+export default SinglePage;

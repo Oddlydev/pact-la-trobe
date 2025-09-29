@@ -1,6 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { getNextStaticProps } from "@faustwp/core";
-import { GetStaticPropsContext } from "next"; // Import GetStaticPropsContext
+import { FaustPage } from "@faustwp/core";
 import { useState } from "react";
 import Layout from "../src/components/Layout";
 import EntryHeader from "../components/EntryHeader";
@@ -14,7 +13,8 @@ interface ArchivePageProps {
   loading?: boolean;
 }
 
-interface Post { // Define Post interface based on PostListFragment
+interface Post {
+  // Define Post interface based on PostListFragment
   id: string;
   title?: string;
   uri?: string;
@@ -32,6 +32,20 @@ interface Post { // Define Post interface based on PostListFragment
       avatar?: {
         url?: string;
       };
+    };
+  };
+}
+
+interface ArchiveQueryData {
+  nodeByUri?: {
+    archiveType?: string;
+    name?: string;
+    posts?: {
+      pageInfo?: {
+        hasNextPage: boolean;
+        endCursor: string | null;
+      };
+      nodes?: Post[];
     };
   };
 }
@@ -72,14 +86,14 @@ const ARCHIVE_QUERY = gql`
   }
 `;
 
-export default function ArchivePage(props: ArchivePageProps) {
+const ArchivePage: FaustPage<ArchiveQueryData, ArchivePageProps> = (props) => {
   const currentUri = props.__SEED_NODE__?.uri;
   const {
     data,
     loading = true,
     error,
     fetchMore,
-  } = useQuery(ARCHIVE_QUERY, {
+  } = useQuery<ArchiveQueryData>(ARCHIVE_QUERY, {
     variables: { first: BATCH_SIZE, after: null, uri: currentUri },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-first",
@@ -87,35 +101,49 @@ export default function ArchivePage(props: ArchivePageProps) {
 
   if (loading && !data)
     return (
-      <div className="max-w-6xl mx-auto px-4 flex justify-center py-20">Loading...</div>
+      <div className="max-w-6xl mx-auto px-4 flex justify-center py-20">
+        Loading...
+      </div>
     );
 
   if (error) return <p>Error! {error.message}</p>;
 
-  if (!data?.nodeByUri?.posts?.nodes.length) {
+  if (!(data?.nodeByUri?.posts?.nodes?.length)) {
     return <p>No posts have been published</p>;
   }
 
   const { archiveType, name, posts } = data?.nodeByUri || {};
 
   const loadMorePosts = async () => {
+    const endCursor = posts?.pageInfo?.endCursor;
+    if (!endCursor) return;
+
     await fetchMore({
       variables: {
         first: BATCH_SIZE,
-        after: posts.pageInfo.endCursor,
-        uri: currentUri
+        after: endCursor,
+        uri: currentUri,
       },
       updateQuery: (prevResult, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prevResult;
+        const nextNode = fetchMoreResult?.nodeByUri;
+        const nextPosts = nextNode?.posts;
+        if (!nextPosts) {
+          return prevResult;
+        }
+
+        const prevNode = prevResult?.nodeByUri ?? {};
+        const prevPosts = prevNode.posts;
 
         return {
           nodeByUri: {
-            ...fetchMoreResult.nodeByUri,
+            ...prevNode,
+            ...nextNode,
             posts: {
-              ...fetchMoreResult.nodeByUri.posts,
+              ...prevPosts,
+              ...nextPosts,
               nodes: [
-                ...prevResult.nodeByUri.posts.nodes,
-                ...fetchMoreResult.nodeByUri.posts.nodes,
+                ...(prevPosts?.nodes ?? []),
+                ...(nextPosts.nodes ?? []),
               ],
             },
           },
@@ -137,7 +165,7 @@ export default function ArchivePage(props: ArchivePageProps) {
           ) : (
             <p>No posts found.</p>
           )}
-          {posts.pageInfo.hasNextPage && (
+          {posts?.pageInfo?.hasNextPage && (
             <div className="flex justify-center mt-8">
               <LoadMoreButton onClick={loadMorePosts} />
             </div>
@@ -146,16 +174,42 @@ export default function ArchivePage(props: ArchivePageProps) {
       </main>
     </Layout>
   );
-}
+};
 
-export async function getStaticProps(context: GetStaticPropsContext) { // Add type for context
-  return getNextStaticProps(context, {
-    Page: ArchivePage,
-    revalidate: 60,
-  });
-}
+ArchivePage.query = ARCHIVE_QUERY;
+const buildArchiveUri = (value?: string | string[] | null) => {
+  if (Array.isArray(value)) {
+    return `/${value.join("/")}`;
+  }
 
-const LoadMoreButton = ({ onClick }: { onClick: () => void }) => { // Add type for onClick
+  if (typeof value === "string" && value.length > 0) {
+    return value.startsWith("/") ? value : `/${value}`;
+  }
+
+  return "/";
+};
+
+ArchivePage.variables = ((context: { params?: { wordpressNode?: string | string[] } } | { uri?: string | null }) => {
+  if ("params" in context) {
+    const wordPressNode = context.params?.wordpressNode;
+    return {
+      uri: buildArchiveUri(wordPressNode),
+      first: BATCH_SIZE,
+      after: null,
+    };
+  }
+
+  return {
+    uri: buildArchiveUri((context as { uri?: string | null })?.uri ?? null),
+    first: BATCH_SIZE,
+    after: null,
+  };
+}) as typeof ArchivePage.variables;
+
+export default ArchivePage;
+
+const LoadMoreButton = ({ onClick }: { onClick: () => void }) => {
+  // Add type for onClick
   const [loading, setLoading] = useState(false);
 
   const handleLoadMore = async () => {
@@ -175,14 +229,3 @@ const LoadMoreButton = ({ onClick }: { onClick: () => void }) => { // Add type f
     </button>
   );
 };
-
-ArchivePage.queries = [
-  {
-    query: ARCHIVE_QUERY,
-    variables: ({ uri }: { uri: string }) => ({ // Add type for uri
-      uri,
-      first: BATCH_SIZE,
-      after: null,
-    }),
-  },
-];
