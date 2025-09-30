@@ -40,6 +40,8 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
     gender: "male",
   });
 
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+
   const [createPatient, { loading, error }] = useMutation(CREATE_PATIENT, {
     client,
   });
@@ -54,11 +56,31 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
     if (typeof safeValue === "object" && safeValue !== null) {
       safeValue = String(safeValue);
     }
+
+    if (name === "phone") {
+      const digits = String(safeValue ?? "")
+        .replace(/\D/g, "")
+        .slice(0, 10);
+      setFormData((prev) => ({ ...prev, phone: digits }));
+      if (!digits.length) {
+        setPhoneError(null);
+      } else if (digits.length < 10) {
+        setPhoneError("Phone number must be 10 digits.");
+      } else {
+        setPhoneError(null);
+      }
+      return;
+    }
+
     setFormData((prev) => ({ ...prev, [name]: safeValue }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.phone.length !== 10) {
+      setPhoneError("Phone number must be 10 digits.");
+      return;
+    }
     try {
       await createPatient({
         variables: {
@@ -166,9 +188,17 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                   value={formData.phone}
                   onChange={(e) => handleChange("phone", e)}
                   placeholder="123-456-7890"
+                  inputMode="numeric"
+                  aria-invalid={Boolean(phoneError)}
+                  aria-describedby={phoneError ? "phone-helper" : undefined}
                   className="block flex-1 border-0 bg-transparent py-1.5 pl-2 pr-3 text-base text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
                 />
               </div>
+              {phoneError && (
+                <p id="phone-helper" className="mt-1 text-sm text-red-600">
+                  {phoneError}
+                </p>
+              )}
             </div>
 
             <DatePickerField

@@ -21,6 +21,11 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
     country: "+61", // default to AU dialing code
   });
 
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+
+  const sanitizePhone = (value: string) =>
+    value.replace(/\D/g, "").slice(0, 10);
+
   useEffect(() => {
     const fetchPatient = async () => {
       if (!open || !patientId) return;
@@ -32,15 +37,30 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
 
           // try splitting phone into country code + number
           if (json.data.phone) {
-            const parts = json.data.phone.split(" ");
-            if (parts.length > 1) {
-              setFormData({
-                country: parts[0],
-                phone: parts.slice(1).join(" "),
-              });
+            const rawPhone = String(json.data.phone);
+            const parts = rawPhone.trim().split(" ");
+            const potentialCode = parts[0] || "";
+            const country = potentialCode.startsWith("+")
+              ? potentialCode
+              : "+61";
+            const numberPortion = potentialCode.startsWith("+")
+              ? parts.slice(1).join(" ")
+              : rawPhone;
+            const digits = sanitizePhone(numberPortion);
+            setFormData({
+              country,
+              phone: digits,
+            });
+            if (!digits.length) {
+              setPhoneError(null);
+            } else if (digits.length < 10) {
+              setPhoneError("Phone number must be 10 digits.");
             } else {
-              setFormData({ country: "+61", phone: json.data.phone });
+              setPhoneError(null);
             }
+          } else {
+            setFormData({ country: "+61", phone: "" });
+            setPhoneError(null);
           }
         }
       } catch {}
@@ -55,12 +75,33 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
     if (value && typeof value === "object" && "target" in value) {
       safeValue = (value as any).target.value;
     }
+    if (typeof safeValue === "object" && safeValue !== null) {
+      safeValue = String(safeValue);
+    }
+
+    if (name === "phone") {
+      const digits = sanitizePhone(String(safeValue ?? ""));
+      setFormData((prev) => ({ ...prev, phone: digits }));
+      if (!digits.length) {
+        setPhoneError(null);
+      } else if (digits.length < 10) {
+        setPhoneError("Phone number must be 10 digits.");
+      } else {
+        setPhoneError(null);
+      }
+      return;
+    }
+
     setFormData((prev) => ({ ...prev, [name]: safeValue }));
   };
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     if (!patientId) return;
+    if (formData.phone.length !== 10) {
+      setPhoneError("Phone number must be 10 digits.");
+      return;
+    }
     const form = e.currentTarget;
     const fd = new FormData(form);
 
@@ -200,9 +241,22 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                       value={formData.phone}
                       onChange={(e) => handleChange("phone", e)}
                       placeholder="123-456-7890"
+                      inputMode="numeric"
+                      aria-invalid={Boolean(phoneError)}
+                      aria-describedby={
+                        phoneError ? "edit-phone-helper" : undefined
+                      }
                       className="block flex-1 border-0 bg-transparent py-1.5 pl-2 pr-3 text-base text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
                     />
                   </div>
+                  {phoneError && (
+                    <p
+                      id="edit-phone-helper"
+                      className="mt-1 text-sm text-red-600"
+                    >
+                      {phoneError}
+                    </p>
+                  )}
                 </div>
 
                 <DatePickerField
