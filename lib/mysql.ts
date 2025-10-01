@@ -1,15 +1,26 @@
 // lib/mysql.ts
 import mysql from "mysql2/promise";
 
+const WP_ENGINE_HOST_REGEX = /\.wpenginepowered\.com$/i;
+
 let pool: mysql.Pool | null = null;
 
-function resolveSslConfig(): mysql.SslOptions | undefined {
-  const sslFlag = process.env.MYSQL_SSL;
-  if (!sslFlag || sslFlag.toLowerCase() === "false") return undefined;
+function resolveSslConfig(host: string): mysql.SslOptions | undefined {
+  const envSsl = process.env.MYSQL_SSL;
+  const enableSsl =
+    (envSsl && envSsl.toLowerCase() !== "false") ||
+    (!envSsl && WP_ENGINE_HOST_REGEX.test(host));
+
+  if (!enableSsl) return undefined;
+
+  const envReject = process.env.MYSQL_SSL_REJECT_UNAUTHORIZED;
+  const rejectUnauthorized =
+    envReject != null
+      ? envReject.toLowerCase() !== "false"
+      : !WP_ENGINE_HOST_REGEX.test(host);
 
   const ssl: mysql.SslOptions = {
-    rejectUnauthorized:
-      process.env.MYSQL_SSL_REJECT_UNAUTHORIZED?.toLowerCase() !== "false",
+    rejectUnauthorized,
   };
 
   const ca = process.env.MYSQL_SSL_CA;
@@ -27,16 +38,20 @@ function resolveSslConfig(): mysql.SslOptions | undefined {
 export function getPool() {
   if (pool) return pool;
 
-  const host = process.env.MYSQL_HOST || "127.0.0.1";
-  const user = process.env.MYSQL_USER || "root";
+  const defaultHost = "wp-pactlatrobedev.wpenginepowered.com";
+  const defaultDatabase = "wp_pactlatrobedev";
+  const defaultUser = "wp_pactlatrobedev";
+
+  const host = process.env.MYSQL_HOST || defaultHost;
+  const user = process.env.MYSQL_USER || defaultUser;
   const password = process.env.MYSQL_PASSWORD || "";
-  const database = process.env.MYSQL_DATABASE || "la-trobe";
+  const database = process.env.MYSQL_DATABASE || defaultDatabase;
 
-  const rawPort = process.env.MYSQL_PORT;
-  const parsedPort = rawPort ? Number.parseInt(rawPort, 10) : 3306;
-  const port = Number.isNaN(parsedPort) ? 3306 : parsedPort;
+  const rawPort = process.env.MYSQL_PORT || "13306";
+  const parsedPort = Number.parseInt(rawPort, 10);
+  const port = Number.isNaN(parsedPort) ? 13306 : parsedPort;
 
-  const ssl = resolveSslConfig();
+  const ssl = resolveSslConfig(host);
 
   pool = mysql.createPool({
     host,
