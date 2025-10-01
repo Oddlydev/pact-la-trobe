@@ -125,7 +125,7 @@ export default function Sidebar() {
       {/* Logo / Header */}
       <div className="flex items-center justify-center">
         {!expanded ? (
-          <img src="/assets/images/Sidebar-logo.svg" alt="Logo" />
+          <img src="../../../assets/images/sidebar-logo.svg" alt="Logo" />
         ) : (
           <div className="flex flex-col text-left gap-1.5">
             <span className="text-sm font-semibold">La Trobe</span>
