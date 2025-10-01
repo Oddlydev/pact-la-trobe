@@ -36,6 +36,7 @@ function EditIcon() {
 
 export default function ProfilePage() {
   const [editingField, setEditingField] = useState<"phone" | null>(null);
+  const [email] = useState("jane.doe@example.com");
   const [phone, setPhone] = useState("7 3344 2211"); // only number part
   const [country, setCountry] = useState("+61"); // dialing code
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -83,7 +84,7 @@ export default function ProfilePage() {
             <h1 className="mb-1 text-3xl font-black leading-9 tracking-tighter text-gray-800">
               Account Information
             </h1>
-            <p className="mb-9 text-gray-500 text-base leading-6 tracking-normal">
+            <p className="mb-9 text-gray-500 text-sm leading-6 tracking-normal">
               Manage your contact information and security settings
             </p>
 
@@ -110,6 +111,23 @@ export default function ProfilePage() {
                 </p>
               </div>
 
+              {/* Email Row */}
+              <div className="mb-4">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 leading-5"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  disabled
+                  className="mt-1 w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-sm outline-none shadow-sm text-gray-900 bg-white"
+                />
+              </div>
+
               {/* Phone Number Row */}
               <div className="mb-4 flex items-end gap-5">
                 <div className="flex-1">
@@ -126,7 +144,7 @@ export default function ProfilePage() {
                         name="country"
                         value={country}
                         onChange={(e) => setCountry(e.target.value)}
-                        className="w-16 rounded-l-md border-0 bg-transparent py-1.5 pl-3 text-base text-gray-900 focus:outline-none focus:ring-0 sm:text-sm"
+                        className="w-16 rounded-l-md border-0 bg-transparent py-2 pl-3.5 pr-1 leading-none text-sm text-gray-900 focus:outline-none focus:ring-0 sm:text-sm"
                       >
                         <option value="+61">+61</option>
                         <option value="+1">+1</option>
@@ -142,7 +160,7 @@ export default function ProfilePage() {
                         onChange={(e) => setPhone(e.target.value)}
                         readOnly={editingField !== "phone"}
                         placeholder="123-456-7890"
-                        className="block flex-1 border-0 bg-transparent py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm"
+                        className="block flex-1 border-0 bg-transparent py-2 pr-1 pl-3.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm"
                       />
                     </div>
                   </div>
@@ -215,7 +233,7 @@ export default function ProfilePage() {
                     type="password"
                     defaultValue="********"
                     readOnly
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-lg outline-none shadow-sm text-gray-900"
+                    className="w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-lg outline-none leading-none shadow-sm text-gray-900 bg-white"
                   />
                 </div>
                 <button
