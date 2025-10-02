@@ -35,7 +35,6 @@ export function getPool() {
   const rawPort = process.env.MYSQL_PORT;
   const parsedPort = rawPort ? Number.parseInt(rawPort, 10) : 3306;
   const port = Number.isNaN(parsedPort) ? 3306 : parsedPort;
-
   const ssl = resolveSslConfig();
 
   pool = mysql.createPool({
