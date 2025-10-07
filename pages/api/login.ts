@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { RowDataPacket } from "mysql2";
-import { PasswordHash } from "wordpress-hash-node";
+import { CheckPassword } from "wordpress-hash-node";
 
 import { getPool } from "@/lib/mysql";
 
@@ -16,8 +16,6 @@ type UserMetaRow = RowDataPacket & {
   meta_key: string;
   meta_value: string;
 };
-
-const wpHash = new PasswordHash();
 
 export default async function handler(
   req: NextApiRequest,
@@ -57,7 +55,7 @@ export default async function handler(
 
     const user = users[0];
 
-    const passwordOk = wpHash.CheckPassword(password, user.user_pass);
+    const passwordOk = CheckPassword(password, user.user_pass);
     if (!passwordOk) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
