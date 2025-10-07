@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormButton from "@/src/components/Buttons/FormButtons";
 
 interface ChangePasswordModalProps {
   open: boolean;
   onClose: () => void;
-  onUpdate: (current: string, newPass: string, confirm: string) => void;
+  onUpdate: (
+    current: string,
+    newPass: string,
+    confirm: string,
+  ) => Promise<{ ok: boolean; error?: string }>;
 }
 
 export default function ChangePasswordModal({
@@ -18,8 +22,54 @@ export default function ChangePasswordModal({
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setCurrent("");
+      setNewPass("");
+      setConfirm("");
+      setShowCurrent(false);
+      setShowNew(false);
+      setShowConfirm(false);
+      setFormError(null);
+      setSubmitting(false);
+    }
+  }, [open]);
 
   if (!open) return null;
+
+  const handleSubmit = async () => {
+    if (submitting) return;
+    setFormError(null);
+
+    if (!current || !newPass || !confirm) {
+      setFormError("All fields are required.");
+      return;
+    }
+
+    if (newPass !== confirm) {
+      setFormError("The new passwords do not match.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const result = await onUpdate(current, newPass, confirm);
+      if (!result.ok) {
+        setFormError(result.error ?? "Unable to update password.");
+        setSubmitting(false);
+        return;
+      }
+    } catch (error) {
+      setFormError("Unable to update password right now.");
+      setSubmitting(false);
+      return;
+    }
+
+    setSubmitting(false);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(17,24,39,0.75)]">
@@ -63,6 +113,7 @@ export default function ChangePasswordModal({
                   value={current}
                   onChange={(e) => setCurrent(e.target.value)}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm leading-5 outline-none shadow-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -70,7 +121,6 @@ export default function ChangePasswordModal({
                   className="absolute inset-y-0 right-3 flex items-center text-gray-900 hover:text-gray-700"
                 >
                   {showCurrent ? (
-                    // Eye-off icon
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="21"
@@ -87,7 +137,6 @@ export default function ChangePasswordModal({
                       />
                     </svg>
                   ) : (
-                    // Eye icon
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="21"
@@ -126,6 +175,7 @@ export default function ChangePasswordModal({
                   value={newPass}
                   onChange={(e) => setNewPass(e.target.value)}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm leading-5 outline-none shadow-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -133,7 +183,6 @@ export default function ChangePasswordModal({
                   className="absolute inset-y-0 right-3 flex items-center text-gray-900 hover:text-gray-700"
                 >
                   {showNew ? (
-                    // Eye-off icon (full)
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="21"
@@ -150,7 +199,6 @@ export default function ChangePasswordModal({
                       />
                     </svg>
                   ) : (
-                    // Eye icon (full)
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="21"
@@ -189,6 +237,7 @@ export default function ChangePasswordModal({
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm leading-5 outline-none shadow-sm text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -196,7 +245,6 @@ export default function ChangePasswordModal({
                   className="absolute inset-y-0 right-3 flex items-center text-gray-900 hover:text-gray-700"
                 >
                   {showConfirm ? (
-                    // Eye-off icon (full)
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="21"
@@ -213,7 +261,6 @@ export default function ChangePasswordModal({
                       />
                     </svg>
                   ) : (
-                    // Eye icon (full)
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="21"
@@ -243,16 +290,34 @@ export default function ChangePasswordModal({
           </div>
         </div>
 
+        {formError && (
+          <p className="mt-4 text-sm text-red-600" role="alert">
+            {formError}
+          </p>
+        )}
+
         {/* Actions */}
         <div className="mt-4 flex justify-end gap-4">
-          <FormButton variant="light" label="Cancel" onClick={onClose} />
+          <FormButton
+            variant="light"
+            label="Cancel"
+            onClick={onClose}
+            disabled={submitting}
+          />
           <FormButton
             variant="dark"
-            label="Update Password"
-            onClick={() => onUpdate(current, newPass, confirm)}
+            label={submitting ? "Updating..." : "Update Password"}
+            onClick={handleSubmit}
+            disabled={submitting}
           />
         </div>
       </div>
     </div>
   );
 }
+
+
+
+
+
+
