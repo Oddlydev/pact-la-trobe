@@ -3,8 +3,7 @@ import mysql from "mysql2/promise";
 
 const DEFAULTS = {
   // Primary guess based on WP Engine docs
-  host: "pactlatrobedev.wpenginepowered.com",
-  port: 13306,
+  host: "127.0.0.1:3306",
   user: "pactlatrobedev",
   database: "wp_pactlatrobedev",
   password: "Z2Aq8ctI-LYymNqP3zyT",
@@ -59,16 +58,10 @@ async function tryCreatePool(host: string): Promise<mysql.Pool | null> {
       ? process.env.MYSQL_PASSWORD
       : DEFAULTS.password) || "";
   const database = process.env.MYSQL_DATABASE || DEFAULTS.database;
-
-  const rawPort = process.env.MYSQL_PORT;
-  const parsedPort = rawPort ? Number.parseInt(rawPort, 10) : DEFAULTS.port;
-  const port = Number.isNaN(parsedPort) ? DEFAULTS.port : parsedPort;
-
   const ssl = resolveSslConfig(host);
 
   const candidate = mysql.createPool({
     host,
-    port,
     user,
     password,
     database,
@@ -87,7 +80,9 @@ async function tryCreatePool(host: string): Promise<mysql.Pool | null> {
     selectedHost = host;
     return candidate;
   } catch {
-    try { candidate.end(); } catch {}
+    try {
+      candidate.end();
+    } catch {}
     return null;
   }
 }
@@ -106,7 +101,10 @@ export function getPool() {
         if (!pool) {
           for (const h of hosts) {
             const p = await tryCreatePool(h);
-            if (p) { pool = p; break; }
+            if (p) {
+              pool = p;
+              break;
+            }
           }
           if (!pool) {
             // Last resort: try DEFAULTS.host
@@ -115,7 +113,7 @@ export function getPool() {
           }
           if (!pool) {
             throw new Error(
-              `Unable to connect to WP Engine MySQL (hosts tried: ${hosts.join(", ")}).`,
+              `Unable to connect to WP Engine MySQL (hosts tried: ${hosts.join(", ")}).`
             );
           }
         }
