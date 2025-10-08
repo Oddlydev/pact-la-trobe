@@ -82,9 +82,7 @@ export default function LoginPage() {
         : "Welcome back!";
       setSuccess(greeting);
 
-      setTimeout(() => {
-        void router.push("/");
-      }, 500);
+      await router.replace("/");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Login failed.";
       setError(message);
@@ -179,3 +177,4 @@ export default function LoginPage() {
     </>
   );
 }
+

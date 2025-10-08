@@ -64,7 +64,6 @@ export default async function handler(
           o.recurrent_falls
         FROM patients p
         JOIN patient_overview o ON p.patientId = o.patientId
-        WHERE (p.deleteReason IS NULL OR p.deleteReason = '')
         ORDER BY o.pcfScore DESC`
       );
 
@@ -93,3 +92,4 @@ export default async function handler(
       .json({ ok: false, error: err?.message || "Internal Server Error" });
   }
 }
+

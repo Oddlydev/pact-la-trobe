@@ -58,9 +58,7 @@ export default async function handler(
   try {
     if (req.method === "GET") {
       const [rows] = await pool.query<DbPatientRow[]>(
-        `SELECT * FROM patients
-         WHERE (deleteReason IS NULL OR deleteReason = '')
-         ORDER BY id DESC`
+        `SELECT * FROM patients ORDER BY id DESC`
       );
 
       const data = rows.map(toApiPatient);
@@ -109,3 +107,5 @@ export default async function handler(
       .json({ ok: false, error: err?.message || "Internal Server Error" });
   }
 }
+
+

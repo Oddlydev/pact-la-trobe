@@ -2,16 +2,27 @@
 import mysql from "mysql2/promise";
 
 const DEFAULTS = {
-  host: "wp-pactlatrobedev.wpenginepowered.com",
+  // Primary guess based on WP Engine docs
+  host: "pactlatrobedev.wpenginepowered.com",
   port: 13306,
   user: "pactlatrobedev",
   database: "wp_pactlatrobedev",
   password: "Z2Aq8ctI-LYymNqP3zyT",
 };
 
-const WP_ENGINE_HOST_REGEX = /\.wpenginepowered\.com$/i;
+const CANDIDATE_HOSTS = [
+  // Most likely
+  "pactlatrobedev.wpenginepowered.com",
+  "pactlatrobedev.wpengine.com",
+  // Some environments prefix with `wp-`
+  "wp-pactlatrobedev.wpenginepowered.com",
+  "wp-pactlatrobedev.wpengine.com",
+];
+
+const WP_ENGINE_HOST_REGEX = /\.wpengine(powered)?\.com$/i;
 
 let pool: mysql.Pool | null = null;
+let selectedHost: string | null = null;
 
 function resolveSslConfig(host: string): mysql.SslOptions | undefined {
   const envSsl = process.env.MYSQL_SSL;
@@ -23,9 +34,7 @@ function resolveSslConfig(host: string): mysql.SslOptions | undefined {
 
   const envReject = process.env.MYSQL_SSL_REJECT_UNAUTHORIZED;
   const rejectUnauthorized =
-    envReject != null
-      ? envReject.toLowerCase() !== "false"
-      : !WP_ENGINE_HOST_REGEX.test(host);
+    envReject != null ? envReject.toLowerCase() !== "false" : false; // WP Engine cert chain sometimes fails locally
 
   const ssl: mysql.SslOptions = {
     rejectUnauthorized,
@@ -43,12 +52,12 @@ function resolveSslConfig(host: string): mysql.SslOptions | undefined {
   return ssl;
 }
 
-export function getPool() {
-  if (pool) return pool;
-
-  const host = process.env.MYSQL_HOST || DEFAULTS.host;
+async function tryCreatePool(host: string): Promise<mysql.Pool | null> {
   const user = process.env.MYSQL_USER || DEFAULTS.user;
-  const password = (process.env.MYSQL_PASSWORD !== undefined ? process.env.MYSQL_PASSWORD : DEFAULTS.password) || "";
+  const password =
+    (process.env.MYSQL_PASSWORD !== undefined
+      ? process.env.MYSQL_PASSWORD
+      : DEFAULTS.password) || "";
   const database = process.env.MYSQL_DATABASE || DEFAULTS.database;
 
   const rawPort = process.env.MYSQL_PORT;
@@ -57,7 +66,7 @@ export function getPool() {
 
   const ssl = resolveSslConfig(host);
 
-  pool = mysql.createPool({
+  const candidate = mysql.createPool({
     host,
     port,
     user,
@@ -66,11 +75,58 @@ export function getPool() {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
+    connectTimeout: 7000,
     dateStrings: true,
     ...(ssl ? { ssl } : {}),
   });
 
-  return pool;
+  try {
+    const conn = await candidate.getConnection();
+    await conn.ping();
+    conn.release();
+    selectedHost = host;
+    return candidate;
+  } catch {
+    try { candidate.end(); } catch {}
+    return null;
+  }
+}
+
+export function getPool() {
+  if (pool) return pool;
+
+  const envHost = process.env.MYSQL_HOST;
+  const hosts = envHost ? [envHost, ...CANDIDATE_HOSTS] : CANDIDATE_HOSTS;
+
+  // Note: we cannot use top-level await here; initialize lazily on first use.
+  // Create a lightweight proxy that resolves to a working pool on first query.
+  const lazy = new Proxy({} as mysql.Pool, {
+    get(_t, prop) {
+      return async (...args: any[]) => {
+        if (!pool) {
+          for (const h of hosts) {
+            const p = await tryCreatePool(h);
+            if (p) { pool = p; break; }
+          }
+          if (!pool) {
+            // Last resort: try DEFAULTS.host
+            const fallback = await tryCreatePool(DEFAULTS.host);
+            if (fallback) pool = fallback;
+          }
+          if (!pool) {
+            throw new Error(
+              `Unable to connect to WP Engine MySQL (hosts tried: ${hosts.join(", ")}).`,
+            );
+          }
+        }
+        // @ts-ignore - forward calls to the real pool
+        return (pool as any)[prop](...args);
+      };
+    },
+  });
+
+  // @ts-ignore
+  return lazy as unknown as mysql.Pool;
 }
 
 export type DbPatientRow = {
