@@ -174,21 +174,6 @@ export default function LoginPage() {
               disabled={loading}
             />
           </form>
-
-          {wordpressLoginUrl && (
-            <p className="mt-6 text-center text-sm text-gray-500 font-dmsans">
-              Prefer WordPress?{" "}
-              <a
-                href={wordpressLoginUrl}
-                className="font-medium text-[var(--color-accent)]"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Use the default WordPress login
-              </a>
-              .
-            </p>
-          )}
         </div>
       </main>
     </>
