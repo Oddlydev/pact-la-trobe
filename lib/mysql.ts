@@ -4,8 +4,9 @@ import mysql from "mysql2/promise";
 const DEFAULTS = {
   host: "wp-pactlatrobedev.wpenginepowered.com",
   port: 13306,
-  user: "wp_pactlatrobedev",
+  user: "pactlatrobedev",
   database: "wp_pactlatrobedev",
+  password: "Z2Aq8ctI-LYymNqP3zyT",
 };
 
 const WP_ENGINE_HOST_REGEX = /\.wpenginepowered\.com$/i;
@@ -47,7 +48,7 @@ export function getPool() {
 
   const host = process.env.MYSQL_HOST || DEFAULTS.host;
   const user = process.env.MYSQL_USER || DEFAULTS.user;
-  const password = process.env.MYSQL_PASSWORD || "";
+  const password = (process.env.MYSQL_PASSWORD !== undefined ? process.env.MYSQL_PASSWORD : DEFAULTS.password) || "";
   const database = process.env.MYSQL_DATABASE || DEFAULTS.database;
 
   const rawPort = process.env.MYSQL_PORT;
