@@ -1,10 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PrimaryButton from "../Buttons/PrimaryButtons";
 import AddPatientDrawer from "@/src/components/Drawer/AddPatientDrawer";
 
 export default function Topbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [loadingUser, setLoadingUser] = useState<boolean>(true);
+
+  useEffect(() => {
+    let active = true;
+    async function loadMe() {
+      try {
+        const res = await fetch("/api/me");
+        if (!res.ok) {
+          if (!active) return;
+          setCurrentUser(null);
+          return;
+        }
+        const data = await res.json();
+        if (!active) return;
+        setCurrentUser(data?.user || null);
+      } catch {
+        if (!active) return;
+        setCurrentUser(null);
+      } finally {
+        if (!active) return;
+        setLoadingUser(false);
+      }
+    }
+    loadMe();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const displayName: string = (
+    (currentUser?.name as string) ||
+    (currentUser?.user_display_name as string) ||
+    (currentUser?.user_nicename as string) ||
+    (currentUser?.user_email as string) ||
+    ""
+  );
+  const profileInitial: string = (displayName || " ")
+    .trim()
+    .charAt(0)
+    .toUpperCase();
 
   return (
     <div className="w-full bg-[rgba(171,190,194,0.10)] shadow-[inset_0_0_50px_0_rgba(171,190,194,0.10)]">
@@ -12,7 +53,10 @@ export default function Topbar() {
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left greeting */}
         <div className="text-2xl font-light">
-          Hi, <span className="text-2xl font-bold">Thompson Robert</span>
+          Hi, {" "}
+          <span className="text-2xl font-bold">
+            {loadingUser ? "…" : displayName || "Guest"}
+          </span>
         </div>
 
         {/* Right side */}
@@ -43,7 +87,7 @@ export default function Topbar() {
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white font-dmsans text-xl font-black"
             >
-              T
+              {loadingUser ? "…" : profileInitial || "?"}
             </button>
 
             {/* Dropdown */}

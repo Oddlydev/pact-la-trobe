@@ -103,11 +103,23 @@ export default function LoginPage() {
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
               />
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700">
+            {/* Password Field with Forgot Password */}
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-slate-700 font-dmsans"
+              >
                 Password
               </label>
+              <a
+                href={`${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-login.php?action=lostpassword`}
+                className="text-sm font-medium leading-5 tracking-normal text-[var(--color-accent)]"
+              >
+                Forgot password?
+              </a>
+            </div>
+
+            <div>
               <input
                 type="password"
                 value={password}
@@ -122,7 +134,9 @@ export default function LoginPage() {
               <p className="text-red-600 text-sm text-center">{loginError}</p>
             )}
             {loginSuccess && (
-              <p className="text-green-600 text-sm text-center">{loginSuccess}</p>
+              <p className="text-green-600 text-sm text-center">
+                {loginSuccess}
+              </p>
             )}
 
             <button
@@ -135,52 +149,6 @@ export default function LoginPage() {
               {loadingLogin ? "Signing in..." : "Sign in"}
             </button>
           </form>
-        </div>
-
-        {/* 🧠 Display WordPress users */}
-        <div className="mt-16 sm:mx-auto sm:w-full sm:max-w-2xl">
-          <h3 className="text-xl font-bold text-zinc-900 mb-4 text-center">
-            Current Users
-          </h3>
-
-          {loadingUsers && <p className="text-center">Loading users...</p>}
-          {errorUsers && (
-            <p className="text-center text-red-600">{errorUsers}</p>
-          )}
-
-          {!loadingUsers && !errorUsers && (
-            <table className="min-w-full border border-gray-300">
-              <thead>
-                <tr className="bg-gray-100 text-left">
-                  <th className="py-2 px-3 border-b">ID</th>
-                  <th className="py-2 px-3 border-b">Login</th>
-                  <th className="py-2 px-3 border-b">Name</th>
-                  <th className="py-2 px-3 border-b">Email</th>
-                  <th className="py-2 px-3 border-b">URL</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr key={u.ID} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-3">{u.ID}</td>
-                    <td className="py-2 px-3">{u.user_login}</td>
-                    <td className="py-2 px-3">{u.user_nicename}</td>
-                    <td className="py-2 px-3">{u.user_email}</td>
-                    <td className="py-2 px-3">
-                      <a
-                        href={u.user_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline"
-                      >
-                        {u.user_url}
-                      </a>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
         </div>
       </main>
     </>
