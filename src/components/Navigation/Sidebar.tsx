@@ -1,10 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const router = useRouter();
+
+  // Fetch current user info from our API (uses httpOnly JWT cookie)
+  useEffect(() => {
+    let active = true;
+    async function loadMe() {
+      try {
+        const res = await fetch("/api/me");
+        if (!res.ok) {
+          if (!active) return;
+          setCurrentUser(null);
+          return;
+        }
+        const data = await res.json();
+        if (!active) return;
+        setCurrentUser(data?.user || null);
+      } catch {
+        if (!active) return;
+        setCurrentUser(null);
+      } finally {
+        if (!active) return;
+        setLoadingUser(false);
+      }
+    }
+    loadMe();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function handleLogout() {
+    try {
+      await fetch("/api/logout", { method: "POST" });
+    } catch {}
+    router.push("/login");
+  }
 
   const menuItems = [
     {
@@ -163,7 +200,13 @@ export default function Sidebar() {
             {/* Name + SVG row */}
             <div className="flex justify-between items-start self-stretch">
               <div className="text-2xl font-medium font-dmsans text-white">
-                Thomson Robert
+                {loadingUser
+                  ? "…"
+                  : (currentUser?.name ||
+                      currentUser?.user_display_name ||
+                      currentUser?.user_nicename ||
+                      currentUser?.user_email ||
+                      "Guest")}
               </div>
               <a href="/user-profile">
                 <svg
@@ -209,7 +252,7 @@ export default function Sidebar() {
           className={`${expanded ? "w-full" : "flex justify-center w-full"}`}
         >
           <button
-            onClick={() => alert("Logging out...")} // <-- replace with real logout
+            onClick={handleLogout}
             className={`flex items-center gap-2.5 px-3 py-2.5 rounded-md transition-all duration-200 ${
               expanded ? "justify-start w-full" : "justify-center"
             } bg-gray-900 hover:bg-gray-900 hover:ring-2 hover:ring-blue-950`}

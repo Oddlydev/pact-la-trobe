@@ -1,98 +1,74 @@
+// pages/api/login.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { RowDataPacket } from "mysql2";
-import { CheckPassword } from "wordpress-hash-node";
+import { serialize } from "cookie";
 
-import { getPool } from "@/lib/mysql";
+const NEXT_PUBLIC_WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL!;
+const COOKIE_NAME = process.env.JWT_COOKIE_NAME || "wpToken";
+const MAX_AGE = Number(process.env.JWT_COOKIE_MAX_AGE || 3600);
 
-type UserRow = RowDataPacket & {
-  ID: number;
-  user_login: string;
-  user_pass: string;
-  user_email: string;
-  display_name: string;
-};
-
-type UserMetaRow = RowDataPacket & {
-  meta_key: string;
-  meta_value: string;
-};
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
-    res.setHeader("Allow", ["POST"]);
-    return res.status(405).json({ message: "Method Not Allowed" });
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   }
 
-  const { identifier, password } = req.body ?? {};
-
-  if (
-    typeof identifier !== "string" ||
-    typeof password !== "string" ||
-    !identifier.trim() ||
-    !password
-  ) {
-    return res.status(400).json({ message: "Missing credentials" });
+  const { email, password } = req.body || {};
+  if (!email || !password) {
+    return res.status(400).json({ ok: false, error: "Missing email or password" });
   }
 
   try {
-    const pool = getPool();
-    const normalizedIdentifier = identifier.trim();
+    // WP plugin expects "username" even if it's an email. Most setups accept email here.
+    // Use rest_route form for environments where /wp-json is not routed
+    const wpRes = await fetch(`${NEXT_PUBLIC_WORDPRESS_URL}/?rest_route=/jwt-auth/v1/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ username: email, password }),
+    });
 
-    const [users] = await pool.execute<UserRow[]>(
-      `SELECT ID, user_login, user_pass, user_email, display_name
-       FROM wp_users
-       WHERE user_email = ? OR user_login = ?
-       LIMIT 1`,
-      [normalizedIdentifier, normalizedIdentifier],
-    );
-
-    if (!users.length) {
-      return res.status(401).json({ message: "Invalid email or password" });
+    // WP can sometimes return HTML (e.g., redirects, WAF blocks). Read as text and try JSON.
+    const raw = await wpRes.text();
+    let data: any = null;
+    try {
+      data = raw ? JSON.parse(raw) : null;
+    } catch {
+      data = null;
     }
 
-    const user = users[0];
-
-    const passwordOk = CheckPassword(password, user.user_pass);
-    if (!passwordOk) {
-      return res.status(401).json({ message: "Invalid email or password" });
+    if (!wpRes.ok || !data?.token) {
+      // If JSON parse failed, include a short snippet of raw text for debugging.
+      const snippet = raw && typeof raw === "string" ? raw.slice(0, 200) : undefined;
+      const message = (data && data.message) || snippet || "Invalid login";
+      return res.status(wpRes.status && wpRes.status !== 200 ? wpRes.status : 401).json({
+        ok: false,
+        error: message,
+      });
     }
 
-    const metaKeys = [
-      "first_name",
-      "last_name",
-      "nickname",
-      "description",
-      "wp_capabilities",
-    ];
-    const keyPlaceholders = metaKeys.map(() => "?").join(", ");
+    // Set httpOnly cookie
+    const cookie = serialize(COOKIE_NAME, data.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: MAX_AGE,
+    });
+    res.setHeader("Set-Cookie", cookie);
 
-    const [metaRows] = await pool.execute<UserMetaRow[]>(
-      `SELECT meta_key, meta_value
-       FROM wp_usermeta
-       WHERE user_id = ?
-         AND meta_key IN (${keyPlaceholders})`,
-      [user.ID, ...metaKeys],
-    );
-
-    const meta: Record<string, string> = {};
-    for (const row of metaRows) {
-      meta[row.meta_key] = row.meta_value;
-    }
-
+    // Return minimal public info to the client
     return res.status(200).json({
+      ok: true,
       user: {
-        id: user.ID,
-        login: user.user_login,
-        email: user.user_email,
-        displayName: user.display_name,
-        meta,
+        email: data.user_email,
+        nicename: data.user_nicename,
+        name: data.user_display_name,
       },
     });
-  } catch (error) {
-    console.error("Failed to authenticate user", error);
-    return res.status(500).json({ message: "Internal server error" });
+  } catch (err: any) {
+    console.error("Login error:", err);
+    return res.status(500).json({ ok: false, error: "Server error" });
   }
 }

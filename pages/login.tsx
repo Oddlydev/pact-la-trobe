@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loadingLogin, setLoadingLogin] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState<string | null>(null);
 
   // User list display
   const [users, setUsers] = useState<User[]>([]);
@@ -45,20 +46,21 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoginError(null);
+    setLoginSuccess(null);
     setLoadingLogin(true);
 
     try {
+      // inside handleLogin()
       const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Invalid email or password");
-      }
+      if (!res.ok) throw new Error(data.error || "Invalid login");
+      setLoginSuccess("Signed in successfully. Redirecting…");
+      setTimeout(() => router.push("/"), 1000);
+      return;
 
       // ✅ Successful login → redirect
       router.push("/");
@@ -118,6 +120,9 @@ export default function LoginPage() {
             {/* 🧠 Show validation or login error */}
             {loginError && (
               <p className="text-red-600 text-sm text-center">{loginError}</p>
+            )}
+            {loginSuccess && (
+              <p className="text-green-600 text-sm text-center">{loginSuccess}</p>
             )}
 
             <button
