@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "@/src/components/Layout";
 import ChangePasswordModal from "@/src/components/Modal/ChangePasswordModal";
 
@@ -36,9 +36,12 @@ function EditIcon() {
 
 export default function ProfilePage() {
   const [editingField, setEditingField] = useState<"phone" | null>(null);
-  const [email] = useState("jane.doe@example.com");
-  const [phone, setPhone] = useState("7 3344 2211"); // only number part
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState(""); // only number part
   const [country, setCountry] = useState("+61"); // dialing code
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const [message, setMessage] = useState<{
@@ -60,6 +63,66 @@ export default function ProfilePage() {
       setTimeout(() => setMessage(null), 3000);
     }
   };
+
+  // Fetch current user details (name, ACF phone)
+  useEffect(() => {
+    let active = true;
+    async function loadMe() {
+      try {
+        const res = await fetch("/api/me");
+        if (!res.ok) {
+          if (!active) return;
+          setCurrentUser(null);
+          return;
+        }
+        const data = await res.json();
+        if (!active) return;
+        const u = data?.user || null;
+        setCurrentUser(u);
+
+        // Name
+        const n =
+          (u?.name as string) ||
+          (u?.user_display_name as string) ||
+          (u?.user_nicename as string) ||
+          "";
+        setName(n);
+
+        // Email (best effort; WP REST may omit email)
+        const em = (u?.email as string) || (u?.user_email as string) || "";
+        if (em) setEmail(em);
+
+        // Phone/Contact number from ACF
+        const acfPhone =
+          u?.acf?.phone_number ||
+          u?.acf?.contact_number ||
+          u?.acf?.contact ||
+          u?.acf?.phone ||
+          u?.phone_number ||
+          "";
+        if (typeof acfPhone === "string" && acfPhone.trim()) {
+          const trimmed = acfPhone.trim();
+          const m = trimmed.match(/^(\+\d{1,4})\s*(.*)$/);
+          if (m) {
+            setCountry(m[1]);
+            setPhone(m[2] || "");
+          } else {
+            setPhone(trimmed);
+          }
+        }
+      } catch {
+        if (!active) return;
+        setCurrentUser(null);
+      } finally {
+        if (!active) return;
+        setLoadingUser(false);
+      }
+    }
+    loadMe();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handlePasswordUpdate = async (
     current: string,
@@ -149,8 +212,25 @@ export default function ProfilePage() {
                   User ID :
                 </p>
                 <p className="text-gray-500 text-sm leading-5 font-normal">
-                  NU134436
+                  {loadingUser ? "…" : currentUser?.id ?? "-"}
                 </p>
+              </div>
+
+              {/* Name Row */}
+              <div className="mb-4">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 leading-5"
+                >
+                  Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={loadingUser ? "" : name}
+                  disabled
+                  className="mt-1 w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-sm outline-none shadow-sm text-gray-900 bg-white"
+                />
               </div>
 
               {/* Email Row */}
