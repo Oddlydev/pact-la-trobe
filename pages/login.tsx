@@ -100,10 +100,10 @@ export default function LoginPage() {
           </h2>
         </div>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form onSubmit={handleLogin} className="space-y-6">
+        <div className="mt-16 sm:mx-auto sm:w-full sm:max-w-sm">
+          <form onSubmit={handleLogin}>
             <div>
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 leading-5">
                 Email address
               </label>
               <input
@@ -111,33 +111,35 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                className="block w-full rounded-md border border-gray-300 px-3 py-2"
               />
             </div>
-            {/* Password Field with Forgot Password */}
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-slate-700 font-dmsans"
-              >
-                Password
-              </label>
-              <a
-                href={`${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-login.php?action=lostpassword`}
-                className="text-sm font-medium leading-5 tracking-normal text-[var(--color-accent)]"
-              >
-                Forgot password?
-              </a>
-            </div>
-
             <div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-              />
+              {/* Password Field with Forgot Password */}
+              <div className="flex items-center justify-between mt-6">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-slate-700 leading-5 font-dmsans"
+                >
+                  Password
+                </label>
+                <a
+                  href={`${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-login.php?action=lostpassword`}
+                  className="text-sm font-medium leading-5 tracking-normal text-[var(--color-accent)]"
+                >
+                  Forgot your password?
+                </a>
+              </div>
+
+              <div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="block w-full rounded-md border border-gray-300 px-3 py-2"
+                />
+              </div>
             </div>
 
             {/* 🧠 Show validation or login error */}
@@ -155,7 +157,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loadingLogin}
-              className={`w-full flex justify-center rounded-md bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 ${
+              className={`w-full flex justify-center rounded-md bg-black px-4 py-2.5 mt-6 text-sm font-semibold text-white shadow-md hover:bg-gray-800 ${
                 loadingLogin ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
