@@ -42,9 +42,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // If JSON parse failed, include a short snippet of raw text for debugging.
       const snippet = raw && typeof raw === "string" ? raw.slice(0, 200) : undefined;
       const message = (data && data.message) || snippet || "Invalid login";
+      const stripTags = (s: string) =>
+        (s || "")
+          .replace(/<[^>]*>/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      const plain = stripTags(message);
       return res.status(wpRes.status && wpRes.status !== 200 ? wpRes.status : 401).json({
         ok: false,
-        error: message,
+        error: plain,
       });
     }
 

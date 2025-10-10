@@ -50,6 +50,11 @@ export default function LoginPage() {
     setLoadingLogin(true);
 
     try {
+      const cleanMessage = (msg: string) =>
+        (msg || "")
+          .replace(/<[^>]*>/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
       // inside handleLogin()
       const res = await fetch("/api/login", {
         method: "POST",
@@ -57,7 +62,13 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Invalid login");
+      if (!res.ok) {
+        const msg = cleanMessage(data?.error || "Invalid login");
+        const friendly = /incorrect|invalid|unknown/i.test(msg)
+          ? "Incorrect email or password. Please try again."
+          : msg || "Login failed. Please try again.";
+        throw new Error(friendly);
+      }
       setLoginSuccess("Signed in successfully. Redirecting…");
       setTimeout(() => router.push("/"), 1000);
       return;
@@ -131,7 +142,9 @@ export default function LoginPage() {
 
             {/* 🧠 Show validation or login error */}
             {loginError && (
-              <p className="text-red-600 text-sm text-center">{loginError}</p>
+              <div className="text-red-600 text-sm text-center">
+                {loginError}
+              </div>
             )}
             {loginSuccess && (
               <p className="text-green-600 text-sm text-center">
