@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
+import type { GetServerSideProps } from "next";
 import Sidebar from "@/src/components/Navigation/Sidebar";
 import StatisticsCard from "@/src/components/Cards/StatisticsCard";
 import Chip from "@/src/components/Chips/Chips";
@@ -209,3 +210,48 @@ export default function HomePage() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const COOKIE_NAME = process.env.JWT_COOKIE_NAME || "wpToken";
+  const NEXT_PUBLIC_WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL;
+
+  const token = ctx.req.cookies?.[COOKIE_NAME];
+
+  // If no token, redirect to login
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  // Optionally validate token against WP to avoid stale cookies
+  if (NEXT_PUBLIC_WORDPRESS_URL) {
+    try {
+      const meRes = await fetch(
+        `${NEXT_PUBLIC_WORDPRESS_URL}/?rest_route=/wp/v2/users/me&context=edit`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!meRes.ok) {
+        return {
+          redirect: {
+            destination: "/login",
+            permanent: false,
+          },
+        };
+      }
+    } catch {
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+  }
+
+  // Authenticated
+  return { props: {} };
+};
