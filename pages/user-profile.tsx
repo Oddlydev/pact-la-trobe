@@ -277,6 +277,23 @@ export default function ProfilePage() {
                 </p>
               </div>
 
+              {/* Email Row */}
+              <div className="mb-4">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 leading-5"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  disabled
+                  className="mt-1 w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-sm outline-none shadow-sm text-gray-900 bg-white"
+                />
+              </div>
+
               {/* Name Row */}
               <div className="mb-4 flex items-end gap-5">
                 <div className="flex-1">
@@ -347,23 +364,6 @@ export default function ProfilePage() {
                     <EditIcon />
                   </button>
                 )}
-              </div>
-
-              {/* Email Row */}
-              <div className="mb-4">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 leading-5"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  disabled
-                  className="mt-1 w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-sm outline-none shadow-sm text-gray-900 bg-white"
-                />
               </div>
 
               {/* Phone Number Row */}
@@ -458,7 +458,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Password Row */}
-              <div className="flex items-end gap-3">
+              <div className="flex items-end gap-5">
                 <div className="flex-1">
                   <label
                     htmlFor="password"
@@ -471,7 +471,7 @@ export default function ProfilePage() {
                     type="password"
                     defaultValue="********"
                     readOnly
-                    className="w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-lg outline-none leading-none shadow-sm text-gray-900 bg-white"
+                    className="w-full rounded-md border border-gray-300 py-2 px-3.5 text-lg outline-none leading-none shadow-sm text-gray-900 bg-white"
                   />
                 </div>
                 <button
