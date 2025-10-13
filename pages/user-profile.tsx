@@ -36,7 +36,7 @@ function EditIcon() {
 }
 
 export default function ProfilePage() {
-  const [editingField, setEditingField] = useState<"phone" | null>(null);
+  const [editingField, setEditingField] = useState<"phone" | "name" | null>(null);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState(""); // only number part
@@ -50,17 +50,42 @@ export default function ProfilePage() {
     text: string;
   } | null>(null);
 
-  const handleSave = (field: "phone") => {
-    if (field === "phone") {
-      if (phone.trim() === "") {
-        setMessage({ type: "error", text: "Phone number cannot be empty." });
-      } else {
-        setMessage({
-          type: "success",
-          text: `Phone number updated successfully to ${country} ${phone}!`,
+  const handleSave = async (field: "phone" | "name") => {
+    try {
+      if (field === "phone") {
+        if (phone.trim() === "") {
+          setMessage({ type: "error", text: "Phone number cannot be empty." });
+          setTimeout(() => setMessage(null), 3000);
+          return;
+        }
+        const resp = await fetch("/api/user/update-profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone, country }),
         });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok || !data?.ok) throw new Error(data?.error || "Update failed");
+        setMessage({ type: "success", text: "Phone number updated successfully." });
+        setEditingField(null);
+      } else if (field === "name") {
+        if (!name.trim()) {
+          setMessage({ type: "error", text: "Name cannot be empty." });
+          setTimeout(() => setMessage(null), 3000);
+          return;
+        }
+        const resp = await fetch("/api/user/update-profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name }),
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok || !data?.ok) throw new Error(data?.error || "Update failed");
+        setMessage({ type: "success", text: "Name updated successfully." });
         setEditingField(null);
       }
+    } catch (e: any) {
+      setMessage({ type: "error", text: e?.message || "Unable to update" });
+    } finally {
       setTimeout(() => setMessage(null), 3000);
     }
   };
@@ -219,19 +244,59 @@ export default function ProfilePage() {
 
               {/* Name Row */}
               <div className="mb-4">
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 leading-5"
-                >
-                  Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={loadingUser ? "" : name}
-                  disabled
-                  className="mt-1 w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-sm outline-none shadow-sm text-gray-900 bg-white"
-                />
+                <div className="flex items-end gap-3">
+                  <div className="flex-1">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700 leading-5"
+                    >
+                      Name
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      value={loadingUser ? "" : name}
+                      onChange={(e) => setName(e.target.value)}
+                      readOnly={editingField !== "name"}
+                      className="mt-1 w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-sm outline-none shadow-sm text-gray-900 bg-white"
+                    />
+                  </div>
+                  {editingField === "name" ? (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleSave("name")}
+                        className="rounded-full bg-black text-sm text-white font-medium hover:bg-gray-800 w-[72px] h-9 flex items-center justify-center leading-3.5"
+                      >
+                        <div className="flex items-center gap-1">Save</div>
+                      </button>
+                      <button
+                        onClick={() => setEditingField(null)}
+                        className="flex items-center justify-center rounded-full border border-black h-9 w-10"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 16 16"
+                          className="h-4 w-4"
+                          fill="none"
+                        >
+                          <path
+                            d="M12 4L4 12M12 12L4 4"
+                            stroke="black"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setEditingField("name")}
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black hover:bg-gray-800"
+                    >
+                      <EditIcon />
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Email Row */}
