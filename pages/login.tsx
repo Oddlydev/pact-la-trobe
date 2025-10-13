@@ -74,7 +74,7 @@ export default function LoginPage() {
       setTimeout(() => router.push("/"), 1000);
       return;
 
-      // ✅ Successful login → redirect
+      //Successful login → redirect
       router.push("/");
     } catch (err: any) {
       setLoginError(err.message);
@@ -141,7 +141,7 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* 🧠 Show validation or login error */}
+            {/* Show validation or login error */}
             {loginError && (
               <div className="text-red-600 text-sm text-center mt-4">
                 {loginError}
