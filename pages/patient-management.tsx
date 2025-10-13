@@ -180,7 +180,10 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
+export const getServerSideProps: GetServerSideProps<PageProps> = async (ctx) => {
+  const { requireAuth } = await import("@/lib/requireAuth");
+  const authRedirect = await requireAuth<PageProps>(ctx);
+  if (authRedirect) return authRedirect;
   try {
     const pool = getPool();
     const [rows] = await pool.query<(DbPatientRow & RowDataPacket)[]>(

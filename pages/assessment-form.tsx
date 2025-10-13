@@ -1,4 +1,5 @@
 import React from "react";
+import type { GetServerSideProps } from "next";
 import Layout from "@/src/components/Layout";
 import PrimaryButton from "@/src/components/Buttons/PrimaryButtons";
 import OverallSeverityCards from "@/src/components/Cards/OverallSeverityCards";
@@ -595,3 +596,10 @@ export default function AssessmentFormPage() {
     </Layout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { requireAuth } = await import("@/lib/requireAuth");
+  const authRedirect = await requireAuth(ctx);
+  if (authRedirect) return authRedirect;
+  return { props: {} };
+};

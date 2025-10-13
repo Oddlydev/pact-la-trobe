@@ -1,4 +1,5 @@
 import { ApolloClient, InMemoryCache, HttpLink, gql } from "@apollo/client";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import Layout from "@/src/components/Layout";
@@ -89,7 +90,10 @@ export default function ResourcesPage({ resources }: { resources: any[] }) {
   );
 }
 
-export async function getStaticProps() {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { requireAuth } = await import("@/lib/requireAuth");
+  const authRedirect = await requireAuth(ctx);
+  if (authRedirect) return authRedirect;
   const client = new ApolloClient({
     link: new HttpLink({
       uri:
@@ -121,6 +125,5 @@ export async function getStaticProps() {
 
   return {
     props: { resources },
-    revalidate: 60,
   };
-}
+};

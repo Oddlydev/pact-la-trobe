@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import type { GetServerSideProps } from "next";
 import Layout from "@/src/components/Layout";
 import PatientBanner from "@/src/components/Banner/PatientBanner";
 import ActionTriggerCard from "@/src/components/Cards/ActionTriggerCards";
@@ -187,3 +188,10 @@ export default function PatientProfilePage() {
     </Layout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { requireAuth } = await import("@/lib/requireAuth");
+  const authRedirect = await requireAuth(ctx);
+  if (authRedirect) return authRedirect;
+  return { props: {} };
+};

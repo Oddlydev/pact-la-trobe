@@ -1,4 +1,5 @@
 import Head from "next/head";
+import type { GetServerSideProps } from "next";
 import Layout from "@/src/components/Layout";
 
 export default function ResourceSinglePage() {
@@ -124,3 +125,10 @@ export default function ResourceSinglePage() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { requireAuth } = await import("@/lib/requireAuth");
+  const authRedirect = await requireAuth(ctx);
+  if (authRedirect) return authRedirect;
+  return { props: {} };
+};
