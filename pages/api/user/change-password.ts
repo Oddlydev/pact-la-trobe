@@ -3,6 +3,7 @@ import type { RowDataPacket } from "mysql2";
 import { CheckPassword, HashPassword } from "wordpress-hash-node";
 
 import { getPool } from "@/lib/mysql";
+import { serialize } from "cookie";
 
 const COOKIE_NAME = process.env.JWT_COOKIE_NAME || "wpToken";
 const NEXT_PUBLIC_WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL!;
@@ -89,7 +90,18 @@ export default async function handler(
         const errTxt = await updateRes.text().catch(() => "");
         return res.status(400).json({ message: errTxt || "Unable to change password." });
       }
-      return res.status(200).json({ success: true });
+      // Clear auth cookie to force re-login
+      res.setHeader(
+        "Set-Cookie",
+        serialize(COOKIE_NAME, "", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 0,
+        }),
+      );
+      return res.status(200).json({ success: true, loggedOut: true });
     }
 
     // Fallback path: verify and change via DB (requires same DB as WP)
@@ -120,8 +132,18 @@ export default async function handler(
        WHERE ID = ?`,
       [hashedPassword, user.ID],
     );
-
-    return res.status(200).json({ success: true });
+    // Clear auth cookie to force re-login
+    res.setHeader(
+      "Set-Cookie",
+      serialize(COOKIE_NAME, "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
+      }),
+    );
+    return res.status(200).json({ success: true, loggedOut: true });
   } catch (error) {
     console.error("Failed to change password", error);
     return res

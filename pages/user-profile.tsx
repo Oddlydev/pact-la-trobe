@@ -1,6 +1,7 @@
 import Head from "next/head";
 import type { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import Layout from "@/src/components/Layout";
 import ChangePasswordModal from "@/src/components/Modal/ChangePasswordModal";
 
@@ -36,6 +37,7 @@ function EditIcon() {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [editingField, setEditingField] = useState<"phone" | "name" | null>(
     null
   );
@@ -94,34 +96,6 @@ export default function ProfilePage() {
       setMessage({ type: "error", text: e?.message || "Unable to update" });
     } finally {
       setTimeout(() => setMessage(null), 3000);
-    }
-    if (field === "name") {
-      const next = name.trim();
-      if (!next) {
-        setMessage({ type: "error", text: "Name cannot be empty." });
-        setTimeout(() => setMessage(null), 3000);
-        return;
-      }
-      try {
-        const resp = await fetch("/api/user/update-name", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: next }),
-        });
-        const data = await resp.json().catch(() => ({}) as any);
-        if (!resp.ok || !data?.ok)
-          throw new Error(data?.message || "Failed to update name");
-        setName(next);
-        setMessage({ type: "success", text: `Name updated successfully!` });
-        setEditingField(null);
-      } catch (e: any) {
-        setMessage({
-          type: "error",
-          text: e?.message || "Unable to update name.",
-        });
-      } finally {
-        setTimeout(() => setMessage(null), 3000);
-      }
     }
   };
 
@@ -228,10 +202,15 @@ export default function ProfilePage() {
         };
       }
 
+      // Success: close modal, logout (cookie cleared by API), redirect to login
       setShowPasswordModal(false);
-      setMessage({ type: "success", text: "Password updated successfully!" });
-      setTimeout(() => setMessage(null), 3000);
-
+      setMessage({ type: "success", text: "Password updated. Please sign in again." });
+      try {
+        await fetch("/api/logout", { method: "POST" });
+      } catch {}
+      setTimeout(() => {
+        router.replace("/login");
+      }, 600);
       return { ok: true };
     } catch (error) {
       return { ok: false, error: "Unable to change password right now." };
