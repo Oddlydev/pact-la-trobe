@@ -30,12 +30,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .json({ ok: false, error: snippet || "Invalid or expired session" });
     }
 
-    // If ACF not present, try ACF endpoint and merge
-    if ((!me.acf || Object.keys(me.acf).length === 0) && me?.id) {
+    // Always try to augment with ACF endpoint for user meta like phone_number
+    if (me?.id) {
       try {
         const acfRes = await fetch(
           `${NEXT_PUBLIC_WORDPRESS_URL}/?rest_route=/acf/v3/users/${me.id}`,
-          { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }
         );
         if (acfRes.ok) {
           const acfRaw = await acfRes.text();
@@ -45,13 +50,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         }
       } catch {
-        // ignore
+        // ignore network/parse errors silently
       }
     }
 
     // Convenience fields: normalize phone number and provide a masked password placeholder
     try {
       const phoneCandidate =
+        // Prefer WP core user meta if exposed via register_meta(..., 'phone_number', ['show_in_rest'=>true])
+        me?.meta?.phone_number ||
+        // Fall back to ACF fields if present
         me?.acf?.phone_number ||
         me?.acf?.contact_number ||
         me?.acf?.contact ||
