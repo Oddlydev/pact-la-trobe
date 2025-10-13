@@ -1,5 +1,24 @@
 // pages/api/me.ts
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getPool } from "@/lib/mysql";
+const WP_PREFIX_ENV = process.env.WORDPRESS_TABLE_PREFIX || "";
+let cachedPrefixMe: string | null = null;
+async function detectWpPrefix(pool: ReturnType<typeof getPool>): Promise<string> {
+  if (cachedPrefixMe) return cachedPrefixMe;
+  try {
+    const [rows]: any = await pool.query("SHOW TABLES");
+    const names = rows.map((r: any) => r[Object.keys(r)[0]] as string).filter(Boolean);
+    const u = names.find((t: string) => t.endsWith("users"));
+    const m = names.find((t: string) => t.endsWith("usermeta"));
+    const p1 = u ? u.slice(0, -"users".length) : null;
+    const p2 = m ? m.slice(0, -"usermeta".length) : null;
+    const p = (p1 && p2 && p1 === p2 ? p1 : (p1 || p2 || "wp_"));
+    cachedPrefixMe = p;
+    return p;
+  } catch {
+    return "wp_";
+  }
+}
 
 const NEXT_PUBLIC_WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL!;
 const COOKIE_NAME = process.env.JWT_COOKIE_NAME || "wpToken";
@@ -51,6 +70,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       } catch {
         // ignore network/parse errors silently
+      }
+    }
+
+    // If ACF not available or doesn't include phone, try DB usermeta as fallback
+    if (
+      me?.id &&
+      (!me.acf ||
+        (!me.acf.phone_number &&
+          !me.acf.contact_number &&
+          !me.acf.contact &&
+          !me.acf.phone))
+    ) {
+      try {
+        const pool = getPool();
+        const prefix = WP_PREFIX_ENV || (await detectWpPrefix(pool));
+        const [rows]: any = await pool.execute(
+          `SELECT meta_key, meta_value FROM ${prefix}usermeta WHERE user_id = ? AND meta_key IN ('phone_number','contact_number','contact','phone')`,
+          [me.id]
+        );
+        const meta: Record<string, string> = {};
+        for (const r of rows || []) meta[r.meta_key] = r.meta_value;
+        if (Object.keys(meta).length) {
+          me.acf = { ...(me.acf || {}), ...meta };
+        }
+      } catch {
+        // ignore DB fallback errors
       }
     }
 

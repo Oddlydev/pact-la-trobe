@@ -54,16 +54,34 @@ export default function ProfilePage() {
 
   const handleSave = async (field: "phone" | "name") => {
     if (field === "phone") {
-      if (phone.trim() === "") {
+      const number = phone.trim();
+      if (!number) {
         setMessage({ type: "error", text: "Phone number cannot be empty." });
-      } else {
+        setTimeout(() => setMessage(null), 3000);
+        return;
+      }
+      try {
+        const resp = await fetch("/api/user/update-phone", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ country, number }),
+        });
+        const data = await resp.json().catch(() => ({} as any));
+        if (!resp.ok || !data?.ok)
+          throw new Error(data?.message || "Failed to update phone number");
         setMessage({
           type: "success",
-          text: `Phone number updated successfully to ${country} ${phone}!`,
+          text: `Phone number updated successfully to ${country} ${number}!`,
         });
         setEditingField(null);
+      } catch (e: any) {
+        setMessage({
+          type: "error",
+          text: e?.message || "Unable to update phone number.",
+        });
+      } finally {
+        setTimeout(() => setMessage(null), 3000);
       }
-      setTimeout(() => setMessage(null), 3000);
     }
     if (field === "name") {
       const next = name.trim();

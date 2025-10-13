@@ -3,6 +3,7 @@ import type { RowDataPacket } from "mysql2";
 import { CheckPassword, HashPassword } from "wordpress-hash-node";
 
 import { getPool } from "@/lib/mysql";
+const WP_PREFIX = process.env.WORDPRESS_TABLE_PREFIX || "wp_";
 
 type UserRow = RowDataPacket & {
   ID: number;
@@ -46,7 +47,7 @@ export default async function handler(
 
     const [rows] = await pool.execute<UserRow[]>(
       `SELECT ID, user_login, user_pass, user_email
-       FROM wp_users
+       FROM ${WP_PREFIX}users
        WHERE user_email = ? OR user_login = ?
        LIMIT 1`,
       [trimmed, trimmed],
@@ -65,7 +66,7 @@ export default async function handler(
 
     const hashedPassword = HashPassword(newPassword);
     await pool.execute(
-      `UPDATE wp_users
+      `UPDATE ${WP_PREFIX}users
        SET user_pass = ?, user_activation_key = ''
        WHERE ID = ?`,
       [hashedPassword, user.ID],
