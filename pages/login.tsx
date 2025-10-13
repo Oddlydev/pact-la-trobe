@@ -1,6 +1,7 @@
 ﻿import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import InputField from "src/components/Forms/InputFields";
 
 type User = {
   ID: number;
@@ -102,18 +103,16 @@ export default function LoginPage() {
 
         <div className="mt-16 sm:mx-auto sm:w-full sm:max-w-sm">
           <form onSubmit={handleLogin}>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 leading-5">
-                Email address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="block w-full rounded-md border border-gray-300 px-3 py-2"
-              />
-            </div>
+            <InputField
+              type="email"
+              name="email"
+              id="email"
+              label="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="Enter your email"
+            />
             <div>
               {/* Password Field with Forgot Password */}
               <div className="flex items-center justify-between mt-6">
@@ -131,15 +130,15 @@ export default function LoginPage() {
                 </a>
               </div>
 
-              <div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2"
-                />
-              </div>
+              <InputField
+                type="password"
+                name="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Enter your password"
+              />
             </div>
 
             {/* 🧠 Show validation or login error */}
