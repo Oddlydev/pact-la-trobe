@@ -52,7 +52,7 @@ export default function ProfilePage() {
     text: string;
   } | null>(null);
 
-  const handleSave = (field: "phone" | "name") => {
+  const handleSave = async (field: "phone" | "name") => {
     if (field === "phone") {
       if (phone.trim() === "") {
         setMessage({ type: "error", text: "Phone number cannot be empty." });
@@ -69,12 +69,25 @@ export default function ProfilePage() {
       const next = name.trim();
       if (!next) {
         setMessage({ type: "error", text: "Name cannot be empty." });
-      } else {
+        setTimeout(() => setMessage(null), 3000);
+        return;
+      }
+      try {
+        const resp = await fetch("/api/user/update-name", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: next }),
+        });
+        const data = await resp.json().catch(() => ({} as any));
+        if (!resp.ok || !data?.ok) throw new Error(data?.message || "Failed to update name");
         setName(next);
         setMessage({ type: "success", text: `Name updated successfully!` });
         setEditingField(null);
+      } catch (e: any) {
+        setMessage({ type: "error", text: e?.message || "Unable to update name." });
+      } finally {
+        setTimeout(() => setMessage(null), 3000);
       }
-      setTimeout(() => setMessage(null), 3000);
     }
   };
 
