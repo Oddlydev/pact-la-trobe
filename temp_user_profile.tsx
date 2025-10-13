@@ -1,4 +1,4 @@
-import Head from "next/head";
+﻿import Head from "next/head";
 import type { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
 import Layout from "@/src/components/Layout";
@@ -36,9 +36,7 @@ function EditIcon() {
 }
 
 export default function ProfilePage() {
-  const [editingField, setEditingField] = useState<"phone" | "name" | null>(
-    null
-  );
+  const [editingField, setEditingField] = useState<"phone" | null>(null);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState(""); // only number part
@@ -52,7 +50,7 @@ export default function ProfilePage() {
     text: string;
   } | null>(null);
 
-  const handleSave = (field: "phone" | "name") => {
+  const handleSave = (field: "phone") => {
     if (field === "phone") {
       if (phone.trim() === "") {
         setMessage({ type: "error", text: "Phone number cannot be empty." });
@@ -61,17 +59,6 @@ export default function ProfilePage() {
           type: "success",
           text: `Phone number updated successfully to ${country} ${phone}!`,
         });
-        setEditingField(null);
-      }
-      setTimeout(() => setMessage(null), 3000);
-    }
-    if (field === "name") {
-      const next = name.trim();
-      if (!next) {
-        setMessage({ type: "error", text: "Name cannot be empty." });
-      } else {
-        setName(next);
-        setMessage({ type: "success", text: `Name updated successfully!` });
         setEditingField(null);
       }
       setTimeout(() => setMessage(null), 3000);
@@ -226,80 +213,25 @@ export default function ProfilePage() {
                   User ID :
                 </p>
                 <p className="text-gray-500 text-sm leading-5 font-normal">
-                  {loadingUser ? "…" : currentUser?.id ?? "-"}
+                  {loadingUser ? "â€¦" : currentUser?.id ?? "-"}
                 </p>
               </div>
 
               {/* Name Row */}
-              <div className="mb-4 flex items-end gap-5">
-                <div className="flex-1">
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 leading-5"
-                  >
-                    Name
-                  </label>
-                  <input
-                    id="name"
-                    type="text"
-                    value={loadingUser ? "" : name}
-                    onChange={(e) => setName(e.target.value)}
-                    readOnly={editingField !== "name"}
-                    className="mt-1 w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-sm outline-none shadow-sm text-gray-900 bg-white"
-                  />
-                </div>
-
-                {editingField === "name" ? (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleSave("name")}
-                      className="rounded-full bg-black text-sm text-white font-medium hover:bg-gray-800 w-[72px] h-9 flex items-center justify-center leading-3.5"
-                    >
-                      <div className="flex items-center gap-1">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                        >
-                          <path
-                            d="M3.33325 9.33301L5.66659 11.6663L12.6666 4.33301"
-                            stroke="white"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        Save
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => setEditingField(null)}
-                      className="flex items-center justify-center rounded-full border border-black h-9 w-10"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 16 16"
-                        className="h-4 w-4"
-                        fill="none"
-                      >
-                        <path
-                          d="M12 4L4 12M12 12L4 4"
-                          stroke="black"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setEditingField("name")}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-black hover:bg-gray-800"
-                  >
-                    <EditIcon />
-                  </button>
-                )}
+              <div className="mb-4">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 leading-5"
+                >
+                  Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={loadingUser ? "" : name}
+                  disabled
+                  className="mt-1 w-full rounded-md leading-none border border-gray-300 py-2 px-3.5 text-sm outline-none shadow-sm text-gray-900 bg-white"
+                />
               </div>
 
               {/* Email Row */}
@@ -485,5 +417,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   if (authRedirect) return authRedirect;
   return { props: {} };
 };
+
 
 
