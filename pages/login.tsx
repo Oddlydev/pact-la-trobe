@@ -143,12 +143,12 @@ export default function LoginPage() {
 
             {/* 🧠 Show validation or login error */}
             {loginError && (
-              <div className="text-red-600 text-sm text-center">
+              <div className="text-red-600 text-sm text-center mt-4">
                 {loginError}
               </div>
             )}
             {loginSuccess && (
-              <p className="text-green-600 text-sm text-center">
+              <p className="text-green-600 text-sm text-center mt-4">
                 {loginSuccess}
               </p>
             )}

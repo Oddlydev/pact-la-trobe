@@ -70,7 +70,7 @@ const SuccessIcon = ({ className = "" }) => (
 );
 
 export default function InputField({
-  label = "Label",
+  label,
   id,
   name = "input",
   type = "text",
@@ -110,33 +110,25 @@ export default function InputField({
   const base = useMemo(() => {
     let colorClasses = "";
     if (currentState === "error") {
-      colorClasses = focused
-        ? "text-red-900 outline-red-600 focus:outline-red-600"
-        : "text-red-900 outline-red-300 focus:outline-red-600";
+      colorClasses = "border-red-300 focus:border-red-600";
     } else if (currentState === "success") {
-      colorClasses = focused
-        ? "text-green-900 outline-green-600 focus:outline-green-600"
-        : "text-green-900 outline-green-300 focus:outline-green-600";
+      colorClasses = "border-green-300 focus:border-green-600";
     } else if (currentState === "warning") {
-      colorClasses = focused
-        ? "text-yellow-900 outline-yellow-600 focus:outline-yellow-600"
-        : "text-yellow-900 outline-yellow-300 focus:outline-yellow-600";
+      colorClasses = "border-yellow-300 focus:border-yellow-600";
     } else {
-      colorClasses = focused
-        ? "outline-blue-500 focus:outline-blue-500"
-        : "outline-gray-300 focus:outline-blue-500";
+      colorClasses = "border-gray-300 focus:border-[var(--blue-500,#3B82F6)]";
     }
 
     return [
-      "block w-full rounded-md bg-transparent px-3 py-2",
+      "block w-full rounded-md bg-white px-3 py-2",
       "text-base placeholder:text-gray-500 placeholder:text-sm placeholder:font-normal",
-      "outline-1 -outline-offset-1",
+      "border ring-0 focus:ring-0 focus:outline-none shadow-sm",
       "font-dmsans text-gray-900",
       colorClasses,
       "sm:text-sm sm:leading-6",
       "autofill:shadow-[inset_0_0_0_1000px_white]", // Tailwind autofill fix
     ].join(" ");
-  }, [focused, currentState]);
+  }, [currentState]);
 
   const runValidation = (value: string) => {
     if (validate) {
