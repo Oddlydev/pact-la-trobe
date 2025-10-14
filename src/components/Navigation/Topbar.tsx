@@ -35,13 +35,12 @@ export default function Topbar() {
     };
   }, []);
 
-  const displayName: string = (
+  const displayName: string =
     (currentUser?.name as string) ||
     (currentUser?.user_display_name as string) ||
     (currentUser?.user_nicename as string) ||
     (currentUser?.user_email as string) ||
-    ""
-  );
+    "";
   const profileInitial: string = (displayName || " ")
     .trim()
     .charAt(0)
@@ -53,7 +52,7 @@ export default function Topbar() {
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left greeting */}
         <div className="text-2xl font-light">
-          Hi, {" "}
+          Hi,{" "}
           <span className="text-2xl font-bold">
             {loadingUser ? "…" : displayName || "Guest"}
           </span>
@@ -74,10 +73,20 @@ export default function Topbar() {
           {/* Date + Time */}
           <div>
             <div className="text-zinc-900 font-semibold text-sm font-dmsans">
-              2025 DEC 23
+              {new Date()
+                .toLocaleDateString(undefined, {
+                  year: "numeric",
+                  month: "short",
+                  day: "2-digit",
+                })
+                .toUpperCase()}
             </div>
             <div className="text-zinc-500 font-normal text-xs text-right font-dmsans">
-              02:57 PM
+              {new Date().toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })}
             </div>
           </div>
 
