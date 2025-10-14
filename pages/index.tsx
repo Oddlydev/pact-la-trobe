@@ -56,20 +56,43 @@ export default function HomePage() {
   const filteredPatients = tokens.length === 0
     ? riskFilteredPatients
     : riskFilteredPatients.filter((p) => {
-        const searchable = [
-          p.name,
-          p.id,
-          p.age,
-          p.gender,
-          p.score,
-          p.riskLevel,
-          ...(Array.isArray(p.risks) ? p.risks : []),
-        ]
-          .map(normalize)
-          .join(" ");
+        const gender = (p.gender || "").toString().toUpperCase();
+        const genderAliases =
+          gender === "M"
+            ? ["m", "male", "man"]
+            : gender === "F"
+              ? ["f", "female", "woman"]
+              : ["na", "unknown", "unspecified"];
 
-        // Match ALL tokens somewhere within the concatenated string
-        return tokens.every((t) => searchable.includes(t));
+        // Match the visible card content as text
+        const statusLabel =
+          (p.riskLevel || "") === "critical"
+            ? "CRITICAL/PRIORITY"
+            : (p.riskLevel || "") === "high"
+              ? "HIGH RISK"
+              : (p.riskLevel || "") === "moderate"
+                ? "MODERATE RISK"
+                : "LOW RISK";
+
+        const risksArray = Array.isArray(p.risks) ? p.risks : [];
+
+        const cardText = normalize(
+          [
+            statusLabel,
+            p.name,
+            p.id,
+            `age ${p.age ?? ""}`,
+            gender,
+            ...genderAliases,
+            `pcat score ${p.score ?? ""}`,
+            ...risksArray,
+          ]
+            .filter(Boolean)
+            .join(" ")
+        );
+
+        if (normalizedQuery && cardText.includes(normalizedQuery)) return true;
+        return tokens.every((t) => cardText.includes(t));
       });
 
   const patientsPerPage = 12;
