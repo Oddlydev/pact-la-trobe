@@ -223,6 +223,29 @@ const COUNTRY_CALLING_CODES: { code: string; name: string }[] = [
   { code: "+998", name: "Uzbekistan" },
 ];
 
+// National significant number length rules for common dialing codes.
+// Fallback applied when not listed.
+const PHONE_LENGTH_RULES: Record<string, { min: number; max: number }> = {
+  "+1": { min: 10, max: 10 }, // NANP
+  "+44": { min: 10, max: 10 },
+  "+61": { min: 9, max: 9 },
+  "+81": { min: 9, max: 10 },
+  "+82": { min: 9, max: 10 },
+  "+86": { min: 11, max: 11 },
+  "+90": { min: 10, max: 11 },
+  "+91": { min: 10, max: 10 },
+  "+92": { min: 10, max: 10 },
+  "+94": { min: 9, max: 9 }, // Sri Lanka
+  "+971": { min: 9, max: 9 },
+  "+972": { min: 8, max: 9 },
+  "+973": { min: 8, max: 8 },
+  "+974": { min: 8, max: 8 },
+  "+975": { min: 7, max: 8 },
+  "+976": { min: 8, max: 8 },
+  "+977": { min: 8, max: 10 },
+};
+const DEFAULT_PHONE_RULE = { min: 6, max: 12 };
+
 const CREATE_PATIENT = gql`
   mutation CreatePatient($input: CreatePatientInput!) {
     createPatient(input: $input) {
@@ -273,14 +296,41 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
     }
 
     if (name === "phone") {
+      const rule = PHONE_LENGTH_RULES[formData.countryCode] || DEFAULT_PHONE_RULE;
       const digits = String(safeValue ?? "")
         .replace(/\D/g, "")
-        .slice(0, 10);
+        .slice(0, rule.max);
       setFormData((prev) => ({ ...prev, phone: digits }));
       if (!digits.length) {
         setPhoneError(null);
-      } else if (digits.length < 10) {
-        setPhoneError("Phone number must be 10 digits.");
+      } else if (digits.length < rule.min || digits.length > rule.max) {
+        setPhoneError(
+          rule.min === rule.max
+            ? `Phone number must be ${rule.min} digits for the selected country.`
+            : `Phone number must be between ${rule.min}-${rule.max} digits for the selected country.`
+        );
+      } else {
+        setPhoneError(null);
+      }
+      return;
+    }
+
+    if (name === "countryCode") {
+      const newCode = String(safeValue);
+      const rule = PHONE_LENGTH_RULES[newCode] || DEFAULT_PHONE_RULE;
+      setFormData((prev) => {
+        const trimmed = (prev.phone || "").slice(0, rule.max);
+        return { ...prev, countryCode: newCode, phone: trimmed };
+      });
+      const currentLen = (formData.phone || "").slice(0, rule.max).length;
+      if (currentLen === 0) {
+        setPhoneError(null);
+      } else if (currentLen < rule.min || currentLen > rule.max) {
+        setPhoneError(
+          rule.min === rule.max
+            ? `Phone number must be ${rule.min} digits for the selected country.`
+            : `Phone number must be between ${rule.min}-${rule.max} digits for the selected country.`
+        );
       } else {
         setPhoneError(null);
       }
@@ -292,8 +342,16 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.phone.length !== 10) {
-      setPhoneError("Phone number must be 10 digits.");
+    const rule = PHONE_LENGTH_RULES[formData.countryCode] || DEFAULT_PHONE_RULE;
+    if (
+      formData.phone.length < rule.min ||
+      formData.phone.length > rule.max
+    ) {
+      setPhoneError(
+        rule.min === rule.max
+          ? `Phone number must be ${rule.min} digits for the selected country.`
+          : `Phone number must be between ${rule.min}-${rule.max} digits for the selected country.`
+      );
       return;
     }
     try {
@@ -402,8 +460,9 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                   name="phone"
                   value={formData.phone}
                   onChange={(e) => handleChange("phone", e)}
-                  placeholder="123-456-7890"
+                  placeholder="Enter phone number"
                   inputMode="numeric"
+                  pattern="[0-9]*"
                   aria-invalid={Boolean(phoneError)}
                   aria-describedby={phoneError ? "phone-helper" : undefined}
                   className="block flex-1 border-0 bg-transparent py-1.5 pl-2 pr-3 text-base text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
