@@ -41,6 +41,37 @@ export default async function handler(
       return res.status(200).json({ ok: true });
     }
 
+    // Update patient
+    if (req.method === "PUT") {
+      const body = req.body || {};
+      const allowed: Record<string, string> = {
+        firstName: "firstName",
+        lastName: "lastName",
+        address: "address",
+        phone: "phone",
+        dob: "dob",
+        gender: "gender",
+      };
+
+      const keys = Object.keys(allowed).filter((k) => body[k] !== undefined);
+      if (keys.length === 0) {
+        return res
+          .status(400)
+          .json({ ok: false, error: "No updatable fields provided" });
+      }
+
+      const setClause = keys.map((k) => `${allowed[k]} = ?`).join(", ");
+      const params = keys.map((k) => body[k]);
+      params.push(id);
+
+      await pool.execute(
+        `UPDATE patients SET ${setClause} WHERE patientId = ?`,
+        params
+      );
+
+      return res.status(200).json({ ok: true });
+    }
+
     // Default GET: return patient details
     if (req.method === "GET") {
       const [rows] = await pool.query<any[]>(
@@ -95,7 +126,7 @@ export default async function handler(
       });
     }
 
-    res.setHeader("Allow", "GET, DELETE");
+    res.setHeader("Allow", "GET, PUT, DELETE");
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   } catch (err: any) {
     console.error("/api/patients/[id] error", err);

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef } from "react";
+import { useRouter } from "next/router";
 import DotTableRiskIndicator from "@/src/components/Indicators/DotTableRiskIndicator";
 import ActionButton from "@/src/components/Buttons/ActionButtons";
 import FilterDropdown from "@/src/components/Filters/FilterDropdown";
@@ -118,6 +119,7 @@ const HeaderIcon = () => (
 //   Patient Table
 // ===============================
 export default function PatientTable({ patients }: Props) {
+  const router = useRouter();
   // Single active filter
   const [activeFilter, setActiveFilter] = useState<
     "gender" | "status" | "date" | null
@@ -324,6 +326,7 @@ export default function PatientTable({ patients }: Props) {
                     type="text"
                     label="View Patient"
                     iconType="viewPatient"
+                    onClick={() => router.push(`/patient-profile/${p.id}`)}
                   />
                   <button className="flex items-center justify-center rounded-full border border-black p-2.5 hover:bg-gray-100">
                     <ReportIcon />
