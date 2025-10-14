@@ -23,8 +23,39 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
 
   const [phoneError, setPhoneError] = useState<string | null>(null);
 
-  const sanitizePhone = (value: string) =>
-    value.replace(/\D/g, "").slice(0, 10);
+  // Phone rules consistent with AddPatientDrawer
+  const PHONE_LENGTH_RULES: Record<string, { min: number; max: number }> = {
+    "+1": { min: 10, max: 10 },
+    "+44": { min: 10, max: 10 },
+    "+61": { min: 9, max: 9 },
+    "+81": { min: 9, max: 10 },
+    "+82": { min: 9, max: 10 },
+    "+86": { min: 11, max: 11 },
+    "+90": { min: 10, max: 11 },
+    "+91": { min: 10, max: 10 },
+    "+92": { min: 10, max: 10 },
+    "+94": { min: 9, max: 9 },
+    "+971": { min: 9, max: 9 },
+    "+972": { min: 8, max: 9 },
+    "+973": { min: 8, max: 8 },
+    "+974": { min: 8, max: 8 },
+    "+975": { min: 7, max: 8 },
+    "+976": { min: 8, max: 8 },
+    "+977": { min: 8, max: 10 },
+  };
+  const DEFAULT_PHONE_RULE = { min: 6, max: 12 };
+
+  function normalizeNationalNumber(input: string, countryCode: string) {
+    const rule = PHONE_LENGTH_RULES[countryCode] || DEFAULT_PHONE_RULE;
+    const maxLen = rule.max;
+    let digits = String(input ?? "").replace(/\D/g, "");
+    if (digits.startsWith("00")) digits = digits.slice(2);
+    const codeDigits = String(countryCode || "").replace(/\D/g, "");
+    if (codeDigits && digits.startsWith(codeDigits)) {
+      digits = digits.slice(codeDigits.length);
+    }
+    return digits.slice(0, maxLen);
+  }
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -35,28 +66,31 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
         if (resp.ok && json?.ok) {
           setInitial(json.data);
 
-          // try splitting phone into country code + number
+          // split into country code + national number
           if (json.data.phone) {
-            const rawPhone = String(json.data.phone);
-            const parts = rawPhone.trim().split(" ");
+            const rawPhone = String(json.data.phone).trim();
+            const parts = rawPhone.split(/\s+/);
             const potentialCode = parts[0] || "";
-            const country = potentialCode.startsWith("+")
-              ? potentialCode
-              : "+61";
-            const numberPortion = potentialCode.startsWith("+")
-              ? parts.slice(1).join(" ")
-              : rawPhone;
-            const digits = sanitizePhone(numberPortion);
+            const country = potentialCode.startsWith("+") ? potentialCode : "+61";
+            const numberPortion = potentialCode.startsWith("+") ? parts.slice(1).join(" ") : rawPhone;
+            const digits = normalizeNationalNumber(numberPortion, country);
             setFormData({
               country,
               phone: digits,
             });
             if (!digits.length) {
               setPhoneError(null);
-            } else if (digits.length < 10) {
-              setPhoneError("Phone number must be 10 digits.");
             } else {
-              setPhoneError(null);
+              const rule = PHONE_LENGTH_RULES[country] || DEFAULT_PHONE_RULE;
+              if (digits.length < rule.min || digits.length > rule.max) {
+                setPhoneError(
+                  rule.min === rule.max
+                    ? `Phone number must be ${rule.min} digits for the selected country.`
+                    : `Phone number must be between ${rule.min}-${rule.max} digits for the selected country.`
+                );
+              } else {
+                setPhoneError(null);
+              }
             }
           } else {
             setFormData({ country: "+61", phone: "" });
@@ -80,12 +114,38 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
     }
 
     if (name === "phone") {
-      const digits = sanitizePhone(String(safeValue ?? ""));
+      const digits = normalizeNationalNumber(String(safeValue ?? ""), formData.country);
       setFormData((prev) => ({ ...prev, phone: digits }));
       if (!digits.length) {
         setPhoneError(null);
-      } else if (digits.length < 10) {
-        setPhoneError("Phone number must be 10 digits.");
+      } else {
+        const rule = PHONE_LENGTH_RULES[formData.country] || DEFAULT_PHONE_RULE;
+        if (digits.length < rule.min || digits.length > rule.max) {
+          setPhoneError(
+            rule.min === rule.max
+              ? `Phone number must be ${rule.min} digits for the selected country.`
+              : `Phone number must be between ${rule.min}-${rule.max} digits for the selected country.`
+          );
+        } else {
+          setPhoneError(null);
+        }
+      }
+      return;
+    }
+
+    if (name === "country") {
+      const newCode = String(safeValue);
+      const rule = PHONE_LENGTH_RULES[newCode] || DEFAULT_PHONE_RULE;
+      const normalized = normalizeNationalNumber(formData.phone || "", newCode);
+      setFormData((prev) => ({ ...prev, country: newCode, phone: normalized }));
+      if (!normalized.length) {
+        setPhoneError(null);
+      } else if (normalized.length < rule.min || normalized.length > rule.max) {
+        setPhoneError(
+          rule.min === rule.max
+            ? `Phone number must be ${rule.min} digits for the selected country.`
+            : `Phone number must be between ${rule.min}-${rule.max} digits for the selected country.`
+        );
       } else {
         setPhoneError(null);
       }
@@ -98,8 +158,13 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     if (!patientId) return;
-    if (formData.phone.length !== 10) {
-      setPhoneError("Phone number must be 10 digits.");
+    const rule = PHONE_LENGTH_RULES[formData.country] || DEFAULT_PHONE_RULE;
+    if (formData.phone.length < rule.min || formData.phone.length > rule.max) {
+      setPhoneError(
+        rule.min === rule.max
+          ? `Phone number must be ${rule.min} digits for the selected country.`
+          : `Phone number must be between ${rule.min}-${rule.max} digits for the selected country.`
+      );
       return;
     }
     const form = e.currentTarget;
@@ -226,7 +291,7 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                       name="country"
                       value={formData.country}
                       onChange={(e) => handleChange("country", e)}
-                      className="w-16 rounded-l-md border-0 bg-transparent py-1.5 pl-3 text-base text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
+                      className="w-20 rounded-l-md border-0 bg-transparent py-1.5 pl-3 text-base text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
                     >
                       <option value="+61">+61</option> {/* AU */}
                       <option value="+1">+1</option> {/* US/CA */}
@@ -240,8 +305,9 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                       name="phone"
                       value={formData.phone}
                       onChange={(e) => handleChange("phone", e)}
-                      placeholder="123-456-7890"
+                      placeholder="Enter phone number"
                       inputMode="numeric"
+                      pattern="[0-9]*"
                       aria-invalid={Boolean(phoneError)}
                       aria-describedby={
                         phoneError ? "edit-phone-helper" : undefined

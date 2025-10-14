@@ -244,6 +244,21 @@ const PHONE_LENGTH_RULES: Record<string, { min: number; max: number }> = {
 };
 const DEFAULT_PHONE_RULE = { min: 6, max: 12 };
 
+// Normalize pasted/typed phone to national significant number
+function normalizeNationalNumber(
+  input: string,
+  countryCode: string,
+  maxLen: number
+) {
+  let digits = String(input ?? "").replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2); // strip intl prefix
+  const codeDigits = String(countryCode || "").replace(/\D/g, "");
+  if (codeDigits && digits.startsWith(codeDigits)) {
+    digits = digits.slice(codeDigits.length);
+  }
+  return digits.slice(0, maxLen);
+}
+
 // Note: Patient creation is handled via REST at /api/patients
 
 type Props = {
@@ -279,9 +294,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
 
     if (name === "phone") {
       const rule = PHONE_LENGTH_RULES[formData.countryCode] || DEFAULT_PHONE_RULE;
-      const digits = String(safeValue ?? "")
-        .replace(/\D/g, "")
-        .slice(0, rule.max);
+      const digits = normalizeNationalNumber(String(safeValue ?? ""), formData.countryCode, rule.max);
       setFormData((prev) => ({ ...prev, phone: digits }));
       if (!digits.length) {
         setPhoneError(null);
@@ -301,10 +314,10 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
       const newCode = String(safeValue);
       const rule = PHONE_LENGTH_RULES[newCode] || DEFAULT_PHONE_RULE;
       setFormData((prev) => {
-        const trimmed = (prev.phone || "").slice(0, rule.max);
-        return { ...prev, countryCode: newCode, phone: trimmed };
+        const normalized = normalizeNationalNumber(prev.phone || "", newCode, rule.max);
+        return { ...prev, countryCode: newCode, phone: normalized };
       });
-      const currentLen = (formData.phone || "").slice(0, rule.max).length;
+      const currentLen = normalizeNationalNumber(formData.phone || "", newCode, rule.max).length;
       if (currentLen === 0) {
         setPhoneError(null);
       } else if (currentLen < rule.min || currentLen > rule.max) {
