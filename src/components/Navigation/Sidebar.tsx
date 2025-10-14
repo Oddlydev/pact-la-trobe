@@ -6,6 +6,8 @@ export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
   const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
+  const [dateText, setDateText] = useState<string>("");
+  const [timeText, setTimeText] = useState<string>("");
   const router = useRouter();
 
   // Fetch current user info from our API (uses httpOnly JWT cookie)
@@ -34,6 +36,40 @@ export default function Sidebar() {
     return () => {
       active = false;
     };
+  }, []);
+
+  // Live date/time in format: YYYY MMM DD and HH:mm (24h)
+  useEffect(() => {
+    function pad(n: number) {
+      return n.toString().padStart(2, "0");
+    }
+    const MONTHS = [
+      "JAN",
+      "FEB",
+      "MAR",
+      "APR",
+      "MAY",
+      "JUN",
+      "JUL",
+      "AUG",
+      "SEP",
+      "OCT",
+      "NOV",
+      "DEC",
+    ];
+    const update = () => {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = MONTHS[d.getMonth()];
+      const day = pad(d.getDate());
+      const hh = pad(d.getHours());
+      const mm = pad(d.getMinutes());
+      setDateText(`${y} ${m} ${day}`);
+      setTimeText(`${hh}:${mm}`);
+    };
+    update();
+    const id = setInterval(update, 1000 * 30); // refresh every 30s
+    return () => clearInterval(id);
   }, []);
 
   async function handleLogout() {
@@ -235,13 +271,13 @@ export default function Sidebar() {
             {/* Date + Time row */}
             <div className="flex justify-between items-start self-stretch mt-1">
               <div className="text-white text-sm leading-5 font-normal font-dmsans">
-                2025 DEC 23
+                {dateText || ""}
               </div>
               <div
                 className="text-white text-sm leading-5 font-normal font-dmsans"
                 style={{ fontFeatureSettings: "'dlig' on" }}
               >
-                14:57
+                {timeText || ""}
               </div>
             </div>
           </div>
