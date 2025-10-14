@@ -16,6 +16,7 @@ export default function HomePage() {
   const [viewMode, setViewMode] = useState<"card" | "table">("card");
   const [patients, setPatients] = useState<any[]>([]);
   const [selectedFilter, setSelectedFilter] = useState("All Patients");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // 🔹 Fetch patients from API
   useEffect(() => {
@@ -29,17 +30,47 @@ export default function HomePage() {
   // ==========================================================
   //  Filtering
   // ==========================================================
-  const filteredPatients =
+  // Apply risk-level filter first
+  const riskFilteredPatients =
     selectedFilter === "All Patients"
       ? patients
       : patients.filter((p) => {
           if (selectedFilter === "Critical") return p.riskLevel === "critical";
           if (selectedFilter === "High Risk") return p.riskLevel === "high";
-          if (selectedFilter === "Moderate Risk")
-            return p.riskLevel === "moderate";
+          if (selectedFilter === "Moderate Risk") return p.riskLevel === "moderate";
           if (selectedFilter === "Low Risk") return p.riskLevel === "low";
           return true;
         });
+
+  // Then apply search across multiple fields (name, id, age, gender, score, riskLevel, risks)
+  const normalize = (s: any) =>
+    (s == null ? "" : String(s))
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+
+  const normalizedQuery = normalize(searchQuery);
+  const tokens = normalizedQuery ? normalizedQuery.split(/\s+/).filter(Boolean) : [];
+
+  const filteredPatients = tokens.length === 0
+    ? riskFilteredPatients
+    : riskFilteredPatients.filter((p) => {
+        const searchable = [
+          p.name,
+          p.id,
+          p.age,
+          p.gender,
+          p.score,
+          p.riskLevel,
+          ...(Array.isArray(p.risks) ? p.risks : []),
+        ]
+          .map(normalize)
+          .join(" ");
+
+        // Match ALL tokens somewhere within the concatenated string
+        return tokens.every((t) => searchable.includes(t));
+      });
 
   const patientsPerPage = 12;
   const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
@@ -84,7 +115,10 @@ export default function HomePage() {
             label={item.label}
             count={item.count}
             selected={selectedFilter === item.label}
-            onSelectedChange={() => setSelectedFilter(item.label)}
+            onSelectedChange={() => {
+              setSelectedFilter(item.label);
+              setCurrentPage(1);
+            }}
             badgeClassName={item.color}
           />
         ))}
@@ -170,7 +204,13 @@ export default function HomePage() {
 
                 {/* Search */}
                 <div className="pb-8 pt-3">
-                  <SearchBar />
+                  <SearchBar
+                    value={searchQuery}
+                    onChange={(val) => {
+                      setSearchQuery(val);
+                      setCurrentPage(1);
+                    }}
+                  />
                 </div>
 
                 {/* Switch Views */}
