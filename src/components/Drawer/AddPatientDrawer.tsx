@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
-import client from "@/lib/apolloClient";
 import InputField from "@/src/components/Forms/InputFields";
 import TextAreaField from "@/src/components/Forms/TextArea";
 import DatePickerField from "@/src/components/Forms/DatePicker";
@@ -246,21 +244,7 @@ const PHONE_LENGTH_RULES: Record<string, { min: number; max: number }> = {
 };
 const DEFAULT_PHONE_RULE = { min: 6, max: 12 };
 
-const CREATE_PATIENT = gql`
-  mutation CreatePatient($input: CreatePatientInput!) {
-    createPatient(input: $input) {
-      patient {
-        id
-        firstName
-        lastName
-        address
-        phone
-        dob
-        gender
-      }
-    }
-  }
-`;
+// Note: Patient creation is handled via REST at /api/patients
 
 type Props = {
   open: boolean;
@@ -279,10 +263,8 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
   });
 
   const [phoneError, setPhoneError] = useState<string | null>(null);
-
-  const [createPatient, { loading, error }] = useMutation(CREATE_PATIENT, {
-    client,
-  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   if (!open) return null;
 
@@ -354,22 +336,34 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
       );
       return;
     }
+    setLoading(true);
+    setError(null);
     try {
-      await createPatient({
-        variables: {
-          input: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            address: formData.address,
-            phone: `${formData.countryCode} ${formData.phone}`, // combine code + number
-            dob: formData.dob,
-            gender: formData.gender,
-          },
-        },
+      const resp = await fetch("/api/patients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          address: formData.address,
+          phone: `${formData.countryCode} ${formData.phone}`,
+          dob: formData.dob,
+          gender: formData.gender,
+        }),
       });
+      const json = await resp.json();
+      if (!resp.ok || !json?.ok) {
+        throw new Error(json?.error || "Failed to create patient");
+      }
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("patients:reload"));
+      }
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error creating patient", err);
+      setError(err instanceof Error ? err : new Error("Unknown error"));
+    } finally {
+      setLoading(false);
     }
   };
 
