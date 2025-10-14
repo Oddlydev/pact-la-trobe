@@ -30,52 +30,73 @@ export default async function handler(
       return res.status(400).json({ ok: false, error: "Missing id" });
     }
 
-    const [rows] = await pool.query<any[]>(
-      `SELECT p.id,
-              p.patientId,
-              p.firstName,
-              p.lastName,
-              p.address,
-              p.phone,
-              p.dob,
-              p.gender,
-              o.pcfScore,
-              o.riskLevel,
-              o.caregiver_unable,
-              o.recurrent_falls
-       FROM patients p
-       LEFT JOIN patient_overview o ON p.patientId = o.patientId
-       WHERE p.patientId = ?`,
-      [id]
-    );
-
-    if (!rows.length) {
-      return res.status(404).json({ ok: false, error: "Patient not found" });
+    // Handle delete with reason: persist to patients.deleteReason
+    if (req.method === "DELETE") {
+      const reason = (req.body?.reason ?? "").toString();
+      // Update the deleteReason for this patientId
+      await pool.execute(
+        `UPDATE patients SET deleteReason = ? WHERE patientId = ?`,
+        [reason, id]
+      );
+      return res.status(200).json({ ok: true });
     }
 
-    const r = rows[0];
-    return res.status(200).json({
-      ok: true,
-      data: {
-        id: r.id, // internal DB ID
-        patientId: r.patientId,
-        firstName: r.firstName || "",
-        lastName: r.lastName || "",
-        address: r.address || "",
-        phone: r.phone || "",
-        gender: mapGender(r.gender),
-        dob: r.dob,
-        // extras used by other pages
-        name: `${r.firstName || ""} ${r.lastName || ""}`.trim(),
-        age: calculateAge(r.dob),
-        score: r.pcfScore ?? null,
-        riskLevel: (r.riskLevel || "").toLowerCase(),
-        risks: [
-          r.caregiver_unable ? "Caregiver is unable to continue care" : null,
-          r.recurrent_falls ? "Has risk for recurrent falls" : null,
-        ].filter(Boolean),
-      },
-    });
+    // Default GET: return patient details
+    if (req.method === "GET") {
+      const [rows] = await pool.query<any[]>(
+        `SELECT p.id,
+                p.patientId,
+                p.firstName,
+                p.lastName,
+                p.address,
+                p.phone,
+                p.dob,
+                p.gender,
+                o.pcfScore,
+                o.riskLevel,
+                o.caregiver_unable,
+                o.recurrent_falls
+         FROM patients p
+         LEFT JOIN patient_overview o ON p.patientId = o.patientId
+         WHERE p.patientId = ?`,
+        [id]
+      );
+
+      if (!rows.length) {
+        return res
+          .status(404)
+          .json({ ok: false, error: "Patient not found" });
+      }
+
+      const r = rows[0];
+      return res.status(200).json({
+        ok: true,
+        data: {
+          id: r.id, // internal DB ID
+          patientId: r.patientId,
+          firstName: r.firstName || "",
+          lastName: r.lastName || "",
+          address: r.address || "",
+          phone: r.phone || "",
+          gender: mapGender(r.gender),
+          dob: r.dob,
+          // extras used by other pages
+          name: `${r.firstName || ""} ${r.lastName || ""}`.trim(),
+          age: calculateAge(r.dob),
+          score: r.pcfScore ?? null,
+          riskLevel: (r.riskLevel || "").toLowerCase(),
+          risks: [
+            r.caregiver_unable
+              ? "Caregiver is unable to continue care"
+              : null,
+            r.recurrent_falls ? "Has risk for recurrent falls" : null,
+          ].filter(Boolean),
+        },
+      });
+    }
+
+    res.setHeader("Allow", "GET, DELETE");
+    return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   } catch (err: any) {
     console.error("/api/patients/[id] error", err);
     res.status(500).json({ ok: false, error: "Internal Server Error" });
