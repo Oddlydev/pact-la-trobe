@@ -45,13 +45,22 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
 
   const itemsPerPage = 10;
 
-  // Filter
+  // Filter by all visible columns with multi-keyword support
   const filtered = patients.filter((p) => {
-    const q = search.toLowerCase();
-    const textMatch =
-      p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
-    // Table handles gender filtering internally; keep page filter to search only
-    return textMatch;
+    const tokens = search
+      .toLowerCase()
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (tokens.length === 0) return true;
+
+    const haystack = [p.id, p.name, p.address, p.phone, p.gender]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    // Require every token to appear somewhere in the row
+    return tokens.every((t) => haystack.includes(t));
   });
 
   // Paginate
@@ -95,6 +104,11 @@ export default function PatientManagementPage({ initialPatients }: PageProps) {
     window.addEventListener("patients:reload", handler);
     return () => window.removeEventListener("patients:reload", handler);
   }, []);
+
+  // Reset to first page when search query changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
 
   // Gender filter UI is managed inside the table component.
 
