@@ -125,7 +125,7 @@ export default function PatientTable({ patients }: Props) {
     "gender" | "status" | "date" | null
   >(null);
 
-  const [genderFilters, setGenderFilters] = useState({ M: false, F: false });
+  const [genderFilters, setGenderFilters] = useState({ M: false, F: false, NA: false });
   const [statusFilters, setStatusFilters] = useState({
     critical: false,
     high: false,
@@ -142,6 +142,43 @@ export default function PatientTable({ patients }: Props) {
   const genderBtnRef = useRef<HTMLButtonElement>(null);
   const statusBtnRef = useRef<HTMLButtonElement>(null);
   const dateBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Parse helper for lastUpdated like "03-MAY-2025 16:33"
+  const parseLastUpdated = (s: string): Date | null => {
+    if (!s) return null;
+    try {
+      const [dmy, hm] = s.trim().split(/\s+/);
+      if (!dmy) return null;
+      const [d, mon, y] = dmy.split("-");
+      const [h = "0", m = "0"] = (hm || "").split(":");
+      const months: Record<string, number> = {
+        JAN: 0,
+        FEB: 1,
+        MAR: 2,
+        APR: 3,
+        MAY: 4,
+        JUN: 5,
+        JUL: 6,
+        AUG: 7,
+        SEP: 8,
+        OCT: 9,
+        NOV: 10,
+        DEC: 11,
+      };
+      const mi = months[(mon || "").toUpperCase()];
+      if (mi == null) return null;
+      const dt = new Date(
+        Number(y),
+        mi,
+        Number(d),
+        Number(h),
+        Number(m)
+      );
+      return isNaN(dt.getTime()) ? null : dt;
+    } catch {
+      return null;
+    }
+  };
 
   // Filtering logic
   const filteredPatients = useMemo(() => {
@@ -163,21 +200,25 @@ export default function PatientTable({ patients }: Props) {
 
       let datePass = true;
       if (activeDate.length > 0) {
-        const updatedDate = new Date(p.lastUpdated);
+        const updatedDate = parseLastUpdated(p.lastUpdated);
+        if (!updatedDate) return false; // cannot evaluate -> exclude when a date filter is active
         const now = new Date();
+
+        const checks: boolean[] = [];
         if (dateFilters.today) {
-          datePass = updatedDate.toDateString() === now.toDateString();
+          checks.push(updatedDate.toDateString() === now.toDateString());
         }
         if (dateFilters.week) {
-          const oneWeekAgo = new Date();
-          oneWeekAgo.setDate(now.getDate() - 7);
-          datePass = updatedDate >= oneWeekAgo;
+          const sevenDaysAgo = new Date(now);
+          sevenDaysAgo.setDate(now.getDate() - 7);
+          checks.push(updatedDate >= sevenDaysAgo);
         }
         if (dateFilters.month) {
-          const oneMonthAgo = new Date();
-          oneMonthAgo.setMonth(now.getMonth() - 1);
-          datePass = updatedDate >= oneMonthAgo;
+          const thirtyDaysAgo = new Date(now);
+          thirtyDaysAgo.setDate(now.getDate() - 30);
+          checks.push(updatedDate >= thirtyDaysAgo);
         }
+        datePass = checks.some(Boolean);
       }
 
       return genderPass && statusPass && datePass;
@@ -216,10 +257,14 @@ export default function PatientTable({ patients }: Props) {
                 options={[
                   { key: "M", label: "Male" },
                   { key: "F", label: "Female" },
+                  { key: "NA", label: "Not Prefer" },
                 ]}
                 selected={genderFilters}
-                onChange={(k, v) => setGenderFilters((p) => ({ ...p, [k]: v }))}
-                onClear={() => setGenderFilters({ M: false, F: false })}
+                onApply={(sel) => {
+                  const next = { M: !!(sel as any).M, F: !!(sel as any).F, NA: !!(sel as any).NA };
+                  setGenderFilters(next);
+                }}
+                onClear={() => setGenderFilters({ M: false, F: false, NA: false })}
                 onClose={() => setActiveFilter(null)}
                 anchorRef={genderBtnRef}
               />
@@ -246,7 +291,14 @@ export default function PatientTable({ patients }: Props) {
                   { key: "low", label: "Low" },
                 ]}
                 selected={statusFilters}
-                onChange={(k, v) => setStatusFilters((p) => ({ ...p, [k]: v }))}
+                onApply={(sel) =>
+                  setStatusFilters({
+                    critical: !!(sel as any).critical,
+                    high: !!(sel as any).high,
+                    moderate: !!(sel as any).moderate,
+                    low: !!(sel as any).low,
+                  })
+                }
                 onClear={() =>
                   setStatusFilters({
                     critical: false,
@@ -280,7 +332,13 @@ export default function PatientTable({ patients }: Props) {
                   { key: "month", label: "This Month" },
                 ]}
                 selected={dateFilters}
-                onChange={(k, v) => setDateFilters((p) => ({ ...p, [k]: v }))}
+                onApply={(sel) =>
+                  setDateFilters({
+                    today: !!(sel as any).today,
+                    week: !!(sel as any).week,
+                    month: !!(sel as any).month,
+                  })
+                }
                 onClear={() =>
                   setDateFilters({ today: false, week: false, month: false })
                 }
