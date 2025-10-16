@@ -45,7 +45,7 @@ export default function TextAreaField({
             "block w-full rounded-md bg-white px-3 py-1.5",
             "text-base placeholder:text-gray-500 placeholder:font-normal font-dmsans text-gray-900",
             "outline-1 outline-gray-300 focus:outline-1 focus:outline-blue-500",
-            "sm:text-sm/6 resize-y",
+            "sm:text-sm/6 resize-y shadow-sm",
           ].join(" ")}
           {...rest}
         />

@@ -65,7 +65,7 @@ export default function SearchBar({
       <label htmlFor={inputId} className="sr-only">
         Search
       </label>
-      <div className="text-zinc-400 text-sm font-normal leading-5 flex items-center gap-2 rounded-full bg-brand-2 px-4 py-3 ring-1 ring-zinc-200 focus-within:ring-2 focus-within:ring-blue-500">
+      <div className="text-zinc-400 text-sm font-normal leading-5 flex items-center gap-2 rounded-full bg-brand-2 px-4 py-3 ring-1 ring-zinc-200 focus-within:ring-2 focus-within:ring-blue-500 shadow-xs">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"

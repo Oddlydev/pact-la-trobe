@@ -71,8 +71,12 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
             const rawPhone = String(json.data.phone).trim();
             const parts = rawPhone.split(/\s+/);
             const potentialCode = parts[0] || "";
-            const country = potentialCode.startsWith("+") ? potentialCode : "+61";
-            const numberPortion = potentialCode.startsWith("+") ? parts.slice(1).join(" ") : rawPhone;
+            const country = potentialCode.startsWith("+")
+              ? potentialCode
+              : "+61";
+            const numberPortion = potentialCode.startsWith("+")
+              ? parts.slice(1).join(" ")
+              : rawPhone;
             const digits = normalizeNationalNumber(numberPortion, country);
             setFormData({
               country,
@@ -114,7 +118,10 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
     }
 
     if (name === "phone") {
-      const digits = normalizeNationalNumber(String(safeValue ?? ""), formData.country);
+      const digits = normalizeNationalNumber(
+        String(safeValue ?? ""),
+        formData.country
+      );
       setFormData((prev) => ({ ...prev, phone: digits }));
       if (!digits.length) {
         setPhoneError(null);
@@ -312,7 +319,7 @@ export default function EditPatientDrawer({ open, onClose, patientId }: Props) {
                       aria-describedby={
                         phoneError ? "edit-phone-helper" : undefined
                       }
-                      className="block flex-1 border-0 bg-transparent py-1.5 pl-2 pr-3 text-base text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
+                      className="block flex-1 border-0 bg-transparent py-1.5 pl-2 pr-3 text-base text-gray-500 placeholder:text-gray-500 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
                     />
                   </div>
                   {phoneError && (

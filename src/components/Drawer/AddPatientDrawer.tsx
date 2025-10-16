@@ -293,8 +293,13 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
     }
 
     if (name === "phone") {
-      const rule = PHONE_LENGTH_RULES[formData.countryCode] || DEFAULT_PHONE_RULE;
-      const digits = normalizeNationalNumber(String(safeValue ?? ""), formData.countryCode, rule.max);
+      const rule =
+        PHONE_LENGTH_RULES[formData.countryCode] || DEFAULT_PHONE_RULE;
+      const digits = normalizeNationalNumber(
+        String(safeValue ?? ""),
+        formData.countryCode,
+        rule.max
+      );
       setFormData((prev) => ({ ...prev, phone: digits }));
       if (!digits.length) {
         setPhoneError(null);
@@ -314,10 +319,18 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
       const newCode = String(safeValue);
       const rule = PHONE_LENGTH_RULES[newCode] || DEFAULT_PHONE_RULE;
       setFormData((prev) => {
-        const normalized = normalizeNationalNumber(prev.phone || "", newCode, rule.max);
+        const normalized = normalizeNationalNumber(
+          prev.phone || "",
+          newCode,
+          rule.max
+        );
         return { ...prev, countryCode: newCode, phone: normalized };
       });
-      const currentLen = normalizeNationalNumber(formData.phone || "", newCode, rule.max).length;
+      const currentLen = normalizeNationalNumber(
+        formData.phone || "",
+        newCode,
+        rule.max
+      ).length;
       if (currentLen === 0) {
         setPhoneError(null);
       } else if (currentLen < rule.min || currentLen > rule.max) {
@@ -338,10 +351,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const rule = PHONE_LENGTH_RULES[formData.countryCode] || DEFAULT_PHONE_RULE;
-    if (
-      formData.phone.length < rule.min ||
-      formData.phone.length > rule.max
-    ) {
+    if (formData.phone.length < rule.min || formData.phone.length > rule.max) {
       setPhoneError(
         rule.min === rule.max
           ? `Phone number must be ${rule.min} digits for the selected country.`
@@ -472,7 +482,7 @@ export default function AddPatientDrawer({ open, onClose }: Props) {
                   pattern="[0-9]*"
                   aria-invalid={Boolean(phoneError)}
                   aria-describedby={phoneError ? "phone-helper" : undefined}
-                  className="block flex-1 border-0 bg-transparent py-1.5 pl-2 pr-3 text-base text-gray-900 placeholder:text-gray-400 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
+                  className="block flex-1 border-0 bg-transparent py-1.5 pl-2 pr-3 text-base text-gray-500 placeholder:text-gray-500 placeholder:font-normal font-normal focus:outline-none focus:ring-0 sm:text-sm"
                 />
               </div>
               {phoneError && (
