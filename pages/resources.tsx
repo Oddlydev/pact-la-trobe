@@ -15,6 +15,9 @@ const RESOURCES_QUERY = gql`
         excerpt
         slug
         uri
+        externalWebisteLink {
+          externalLink
+        }
         featuredImage {
           node {
             sourceUrl
@@ -100,6 +103,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const resources =
     data?.resources?.nodes.map((res: any) => {
+      const external = res?.externalWebisteLink?.externalLink || "";
+      const isExternal = Boolean(external);
       return {
         id: res.id,
         title: res.title || "Untitled",
@@ -109,7 +114,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         // If no category selected, keep blank instead of defaulting to 'General'
         category: res.categories?.nodes?.[0]?.name ?? "",
         description: res.excerpt || "",
-        link: `/resources/${res.slug}`, //   Next.js internal link
+        link: isExternal ? external : `/resources/${res.slug}`,
+        linkType: isExternal ? "external" : "internal",
       };
     }) || [];
 
