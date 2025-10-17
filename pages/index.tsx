@@ -42,7 +42,7 @@ export default function HomePage() {
           return true;
         });
 
-  // Then apply search across multiple fields (name, id, age, gender, score, riskLevel, risks)
+  // Then apply search across ONLY patient id and name
   const normalize = (s: any) =>
     (s == null ? "" : String(s))
       .toLowerCase()
@@ -53,47 +53,15 @@ export default function HomePage() {
   const normalizedQuery = normalize(searchQuery);
   const tokens = normalizedQuery ? normalizedQuery.split(/\s+/).filter(Boolean) : [];
 
-  const filteredPatients = tokens.length === 0
-    ? riskFilteredPatients
-    : riskFilteredPatients.filter((p) => {
-        const gender = (p.gender || "").toString().toUpperCase();
-        const genderAliases =
-          gender === "M"
-            ? ["m", "male", "man"]
-            : gender === "F"
-              ? ["f", "female", "woman"]
-              : ["na", "unknown", "unspecified"];
-
-        // Match the visible card content as text
-        const statusLabel =
-          (p.riskLevel || "") === "critical"
-            ? "CRITICAL/PRIORITY"
-            : (p.riskLevel || "") === "high"
-              ? "HIGH RISK"
-              : (p.riskLevel || "") === "moderate"
-                ? "MODERATE RISK"
-                : "LOW RISK";
-
-        const risksArray = Array.isArray(p.risks) ? p.risks : [];
-
-        const cardText = normalize(
-          [
-            statusLabel,
-            p.name,
-            p.id,
-            `age ${p.age ?? ""}`,
-            gender,
-            ...genderAliases,
-            `pcat score ${p.score ?? ""}`,
-            ...risksArray,
-          ]
-            .filter(Boolean)
-            .join(" ")
-        );
-
-        if (normalizedQuery && cardText.includes(normalizedQuery)) return true;
-        return tokens.every((t) => cardText.includes(t));
-      });
+  const filteredPatients =
+    tokens.length === 0
+      ? riskFilteredPatients
+      : riskFilteredPatients.filter((p) => {
+          // Search only by patient name and ID
+          const searchable = normalize(`${p.name ?? ""} ${p.id ?? ""}`);
+          if (normalizedQuery && searchable.includes(normalizedQuery)) return true;
+          return tokens.every((t) => searchable.includes(t));
+        });
 
   const patientsPerPage = 12;
   const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
