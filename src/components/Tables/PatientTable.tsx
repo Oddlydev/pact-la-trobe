@@ -125,7 +125,11 @@ export default function PatientTable({ patients }: Props) {
     "gender" | "status" | "date" | null
   >(null);
 
-  const [genderFilters, setGenderFilters] = useState({ M: false, F: false, NA: false });
+  const [genderFilters, setGenderFilters] = useState({
+    M: false,
+    F: false,
+    NA: false,
+  });
   const [statusFilters, setStatusFilters] = useState({
     critical: false,
     high: false,
@@ -167,13 +171,7 @@ export default function PatientTable({ patients }: Props) {
       };
       const mi = months[(mon || "").toUpperCase()];
       if (mi == null) return null;
-      const dt = new Date(
-        Number(y),
-        mi,
-        Number(d),
-        Number(h),
-        Number(m)
-      );
+      const dt = new Date(Number(y), mi, Number(d), Number(h), Number(m));
       return isNaN(dt.getTime()) ? null : dt;
     } catch {
       return null;
@@ -261,10 +259,16 @@ export default function PatientTable({ patients }: Props) {
                 ]}
                 selected={genderFilters}
                 onApply={(sel) => {
-                  const next = { M: !!(sel as any).M, F: !!(sel as any).F, NA: !!(sel as any).NA };
+                  const next = {
+                    M: !!(sel as any).M,
+                    F: !!(sel as any).F,
+                    NA: !!(sel as any).NA,
+                  };
                   setGenderFilters(next);
                 }}
-                onClear={() => setGenderFilters({ M: false, F: false, NA: false })}
+                onClear={() =>
+                  setGenderFilters({ M: false, F: false, NA: false })
+                }
                 onClose={() => setActiveFilter(null)}
                 anchorRef={genderBtnRef}
               />
@@ -386,10 +390,20 @@ export default function PatientTable({ patients }: Props) {
                     iconType="viewPatient"
                     onClick={() => router.push(`/patient-profile/${p.id}`)}
                   />
-                  <button className="flex items-center justify-center rounded-full border border-black p-2.5 hover:bg-gray-100">
+                  <button
+                    className="flex items-center justify-center rounded-full border border-black p-2.5 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => router.push(`/assessment-report/`)}
+                    aria-label="Open Assessment Report"
+                    title="Open Assessment Report"
+                  >
                     <ReportIcon />
                   </button>
-                  <button className="flex items-center justify-center rounded-full border border-black p-2.5 hover:bg-gray-100">
+                  <button
+                    className="flex items-center justify-center rounded-full border border-black p-2.5 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => router.push(`/assessment-form/`)}
+                    aria-label="Open Assessment Form"
+                    title="Open Assessment Form"
+                  >
                     <NotesIcon />
                   </button>
                 </div>
