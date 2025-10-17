@@ -390,22 +390,36 @@ export default function PatientTable({ patients }: Props) {
                     iconType="viewPatient"
                     onClick={() => router.push(`/patient-profile/${p.id}`)}
                   />
-                  <button
-                    className="flex items-center justify-center rounded-full border border-black bg-black text-white p-2.5 hover:bg-transparent hover:text-black cursor-pointer transition-colors"
-                    onClick={() => router.push(`/assessment-report/`)}
-                    aria-label="Open Assessment Report"
-                    title="Open Assessment Report"
-                  >
-                    <ReportIcon />
-                  </button>
-                  <button
-                    className="flex items-center justify-center rounded-full border border-black text-black p-2.5 hover:bg-black hover:text-white cursor-pointer transition-colors"
-                    onClick={() => router.push(`/assessment-form/`)}
-                    aria-label="Open Assessment Form"
-                    title="Open Assessment Form"
-                  >
-                    <NotesIcon />
-                  </button>
+                  <div className="relative group">
+                    <button
+                      className="flex items-center justify-center rounded-full border border-black text-black p-2.5 hover:bg-black hover:text-white focus:bg-black focus:text-white active:bg-black active:text-white cursor-pointer transition-colors"
+                      onClick={() => router.push(`/assessment-report/`)}
+                      aria-label="View Assesment Report"
+                    >
+                      <ReportIcon />
+                    </button>
+                    <span
+                      className="pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-1 bottom-full mb-1 rounded bg-black px-3 py-1.5 text-[10px] text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100 whitespace-nowrap"
+                      role="tooltip"
+                    >
+                      View Assesment Report
+                    </span>
+                  </div>
+                  <div className="relative group">
+                    <button
+                      className="flex items-center justify-center rounded-full border border-black text-black p-2.5 hover:bg-black hover:text-white focus:bg-black focus:text-white active:bg-black active:text-white cursor-pointer transition-colors"
+                      onClick={() => router.push(`/assessment-form/`)}
+                      aria-label="Add Assessment Report"
+                    >
+                      <NotesIcon />
+                    </button>
+                    <span
+                      className="pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-1 bottom-full mb-1 rounded bg-black px-3 py-1.5 text-[10px] text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100 whitespace-nowrap"
+                      role="tooltip"
+                    >
+                      Add Assessment Report
+                    </span>
+                  </div>
                 </div>
               </td>
             </tr>
