@@ -30,31 +30,31 @@ const ReportIcon = () => (
   >
     <path
       d="M13.3334 10.6666V5.33325C13.3334 3.44763 13.3334 2.50483 12.7476 1.91904C12.1618 1.33325 11.219 1.33325 9.33341 1.33325H6.66675C4.78113 1.33325 3.83832 1.33325 3.25253 1.91904C2.66675 2.50483 2.66675 3.44763 2.66675 5.33325V10.6666C2.66675 12.5522 2.66675 13.495 3.25253 14.0808C3.83832 14.6666 4.78113 14.6666 6.66675 14.6666H9.33341C11.219 14.6666 12.1618 14.6666 12.7476 14.0808C13.3334 13.495 13.3334 12.5522 13.3334 10.6666Z"
-      stroke="black"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M10.3334 1.33325H5.66675C5.66675 2.27606 5.66675 2.74747 5.95964 3.04036C6.25253 3.33325 6.72395 3.33325 7.66675 3.33325H8.33341C9.27621 3.33325 9.74761 3.33325 10.0405 3.04036C10.3334 2.74747 10.3334 2.27606 10.3334 1.33325Z"
-      stroke="black"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M5 7.33325L5.66667 7.99992L7 6.33325"
-      stroke="black"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M8.66675 11.3333H10.6667M8.66675 7.33325H10.6667"
-      stroke="black"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M5.66016 11.2449H5.66682"
-      stroke="black"
+      stroke="currentColor"
       strokeWidth="1.33333"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -72,25 +72,25 @@ const NotesIcon = () => (
   >
     <path
       d="M12.6667 8.66658V5.33325C12.6667 3.44763 12.6667 2.50483 12.0809 1.91904C11.4951 1.33325 10.5523 1.33325 8.66667 1.33325H6C4.11438 1.33325 3.17157 1.33325 2.58579 1.91904C2 2.50483 2 3.44763 2 5.33325V10.6666C2 12.5522 2 13.495 2.58579 14.0808C3.17157 14.6666 4.11438 14.6666 6 14.6666H9.33333"
-      stroke="black"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M9.66667 1.33325H5C5 2.27606 5 2.74747 5.29289 3.04036C5.58579 3.33325 6.05719 3.33325 7 3.33325H7.66667C8.60947 3.33325 9.08087 3.33325 9.3738 3.04036C9.66667 2.74747 9.66667 2.27606 9.66667 1.33325Z"
-      stroke="black"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M4.66675 9.99992H7.33341M4.66675 7.33325H10.0001"
-      stroke="black"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M14 12.6667H12M12 12.6667H10M12 12.6667V14.6667M12 12.6667V10.6667"
-      stroke="black"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -391,7 +391,7 @@ export default function PatientTable({ patients }: Props) {
                     onClick={() => router.push(`/patient-profile/${p.id}`)}
                   />
                   <button
-                    className="flex items-center justify-center rounded-full border border-black p-2.5 hover:bg-gray-100 cursor-pointer"
+                    className="flex items-center justify-center rounded-full border border-black bg-black text-white p-2.5 hover:bg-transparent hover:text-black cursor-pointer transition-colors"
                     onClick={() => router.push(`/assessment-report/`)}
                     aria-label="Open Assessment Report"
                     title="Open Assessment Report"
@@ -399,7 +399,7 @@ export default function PatientTable({ patients }: Props) {
                     <ReportIcon />
                   </button>
                   <button
-                    className="flex items-center justify-center rounded-full border border-black p-2.5 hover:bg-gray-100 cursor-pointer"
+                    className="flex items-center justify-center rounded-full border border-black text-black p-2.5 hover:bg-black hover:text-white cursor-pointer transition-colors"
                     onClick={() => router.push(`/assessment-form/`)}
                     aria-label="Open Assessment Form"
                     title="Open Assessment Form"
