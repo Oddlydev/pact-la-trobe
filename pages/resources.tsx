@@ -26,13 +26,6 @@ const RESOURCES_QUERY = gql`
             name
           }
         }
-        resourcesTypes {
-          nodes {
-            id
-            name
-            slug
-          }
-        }
       }
     }
   }
@@ -107,9 +100,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const resources =
     data?.resources?.nodes.map((res: any) => {
-      const resType = res.resourcesTypes?.nodes?.[0]?.slug;
-      const linkType = resType === "external-link" ? "external" : "internal";
-
       return {
         id: res.id,
         title: res.title || "Untitled",
@@ -120,7 +110,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         category: res.categories?.nodes?.[0]?.name ?? "",
         description: res.excerpt || "",
         link: `/resources/${res.slug}`, //   Next.js internal link
-        linkType,
       };
     }) || [];
 
