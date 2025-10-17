@@ -143,7 +143,7 @@ export default function SummaryCards({ sectionScores, totals }: Props) {
 
   const renderCard = (c: SummaryCard, i: number) => {
     const cfg = severityCfg[c.severity];
-    const showExtras = c.step > 5; // ✅ only show recommendation/action for step 6 and 7
+    const showExtras = c.step > 5; //   only show recommendation/action for step 6 and 7
 
     return (
       <div

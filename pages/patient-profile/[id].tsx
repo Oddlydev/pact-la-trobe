@@ -119,7 +119,7 @@ export default function PatientProfilePage() {
                 Access personal information, history, and care status
               </p>
             </div>
-            {/* ✅ Button goes with patient.id (already PT200013) */}
+            {/*   Button goes with patient.id (already PT200013) */}
             <Link
               href={`/assessment-form/${patient.id}`}
               className="shrink-0"

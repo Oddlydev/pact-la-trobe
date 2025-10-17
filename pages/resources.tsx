@@ -116,9 +116,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         image:
           res.featuredImage?.node?.sourceUrl ||
           "/assets/images/card-imgs/resources-card-img.png",
-        category: res.categories?.nodes?.[0]?.name || "General",
+        // If no category selected, keep blank instead of defaulting to 'General'
+        category: res.categories?.nodes?.[0]?.name ?? "",
         description: res.excerpt || "",
-        link: `/resources/${res.slug}`, // ✅ Next.js internal link
+        link: `/resources/${res.slug}`, //   Next.js internal link
         linkType,
       };
     }) || [];
